@@ -13,8 +13,6 @@
 
 **Application web de gestion de véhicules Tesla via l'API Fleet**
 
-[Fonctionnalités](#-fonctionnalités) • [Installation](#-installation) • [Architecture](#-architecture) • [Équipe](#-équipe)
-
 </div>
 
 ---
