@@ -25,19 +25,20 @@ TeslApp est une application web permettant de reproduire les principales fonctio
 
 ## 🛠️ Stack Technique
 
-| Catégorie | Technologies |
-|-----------|-------------|
-| **Backend** | PHP 8.x (MVC from scratch) |
-| **Frontend** | HTML5, CSS3, JavaScript |
-| **Base de données** | PostgreSQL |
-| **API** | Tesla Fleet API, OAuth2 |
-| **Qualité** | SonarCloud, Prettier |
-| **CI/CD** | GitHub Actions |
-| **Infrastructure** | Cloudflare DNS, HTTPS |
+| Catégorie           | Technologies               |
+| ------------------- | -------------------------- |
+| **Backend**         | PHP 8.x (MVC from scratch) |
+| **Frontend**        | HTML5, CSS3, JavaScript    |
+| **Base de données** | PostgreSQL                 |
+| **API**             | Tesla Fleet API, OAuth2    |
+| **Qualité**         | SonarCloud, Prettier       |
+| **CI/CD**           | GitHub Actions             |
+| **Infrastructure**  | Cloudflare DNS, HTTPS      |
 
 ## 🏗️ Architecture
 
 Le projet suit une architecture **MVC (Model-View-Controller)** sans framework PHP.
+
 ```
 teslapp/
 ├── public/                 # Point d'entrée web
@@ -63,12 +64,12 @@ teslapp/
 
 Nous utilisons un **Git Flow simplifié** :
 
-| Branche | Description |
-|---------|-------------|
-| `main` | Version stable en production |
-| `preprod` | Validation avant production |
-| `develop` | Intégration des développements |
-| `test` | Environnement de test pour l'enseignant responsable |
+| Branche   | Description                                         |
+| --------- | --------------------------------------------------- |
+| `main`    | Version stable en production                        |
+| `preprod` | Validation avant production                         |
+| `develop` | Intégration des développements                      |
+| `test`    | Environnement de test pour l'enseignant responsable |
 
 ## ✅ Qualité de code
 
@@ -78,13 +79,13 @@ Nous utilisons un **Git Flow simplifié** :
 
 ## 👥 Équipe
 
-| Membre | Rôle |
-|--------|------|
-| **Alexis BARBERIS** | 
-| **Mathis FAUTSCH** | 
-| **Mathis LAURIOL-TORCQ** | 
-| **Oriane MEJEAN** |
-| **Jérémy WATRIPONT** |
+| Membre                   | Rôle |
+| ------------------------ | ---- |
+| **Alexis BARBERIS**      |
+| **Mathis FAUTSCH**       |
+| **Mathis LAURIOL-TORCQ** |
+| **Oriane MEJEAN**        |
+| **Jérémy WATRIPONT**     |
 
 ## 📚 Documentation
 
