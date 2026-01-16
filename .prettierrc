@@ -6,5 +6,10 @@
   "singleQuote": true,
   "trailingComma": "all",
   "bracketSameLine": false,
-  "bracketSpacing": true
+  "bracketSpacing": true,
+  "phpVersion": "auto",
+  "braceStyle": "per-cs",
+  "plugins": [
+    "@prettier/plugin-php"
+  ]
 }
