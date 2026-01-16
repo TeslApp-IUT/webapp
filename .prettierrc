@@ -9,7 +9,5 @@
   "bracketSpacing": true,
   "phpVersion": "auto",
   "braceStyle": "per-cs",
-  "plugins": [
-    "@prettier/plugin-php"
-  ]
+  "plugins": ["@prettier/plugin-php"]
 }
