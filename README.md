@@ -55,7 +55,7 @@ teslapp/
 │   ├── layouts/            # Structure HTML globale
 │   ├── components/         # Éléments réutilisables
 │   ├── auth/               # Pages d'authentification
-│   └── vehicle/            # Pages véhicule
+│   └── vehicule/            # Pages véhicule
 ├── config/                 # Configuration
 └── vendor/                 # Dépendances Composer
 ```
