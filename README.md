@@ -25,15 +25,15 @@ TeslApp est une application web permettant de reproduire les principales fonctio
 
 ## 🛠️ Stack Technique
 
-| Catégorie           | Technologies               |
-| ------------------- | -------------------------- |
+| Catégorie           | Technologies                                     |
+| ------------------- | ------------------------------------------------ |
 | **Backend**         | PHP 8.2+ (MVC + Clean Architecture from scratch) |
-| **Frontend**        | HTML5, CSS3, JavaScript    |
-| **Base de données** | PostgreSQL                 |
-| **API**             | Tesla Fleet API, OAuth2    |
-| **Qualité**         | SonarCloud, Prettier       |
-| **CI/CD**           | GitHub Actions             |
-| **Infrastructure**  | Cloudflare DNS, HTTPS      |
+| **Frontend**        | HTML5, CSS3, JavaScript                          |
+| **Base de données** | PostgreSQL                                       |
+| **API**             | Tesla Fleet API, OAuth2                          |
+| **Qualité**         | SonarCloud, Prettier                             |
+| **CI/CD**           | GitHub Actions                                   |
+| **Infrastructure**  | Cloudflare DNS, HTTPS                            |
 
 ## 🏗️ Architecture
 
