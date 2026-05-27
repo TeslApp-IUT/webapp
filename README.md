@@ -27,7 +27,7 @@ TeslApp est une application web permettant de reproduire les principales fonctio
 
 | Catégorie           | Technologies               |
 | ------------------- | -------------------------- |
-| **Backend**         | PHP 8.x (MVC from scratch) |
+| **Backend**         | PHP 8.2+ (MVC + Clean Architecture from scratch) |
 | **Frontend**        | HTML5, CSS3, JavaScript    |
 | **Base de données** | PostgreSQL                 |
 | **API**             | Tesla Fleet API, OAuth2    |
@@ -37,27 +37,41 @@ TeslApp est une application web permettant de reproduire les principales fonctio
 
 ## 🏗️ Architecture
 
-Le projet suit une architecture **MVC (Model-View-Controller)** sans framework PHP.
+Le projet combine plusieurs patrons d'architecture étudiés en R4.01 :
+
+- **MVC artisanal** (Chap 1) — Front controller PHP, séparation Controller / Service / View
+- **Clean Architecture** (R. C. Martin, Chap 2) — Domain au cœur, Infrastructure en périphérie, dépendances orientées vers l'intérieur
+- **Architecture hurlante** — Organisation par **bounded contexts** métier (Auth, Vehicle, Climate, Charging, Trips) plutôt que par couches techniques
+- **Application Service Pattern** (Evans / Vernon) — 1 Service par feature regroupant les cas d'utilisation
 
 ```
 teslapp/
-├── public/                 # Point d'entrée web
-│   └── assets/
-│       ├── css/
-│       ├── js/
-│       └── images/
-├── app/
-│   ├── Controllers/        # Logique de traitement
-│   ├── Models/             # Entités métier
-│   ├── Views/              # Classes de rendu
-│   └── Services/           # API Tesla, OAuth...
-├── templates/
-│   ├── layouts/            # Structure HTML globale
-│   ├── components/         # Éléments réutilisables
-│   ├── auth/               # Pages d'authentification
-│   └── vehicule/            # Pages véhicule
-├── config/                 # Configuration
-└── vendor/                 # Dépendances Composer
+├── www/                          # DocumentRoot (point d'entrée web)
+│   ├── index.php                 # Front controller
+│   └── _assets/                  # CSS, JS, images
+├── private/                      # Code applicatif (inaccessible HTTP)
+│   ├── config/                   # Configuration + container DI
+│   ├── Auth/                     # Bounded Context : Login with Tesla
+│   ├── Vehicle/                  # Bounded Context : commandes véhicule
+│   ├── Climate/                  # Bounded Context : climatisation
+│   ├── Charging/                 # Bounded Context : recharge
+│   ├── Trips/                    # Bounded Context : historique trajets
+│   └── Shared/                   # Kernel : VO, ports, infra commune, utils
+├── db/                           # Schéma BDD (schema.sql)
+├── docker/                       # Compose Docker (Postgres, Kafka, ...)
+├── bin/                          # Scripts CLI (workers, crons)
+├── tests/                        # PHPUnit (Unit, Integration, Acceptance)
+└── vendor/                       # Dépendances Composer (gitignored)
+```
+
+Chaque feature suit la même structure interne (Clean Architecture locale) :
+
+```
+private/<Feature>/
+├── Domain/             # Entités + Application Service + Ports (interfaces)
+├── Infrastructure/     # Adapters concrets (PdoRepositories, clients HTTP)
+├── Http/               # Controllers + Presenters
+└── Views/              # Templates PHP
 ```
 
 ## 🔀 Workflow Git
