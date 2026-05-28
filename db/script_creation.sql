@@ -1,3 +1,7 @@
+------------------------------------------------------------------
+--                           VERSION 7                          --
+------------------------------------------------------------------
+
 DROP TABLE IF EXISTS vehicles CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS oauth2_token CASCADE;
