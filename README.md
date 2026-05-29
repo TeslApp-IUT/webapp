@@ -8,7 +8,7 @@
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=teslapp&metric=alert_status)](https://sonarcloud.io/)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=TeslApp-IUT_webapp&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=TeslApp-IUT_webapp)
 [![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 **Application web de gestion de véhicules Tesla via l'API Fleet**
@@ -27,22 +27,21 @@ TeslApp est une application web permettant de reproduire les principales fonctio
 
 | Catégorie           | Technologies                                     |
 | ------------------- | ------------------------------------------------ |
-| **Backend**         | PHP 8.2+ (MVC + Clean Architecture from scratch) |
+| **Backend**         | PHP 8.2+ (MVC en couches plates artisanal + éléments de Clean Architecture dans `Models/`) |
 | **Frontend**        | HTML5, CSS3, JavaScript                          |
 | **Base de données** | PostgreSQL                                       |
 | **API**             | Tesla Fleet API, OAuth2                          |
-| **Qualité**         | SonarCloud, Prettier                             |
+| **Qualité**         | SonarCloud, PHPStan, PHP_CodeSniffer / PHP-CS-Fixer (PSR-12), PHPUnit, Prettier |
 | **CI/CD**           | GitHub Actions                                   |
-| **Infrastructure**  | Cloudflare DNS, HTTPS                            |
+| **Infrastructure**  | Cloudflare (DNS) · Feyli (Docker) · HTTPS Let's Encrypt |
 
 ## 🏗️ Architecture
 
-Le projet combine plusieurs patrons d'architecture étudiés en R4.01 :
+Le projet applique une **architecture MVC en couches plates** (validée par l'enseignant), enrichie de quelques éléments de Clean Architecture dans la couche `Models/` :
 
-- **MVC artisanal** (Chap 1) — Front controller PHP, séparation Controller / Service / View
-- **Clean Architecture** (R. C. Martin, Chap 2) — Domain au cœur, Infrastructure en périphérie, dépendances orientées vers l'intérieur
-- **Architecture hurlante** — Organisation par **bounded contexts** métier (Auth, Vehicle, Climate, Charging, Trips) plutôt que par couches techniques
-- **Application Service Pattern** (Evans / Vernon) — 1 Service par feature regroupant les cas d'utilisation
+- **MVC artisanal en couches plates** (Chap 1 R4.01) — Front controller PHP `www/index.php`, couches top-level `Controllers/` / `Models/` / `Views/` / `Utils/`
+- **Éléments de Clean Architecture dans `Models/`** (R. C. Martin, Chap 2) — Repositories + interfaces (ports), Value Objects readonly, ports Tesla ségrégés (ISP), hiérarchie d'exceptions ; dépendances orientées vers l'intérieur de la couche modèle
+- **Application Service Pattern** (Evans / Vernon) — 1 Service par feature (`Models/<Feature>/<Feature>Service.php`) regroupant les cas d'utilisation
 
 ```
 teslapp/
@@ -51,27 +50,23 @@ teslapp/
 │   └── _assets/                  # CSS, JS, images
 ├── private/                      # Code applicatif (inaccessible HTTP)
 │   ├── config/                   # Configuration + container DI
-│   ├── Auth/                     # Bounded Context : Login with Tesla
-│   ├── Vehicle/                  # Bounded Context : commandes véhicule
-│   ├── Climate/                  # Bounded Context : climatisation
-│   ├── Charging/                 # Bounded Context : recharge
-│   ├── Trips/                    # Bounded Context : historique trajets
-│   └── Shared/                   # Kernel : VO, ports, infra commune, utils
-├── db/                           # Schéma BDD (schema.sql)
+│   ├── Controllers/              # Couche Controller (1 Controller par feature, à plat)
+│   ├── Models/                   # Couche Model : sous-dossiers par feature (Auth, Vehicle, Climate, Charging, Trips) + Shared/{ValueObjects, TeslaApi, Exceptions} + Database.php
+│   ├── Views/                    # Couche View : templates PHP par feature + layout + partials/
+│   └── Utils/                    # Helpers transverses (Auth, Csrf, Flash, Http, Inputs, RateLimit)
+├── db/                           # Schéma BDD : script_creation_app.sql (DDL) + script_insertion_app.sql (données de référence)
 ├── docker/                       # Compose Docker (Postgres, Kafka, ...)
-├── bin/                          # Scripts CLI (workers, crons)
+├── bin/                          # Scripts CLI
 ├── tests/                        # PHPUnit (Unit, Integration, Acceptance)
 └── vendor/                       # Dépendances Composer (gitignored)
 ```
 
-Chaque feature suit la même structure interne (Clean Architecture locale) :
+Chaque feature est répartie à travers les couches MVC (pas de sous-dossiers Domain/Infrastructure par feature) :
 
 ```
-private/<Feature>/
-├── Domain/             # Entités + Application Service + Ports (interfaces)
-├── Infrastructure/     # Adapters concrets (PdoRepositories, clients HTTP)
-├── Http/               # Controllers + Presenters
-└── Views/              # Templates PHP
+private/Controllers/<Feature>Controller.php   # orchestration HTTP de la feature
+private/Models/<Feature>/                      # entités + <Feature>Service + repository PDO + interfaces (ports)
+private/Views/<Feature>/                       # templates PHP de la feature
 ```
 
 ## 🔀 Workflow Git
@@ -82,24 +77,27 @@ Nous utilisons un **Git Flow simplifié** :
 | --------- | --------------------------------------------------- |
 | `main`    | Version stable en production                        |
 | `preprod` | Validation avant production                         |
-| `develop` | Intégration des développements                      |
+| `development` | Intégration des développements                  |
 | `test`    | Environnement de test pour l'enseignant responsable |
 
 ## ✅ Qualité de code
 
 - **SonarCloud** : Analyse continue (bugs, vulnérabilités, dette technique)
+- **PHPStan** : Analyse statique du code PHP (typage, erreurs potentielles)
+- **PHP_CodeSniffer / PHP-CS-Fixer** : Conformité au standard PSR-12
+- **PHPUnit** : Tests unitaires, d'intégration et d'acceptance
 - **Prettier** : Formatage automatique du code
 - **GitHub Actions** : CI/CD automatisé à chaque push/PR
 
 ## 👥 Équipe
 
-| Membre                   | Rôle |
-| ------------------------ | ---- |
-| **Alexis BARBERIS**      |
-| **Mathis FAUTSCH**       |
-| **Mathis LAURIOL-TORCQ** |
-| **Oriane MEJEAN**        |
-| **Jérémy WATRIPONT**     |
+| Membre                   | Rôle          |
+| ------------------------ | ------------- |
+| **Alexis BARBERIS**      | Scrum Master  |
+| **Mathis FAUTSCH**       | Développeur   |
+| **Mathis LAURIOL-TORCQ** | Développeur   |
+| **Oriane MEJEAN**        | Product Owner |
+| **Jérémy WATRIPONT**     | Développeur   |
 
 ## 📚 Documentation
 
@@ -113,7 +111,7 @@ Projet académique - IUT Aix-Marseille © 2026
 
 <div align="center">
 
-**S3.A&B.01 – TeslApp** • BUT Informatique 2ème année alternance
+**R4.01 Architecture Logicielle – TeslApp** • BUT Informatique 2ème année alternance
 
 Enseignant responsable : **Olivier GÉRARD**
 

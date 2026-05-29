@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS ac_plans CASCADE;
 DROP TABLE IF EXISTS charging_plans CASCADE;
 DROP TABLE IF EXISTS day_of_week CASCADE;
 DROP TABLE IF EXISTS jwt CASCADE;
+DROP TABLE IF EXISTS rate_limits CASCADE;
 
 CREATE TABLE vehicle_models
 (
@@ -57,7 +58,7 @@ CREATE TABLE jwt
 (
     id         UUID        NOT NULL,
     user_id    UUID        NOT NULL,
-    iss        VARCHAR(32) NOT NULL,
+    iss        VARCHAR(64) NOT NULL,
     sub        UUID UNIQUE NOT NULL,
     aud        UUID        NOT NULL,
     auth_time  TIMESTAMP   NOT NULL,
@@ -197,3 +198,15 @@ CREATE TABLE charging_plans
         REFERENCES day_of_week (id)
         ON DELETE CASCADE
 );
+
+CREATE TABLE rate_limits
+(
+    id         BIGINT GENERATED ALWAYS AS IDENTITY,
+    key_hash   CHAR(64)  NOT NULL,           -- SHA-256 de (action + ip) ou (action + user_id)
+    attempt_at TIMESTAMP NOT NULL DEFAULT now(),
+    expires_at TIMESTAMP NOT NULL,
+
+    CONSTRAINT pk_rate_limits PRIMARY KEY (id)
+);
+
+CREATE INDEX idx_rate_limits_key_expires ON rate_limits (key_hash, expires_at);
