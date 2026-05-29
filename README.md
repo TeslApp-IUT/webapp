@@ -25,15 +25,15 @@ TeslApp est une application web permettant de reproduire les principales fonctio
 
 ## 🛠️ Stack Technique
 
-| Catégorie           | Technologies                                     |
-| ------------------- | ------------------------------------------------ |
+| Catégorie           | Technologies                                                                               |
+| ------------------- | ------------------------------------------------------------------------------------------ |
 | **Backend**         | PHP 8.2+ (MVC en couches plates artisanal + éléments de Clean Architecture dans `Models/`) |
-| **Frontend**        | HTML5, CSS3, JavaScript                          |
-| **Base de données** | PostgreSQL                                       |
-| **API**             | Tesla Fleet API, OAuth2                          |
-| **Qualité**         | SonarCloud, PHPStan, PHP_CodeSniffer / PHP-CS-Fixer (PSR-12), PHPUnit, Prettier |
-| **CI/CD**           | GitHub Actions                                   |
-| **Infrastructure**  | Cloudflare (DNS) · Feyli (Docker) · HTTPS Let's Encrypt |
+| **Frontend**        | HTML5, CSS3, JavaScript                                                                    |
+| **Base de données** | PostgreSQL                                                                                 |
+| **API**             | Tesla Fleet API, OAuth2                                                                    |
+| **Qualité**         | SonarCloud, PHPStan, PHP_CodeSniffer / PHP-CS-Fixer (PSR-12), PHPUnit, Prettier            |
+| **CI/CD**           | GitHub Actions                                                                             |
+| **Infrastructure**  | Cloudflare (DNS) · Feyli (Docker) · HTTPS Let's Encrypt                                    |
 
 ## 🏗️ Architecture
 
@@ -73,12 +73,12 @@ private/Views/<Feature>/                       # templates PHP de la feature
 
 Nous utilisons un **Git Flow simplifié** :
 
-| Branche   | Description                                         |
-| --------- | --------------------------------------------------- |
-| `main`    | Version stable en production                        |
-| `preprod` | Validation avant production                         |
-| `development` | Intégration des développements                  |
-| `test`    | Environnement de test pour l'enseignant responsable |
+| Branche       | Description                                         |
+| ------------- | --------------------------------------------------- |
+| `main`        | Version stable en production                        |
+| `preprod`     | Validation avant production                         |
+| `development` | Intégration des développements                      |
+| `test`        | Environnement de test pour l'enseignant responsable |
 
 ## ✅ Qualité de code
 
