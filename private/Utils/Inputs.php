@@ -19,7 +19,6 @@ namespace Teslapp\Utils;
  * 2. Validate : vérifie la conformité et retourne un message d'erreur ou null
  *
  * @package Teslapp\Utils
- * @author Teslapp Team
  */
 final class Inputs
 {
@@ -258,6 +257,15 @@ final class Inputs
     /* ===============================
      *  Outils ponctuels
      * =============================== */
+
+    /**
+     * Valide une chaîne contre une expression régulière arbitraire.
+     *
+     * @param string $s     La chaîne à valider
+     * @param string $regex Le motif PCRE à appliquer
+     * @param string $label Label pour le message d'erreur (défaut: 'La valeur')
+     * @return string|null Message d'erreur ou null si valide
+     */
     public static function validateRegex(
         string $s,
         string $regex,

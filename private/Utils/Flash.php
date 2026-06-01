@@ -21,7 +21,6 @@ namespace Teslapp\Utils;
  * les données après lecture (pattern "flash").
  *
  * @package Teslapp\Utils
- * @author Teslapp Team
  */
 final class Flash
 {

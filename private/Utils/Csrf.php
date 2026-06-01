@@ -15,7 +15,6 @@ namespace Teslapp\Utils;
  * en utilisant hash_equals() pour se prémunir contre les attaques par timing.
  *
  * @package Teslapp\Utils
- * @author Teslapp Team
  */
 final class Csrf
 {

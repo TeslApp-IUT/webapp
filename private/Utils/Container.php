@@ -15,7 +15,6 @@ namespace Teslapp\Utils;
  * Les recettes sont déclarées dans private/config/container.php.
  *
  * @package Teslapp\Utils
- * @author Teslapp Team
  */
 final class Container
 {

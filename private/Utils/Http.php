@@ -14,7 +14,6 @@ namespace Teslapp\Utils;
  * depuis n'importe quel point de l'application.
  *
  * @package Teslapp\Utils
- * @author Teslapp Team
  */
 final class Http
 {
