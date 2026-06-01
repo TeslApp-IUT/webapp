@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ruleset name="TeslApp">
+    <description>Norme PSR-12 pour Tesla App.</description>
+
+    <file>private</file>
+    <file>www</file>
+
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+
+    <rule ref="PSR12"/>
+</ruleset>

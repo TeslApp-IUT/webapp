@@ -1,0 +1,13 @@
+parameters:
+    level: 1
+    paths:
+        - private
+        - www
+    excludePaths:
+        analyseAndScan:
+            - vendor
+            # Feature « mot de passe oublié » par e-mail (dépend de PHPMailer, non
+            # installé) : retirée au profit de Login with Tesla. Exclue en attendant
+            # la suppression de ces fichiers.
+            - private/utils/MailService.php
+            - private/modules/controllers/PasswordsController.php
