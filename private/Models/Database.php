@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace Teslapp\Models;
 
 /**
- * Classe de gestion de la connexion à la base de données PostgreSQL
+ * Classe de gestion de la connexion à la base de données PostgreSQL.
  *
- * Cette classe implémente le pattern Singleton pour la connexion PDO.
- * Elle gère la connexion sécurisée à PostgreSQL avec gestion d'erreurs
- * et options PDO configurables.
+ * Encapsule la création d'une connexion PDO sécurisée à PostgreSQL
+ * (mode exception, fetch associatif, requêtes préparées natives) à partir
+ * des paramètres fournis ou des constantes de configuration globales.
  *
  * @package Teslapp\Models
- * @author  Teslapp Team
  */
 final class Database
 {
@@ -21,7 +20,7 @@ final class Database
      *
      * @var \PDO|null
      */
-    private $pdo = null;
+    private ?\PDO $pdo = null;
 
     /**
      * Constructeur - Initialise la connexion à la base de données PostgreSQL
@@ -35,7 +34,6 @@ final class Database
      * @param string|null $dbName  Nom de la base de données (défaut: DB_NAME)
      * @param string|null $user    Nom d'utilisateur (défaut: DB_USER)
      * @param string|null $pass    Mot de passe (défaut: DB_PASS)
-     * @param string|null $charset Charset de la connexion (défaut: DB_CHARSET)
      * @param array       $options Options PDO supplémentaires
      *
      * @throws \RuntimeException Si la connexion à la base de données échoue
@@ -46,7 +44,6 @@ final class Database
         ?string $dbName = null,
         ?string $user = null,
         ?string $pass = null,
-        ?string $charset = null,
         array $options = [],
     ) {
         // Utilisation des valeurs par défaut si non fournies
@@ -55,7 +52,6 @@ final class Database
         $dbName = $dbName ?? DB_NAME;
         $user = $user ?? DB_USER;
         $pass = $pass ?? DB_PASS;
-        $charset = $charset ?? DB_CHARSET;
 
         // Configuration des options PDO sécurisées par défaut
         // ERRMODE_EXCEPTION : Lance des exceptions en cas d'erreur SQL
