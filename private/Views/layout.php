@@ -33,7 +33,13 @@
     <?php require __DIR__ . '/partials/header_guest.php'; ?>
 
     <main>
-        <?php require __DIR__ . '/partials/flash_message.php'; ?>
+        <?php
+        // Messages flash : consommés une fois depuis la session, puis supprimés.
+        $errors = \Teslapp\Utils\Flash::consume('errors', []);
+        $success = \Teslapp\Utils\Flash::consume('success');
+        $info = \Teslapp\Utils\Flash::consume('info');
+        require __DIR__ . '/partials/flash_message.php';
+        ?>
         <?= $content ?? '' ?>
     </main>
 
