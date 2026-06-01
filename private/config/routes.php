@@ -10,11 +10,13 @@
  */
 declare(strict_types=1);
 
+use Teslapp\Controllers\StaticPagesController;
+
 return [
     // Routes des pages statiques accessibles à tous
-    'site/home' => ['StaticPagesController', 'home', false],
-    'site/sitemap' => ['StaticPagesController', 'sitemap', false],
-    'site/legal' => ['StaticPagesController', 'legal', false],
-    'site/privacy' => ['StaticPagesController', 'privacy', false],
-    'error/404' => ['StaticPagesController', 'notFound', false],
+    'site/home' => [StaticPagesController::class, 'home', false],
+    'site/sitemap' => [StaticPagesController::class, 'sitemap', false],
+    'site/legal' => [StaticPagesController::class, 'legal', false],
+    'site/privacy' => [StaticPagesController::class, 'privacy', false],
+    'error/404' => [StaticPagesController::class, 'notFound', false],
 ];

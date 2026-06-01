@@ -1,5 +1,8 @@
 <?php
+
 declare(strict_types=1);
+
+namespace Teslapp\Models;
 
 /**
  * Classe de gestion de la connexion à la base de données PostgreSQL
@@ -8,16 +11,15 @@ declare(strict_types=1);
  * Elle gère la connexion sécurisée à PostgreSQL avec gestion d'erreurs
  * et options PDO configurables.
  *
- * @package MedBoard\Models
- * @author  MedBoard Team
- * @version 1.0.0
+ * @package Teslapp\Models
+ * @author  Teslapp Team
  */
 final class Database
 {
     /**
      * Instance PDO pour la connexion à la base de données
      *
-     * @var PDO|null
+     * @var \PDO|null
      */
     private $pdo = null;
 
@@ -36,7 +38,7 @@ final class Database
      * @param string|null $charset Charset de la connexion (défaut: DB_CHARSET)
      * @param array       $options Options PDO supplémentaires
      *
-     * @throws RuntimeException Si la connexion à la base de données échoue
+     * @throws \RuntimeException Si la connexion à la base de données échoue
      */
     public function __construct(
         ?string $host = null,
@@ -60,9 +62,9 @@ final class Database
         // FETCH_ASSOC : Retourne les résultats sous forme de tableaux associatifs
         // EMULATE_PREPARES : Désactive l'émulation pour utiliser les vrais prepared statements
         $defaultOptions = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false,
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+            \PDO::ATTR_EMULATE_PREPARES => false,
         ];
         $options = $options + $defaultOptions;
 
@@ -71,12 +73,12 @@ final class Database
 
         try {
             // Tentative de connexion à la base de données
-            $this->pdo = new PDO($dsn, $user, $pass, $options);
-        } catch (PDOException $e) {
+            $this->pdo = new \PDO($dsn, $user, $pass, $options);
+        } catch (\PDOException $e) {
             // Log de l'erreur pour le débogage (sans exposer les détails sensibles)
             error_log('DB connection error: ' . $e->getMessage());
             // Lancement d'une exception générique pour l'utilisateur
-            throw new RuntimeException('Erreur de connexion à la base de données.');
+            throw new \RuntimeException('Erreur de connexion à la base de données.');
         }
     }
 
@@ -86,14 +88,14 @@ final class Database
      * Méthode d'accès à l'objet PDO pour exécuter des requêtes.
      * Vérifie que la connexion est bien initialisée avant de la retourner.
      *
-     * @return PDO Instance PDO connectée à la base de données
+     * @return \PDO Instance PDO connectée à la base de données
      *
-     * @throws RuntimeException Si l'instance PDO n'est pas initialisée
+     * @throws \RuntimeException Si l'instance PDO n'est pas initialisée
      */
-    public function getPdo(): PDO
+    public function getPdo(): \PDO
     {
-        if (!$this->pdo instanceof PDO) {
-            throw new RuntimeException('PDO non initialisé.');
+        if (!$this->pdo instanceof \PDO) {
+            throw new \RuntimeException('PDO non initialisé.');
         }
         return $this->pdo;
     }

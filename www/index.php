@@ -5,18 +5,18 @@ declare(strict_types=1);
 use Teslapp\Utils\Csrf;
 
 /**
- * Chargements : autoloader (connait déjà "modules\"),
- * config générale (définit notamment MODULES_PATH),
- * et table des routes.
+ * Chargements : configuration globale, autoload Composer (PSR-4),
+ * puis table des routes.
  */
 require __DIR__ . '/../private/config/config.php';
-require __DIR__ . '/../private/config/autoloader.php';
 
-// L'autoload Composer n'est chargé que s'il est présent : il est introduit avec
-// l'outillage Composer. Permet de lancer le socle sans `composer install`.
-if (is_file(BASE_PATH . '/vendor/autoload.php')) {
-    require BASE_PATH . '/vendor/autoload.php';
+// Autoload Composer (PSR-4) — requis. Lancer `composer install` si absent.
+$autoload = BASE_PATH . '/vendor/autoload.php';
+if (!is_file($autoload)) {
+    http_response_code(500);
+    exit('Autoload Composer manquant. Lancez `composer install`.');
 }
+require $autoload;
 
 $routes = require __DIR__ . '/../private/config/routes.php';
 
