@@ -2,36 +2,6 @@
 $title = 'TeslApp - Votre Tesla, partout avec vous';
 $description = "TeslApp - Contrôlez votre Tesla à distance. Climatisation, recharge, verrouillage et historique de trajets via l'API Fleet.";
 $extraJs = ['script'];
-$headExtra = <<<'HTML'
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "TeslApp",
-  "url": "https://teslapp.feyli.dev",
-  "logo": "https://teslapp.feyli.dev/_assets/images/Logo.svg",
-  "description": "Application web de contrôle de véhicules Tesla via l'API Fleet",
-  "applicationCategory": "UtilitiesApplication",
-  "operatingSystem": "Web",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "EUR"
-  },
-  "author": {
-    "@type": "Organization",
-    "name": "TeslApp",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "413, Avenue Gaston Berger",
-      "addressLocality": "Aix-en-Provence",
-      "postalCode": "13100",
-      "addressCountry": "FR"
-    }
-  }
-}
-</script>
-HTML;
 
 ob_start();
 ?>
