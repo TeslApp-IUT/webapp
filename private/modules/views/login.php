@@ -20,16 +20,16 @@
 </head>
 <body class="light-theme">
 
-     /**
- * Inclusion du header approprié selon le statut de connexion
- */<?php /**
-  * Inclusion du header approprié selon le statut de connexion
-  */
- if (Auth::check()) {
-   require __DIR__ . '/partials/header_user.php';
- } else {
-   require __DIR__ . '/partials/header_guest.php';
- } ?>
+    <?php 
+    /**
+     * Inclusion du header approprié selon le statut de connexion
+     */
+    if (Auth::check()) {
+        require __DIR__ ."/partials/header_user.php";
+    } else {
+        require __DIR__ ."/partials/header_guest.php";
+    }
+    ?>
 
     <main>
         <!-- Section de connexion -->
@@ -49,29 +49,24 @@
                         <p class="signup-subtitle">Accédez à votre espace MedBoard</p>
                     </div>
 
-                     /**
- * Affichage des messages flash (erreurs/succès)
- */<?php require __DIR__ . '/partials/flash_message.php'; ?>
+                    <?php
+                    /**
+                     * Affichage des messages flash (erreurs/succès)
+                     */
+                    require __DIR__ ."/partials/flash_message.php";
+                    ?>
 
                     <!-- Formulaire de connexion -->
                     <form class="signup-form" method="post" action="/auth/login" novalidate>
                         <!-- Token CSRF pour la sécurité -->
-                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(
-                          $_SESSION['csrf_token'],
-                          ENT_QUOTES,
-                          'UTF-8',
-                        ) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
 
                         <!-- Champ identifiant (email ou login) -->
                         <div class="form-group">
                             <label for="loginIdentifier" class="form-label">Email ou Login <span class="required">*</span></label>
                             <div class="input-with-icon">
                                 <img src="/_assets/images/mail.svg" alt="" class="input-icon" aria-hidden="true">
-                                <input type="text" id="loginIdentifier" name="login" class="form-input" placeholder="@email.com ou votre login" required autocomplete="username" value="<?= htmlspecialchars(
-                                  $old['login'] ?? '',
-                                  ENT_QUOTES,
-                                  'UTF-8',
-                                ) ?>">
+                                <input type="text" id="loginIdentifier" name="login" class="form-input" placeholder="@email.com ou votre login" required autocomplete="username" value="<?= htmlspecialchars($old['login'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                             </div>
                         </div>
 
@@ -122,9 +117,12 @@
         </section>
     </main>
 
-     /**
- * Inclusion du footer
- */<?php require __DIR__ . '/partials/footer.php'; ?>
+    <?php
+    /**
+     * Inclusion du footer
+     */
+    require __DIR__ ."/partials/footer.php";
+    ?>
 
     <!-- Scripts JavaScript -->
     <script src="/_assets/js/common.js" defer></script>

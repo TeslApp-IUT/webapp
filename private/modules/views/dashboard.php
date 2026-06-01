@@ -32,16 +32,16 @@
 </head>
 <body class="light-theme dashboard-page">
     
-     /**
- * Inclusion du header approprié selon le statut de connexion
- */<?php /**
-  * Inclusion du header approprié selon le statut de connexion
-  */
- if (Auth::check()) {
-   require __DIR__ . '/partials/header_user.php';
- } else {
-   require __DIR__ . '/partials/header_guest.php';
- } ?>
+    <?php 
+    /**
+     * Inclusion du header approprié selon le statut de connexion
+     */
+    if (Auth::check()) {
+        require __DIR__ ."/partials/header_user.php";
+    } else {
+        require __DIR__ ."/partials/header_guest.php";
+    }
+    ?>
 
     <main>
         <!-- Section principale du tableau de bord -->
@@ -50,14 +50,15 @@
                 <!-- En-tête avec salutation personnalisée -->
                 <div class="dashboard-header">
                     <p class="dashboard-greeting">
-                        Bonjour, <?= htmlspecialchars($firstname) ?> <?= htmlspecialchars(
-   $lastname,
- ) ?>
+                        Bonjour, <?= htmlspecialchars($firstname) ?> <?= htmlspecialchars($lastname) ?>
                     </p>
 
-                     /**
- * Affichage de la spécialisation si définie
- */<?php if (!empty($specialization)): ?>
+                    <?php 
+                    /**
+                     * Affichage de la spécialisation si définie
+                     */
+                    if (!empty($specialization)) : 
+                    ?>
                         <p class="dashboard-specialization">
                             <?= htmlspecialchars($specialization) ?>
                         </p>
@@ -117,9 +118,12 @@
         </div>
     </main>
 
-     /**
- * Inclusion du footer
- */<?php require __DIR__ . '/partials/footer.php'; ?>
+    <?php
+    /**
+     * Inclusion du footer
+     */
+    require __DIR__ ."/partials/footer.php";
+    ?>
 
     <!-- Scripts JavaScript -->
     <script src="/_assets/js/common.js" defer></script>

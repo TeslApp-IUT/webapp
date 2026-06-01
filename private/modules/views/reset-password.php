@@ -20,16 +20,16 @@
 </head>
 <body class="light-theme change-password-page">
     
-     /**
- * Inclusion du header approprié selon le statut de connexion
- */<?php /**
-  * Inclusion du header approprié selon le statut de connexion
-  */
- if (Auth::check()) {
-   require __DIR__ . '/partials/header_user.php';
- } else {
-   require __DIR__ . '/partials/header_guest.php';
- } ?>
+    <?php 
+    /**
+     * Inclusion du header approprié selon le statut de connexion
+     */
+    if (Auth::check()) {
+        require __DIR__ ."/partials/header_user.php";
+    } else {
+        require __DIR__ ."/partials/header_guest.php";
+    }
+    ?>
 
     <main>
         <!-- Section de réinitialisation de mot de passe -->
@@ -46,32 +46,23 @@
                     <h1 class="change-password-title">Nouveau mot de passe</h1>
                     <p class="change-password-subtitle">Choisissez un mot de passe sécurisé pour votre compte</p>
 
-                     /**
- * Affichage des messages flash (erreurs/succès)
- */<?php require __DIR__ . '/partials/flash_message.php'; ?>
+                    <?php
+                    /**
+                     * Affichage des messages flash (erreurs/succès)
+                     */
+                    require __DIR__ ."/partials/flash_message.php";
+                    ?>
 
                     <!-- Formulaire de réinitialisation -->
                     <form id="changePasswordForm" class="change-password-form" method="post" action="/auth/reset-password" novalidate>
                         <!-- Token CSRF pour la sécurité -->
-                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(
-                          $_SESSION['csrf_token'],
-                          ENT_QUOTES,
-                          'UTF-8',
-                        ) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
                         
                         <!-- Token de réinitialisation -->
-                        <input type="hidden" name="token" value="<?= htmlspecialchars(
-                          (string) ($token ?? ''),
-                          ENT_QUOTES,
-                          'UTF-8',
-                        ) ?>">
+                        <input type="hidden" name="token" value="<?= htmlspecialchars((string)($token ?? ''), ENT_QUOTES, 'UTF-8') ?>">
                         
                         <!-- Identifiant utilisateur -->
-                        <input type="hidden" name="uid" value="<?= htmlspecialchars(
-                          (string) ($uid ?? ''),
-                          ENT_QUOTES,
-                          'UTF-8',
-                        ) ?>">
+                        <input type="hidden" name="uid" value="<?= htmlspecialchars((string)($uid ?? ''), ENT_QUOTES, 'UTF-8') ?>">
 
                         <!-- Champ nouveau mot de passe -->
                         <div class="form-group">
@@ -132,9 +123,12 @@
         </section>
     </main>
 
-     /**
- * Inclusion du footer
- */<?php require __DIR__ . '/partials/footer.php'; ?>
+    <?php
+    /**
+     * Inclusion du footer
+     */
+    require __DIR__ ."/partials/footer.php";
+    ?>
 
     <!-- Scripts JavaScript -->
     <script src="/_assets/js/common.js" defer></script>

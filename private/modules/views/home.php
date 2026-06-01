@@ -60,16 +60,16 @@
 </head>
 <body class="light-theme">
     
-     /**
- * Inclusion du header approprié selon le statut de connexion
- */<?php /**
-  * Inclusion du header approprié selon le statut de connexion
-  */
- if (Auth::check()) {
-   require __DIR__ . '/partials/header_user.php';
- } else {
-   require __DIR__ . '/partials/header_guest.php';
- } ?>
+    <?php 
+    /**
+     * Inclusion du header approprié selon le statut de connexion
+     */
+    if (Auth::check()) {
+        require __DIR__ ."/partials/header_user.php";
+    } else {
+        require __DIR__ ."/partials/header_guest.php";
+    }
+    ?>
 
     <main>
         <!-- Section Hero (bandeau principal) -->
@@ -260,9 +260,12 @@
         </section>
     </main>
 
-     /**
- * Inclusion du footer
- */<?php require __DIR__ . '/partials/footer.php'; ?>
+    <?php
+    /**
+     * Inclusion du footer
+     */
+    require __DIR__ ."/partials/footer.php";
+    ?>
 
     <!-- Scripts JavaScript -->
     <script src="/_assets/js/common.js" defer></script>

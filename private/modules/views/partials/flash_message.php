@@ -11,14 +11,13 @@
  */
 ?>
 
- /**
+<?php 
+/**
  * Affichage des erreurs
  * Structure : liste non ordonnée avec un message par erreur
- */<?php /**
-  * Affichage des erreurs
-  * Structure : liste non ordonnée avec un message par erreur
-  */
- if (!empty($errors)): ?>
+ */
+if (!empty($errors)): 
+?>
     <div class="errors" role="alert" style="background:#ffecec; border:1px solid #ffb3b3; color:#a40000; padding:.75rem; border-radius:10px; margin-bottom:1rem;">
         <ul style="margin:0; padding-left: 1.2rem;">
             <?php foreach ($errors as $err): ?>
@@ -28,10 +27,13 @@
     </div>
 <?php endif; ?>
 
- /**
+<?php 
+/**
  * Affichage du message de succès
  * Affiché uniquement si la variable $success contient une valeur
- */<?php if (!empty($success)): ?>
+ */
+if (!empty($success)): 
+?>
     <div class="success" role="status" style="background:#e9ffe9; border:1px solid #9ed99e; color:#136b13; padding:.75rem; border-radius:10px; margin-bottom:1rem;">
         <?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?>
     </div>
