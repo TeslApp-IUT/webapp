@@ -1,0 +1,33 @@
+{
+  "name": "teslapp/app",
+  "description": "Tesla App — application web reproduisant des fonctionnalités de l'application Tesla via son API simulée (SAÉ S4.A&B.01, IUT).",
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Teslapp\\Controllers\\": "private/Controllers/",
+      "Teslapp\\Models\\": "private/Models/",
+      "Teslapp\\Utils\\": "private/Utils/"
+    },
+    "files": [
+      "private/Utils/Functions.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Teslapp\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "phpstan": "phpstan analyse"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.2"
+  }
+}

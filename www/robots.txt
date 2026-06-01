@@ -1,0 +1,26 @@
+# robots.txt pour TeslApp
+# Site : https://teslapp.feyli.dev
+
+User-agent: *
+
+# Pages publiques autorisées
+Allow: /$
+Allow: /site/home
+Allow: /site/sitemap
+Allow: /site/legal
+Allow: /site/privacy
+Allow: /_assets/
+
+# Bloquer les routes authentifiées (OAuth Tesla + espace véhicule à venir)
+Disallow: /auth/
+Disallow: /dashboard
+
+# Bloquer les fichiers techniques / de configuration
+Disallow: /.htaccess
+Disallow: /.env
+Disallow: /*.json$
+Disallow: /*.log$
+Disallow: /*.sql$
+Disallow: /*.php$
+
+Sitemap: https://teslapp.feyli.dev/sitemap.xml
