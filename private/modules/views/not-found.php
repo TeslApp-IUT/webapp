@@ -22,15 +22,14 @@
     
      /**
  * Inclusion du header approprié selon le statut de connexion
- */<?php
-/**
-     * Inclusion du header approprié selon le statut de connexion
-     */
-if (Auth::check()) {
-      require __DIR__ . '/partials/header_user.php';
-    } else {
-      require __DIR__ . '/partials/header_guest.php';
-    } ?>
+ */<?php /**
+  * Inclusion du header approprié selon le statut de connexion
+  */
+ if (Auth::check()) {
+   require __DIR__ . '/partials/header_user.php';
+ } else {
+   require __DIR__ . '/partials/header_guest.php';
+ } ?>
 
     <main>
         <!-- Page d'erreur 404 -->
@@ -75,9 +74,7 @@ if (Auth::check()) {
 
      /**
  * Inclusion du footer
- */<?php
-
-require __DIR__ . '/partials/footer.php'; ?>
+ */<?php require __DIR__ . '/partials/footer.php'; ?>
 
     <!-- Scripts JavaScript -->
     <script src="/_assets/js/common.js" defer></script>

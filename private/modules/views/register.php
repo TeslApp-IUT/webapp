@@ -35,15 +35,14 @@
     
      /**
  * Inclusion du header approprié selon le statut de connexion
- */<?php
-/**
-     * Inclusion du header approprié selon le statut de connexion
-     */
-if (Auth::check()) {
-      require __DIR__ . '/partials/header_user.php';
-    } else {
-      require __DIR__ . '/partials/header_guest.php';
-    } ?>
+ */<?php /**
+  * Inclusion du header approprié selon le statut de connexion
+  */
+ if (Auth::check()) {
+   require __DIR__ . '/partials/header_user.php';
+ } else {
+   require __DIR__ . '/partials/header_guest.php';
+ } ?>
 
     <main>
         <!-- Section d'inscription -->
@@ -65,9 +64,7 @@ if (Auth::check()) {
 
                      /**
  * Affichage des messages flash (erreurs/succès)
- */<?php
-
-require __DIR__ . '/partials/flash_message.php'; ?>
+ */<?php require __DIR__ . '/partials/flash_message.php'; ?>
 
                     <!-- Formulaire d'inscription -->
                     <form class="signup-form" method="post" action="/auth/register" novalidate>
@@ -206,9 +203,7 @@ require __DIR__ . '/partials/flash_message.php'; ?>
 
      /**
  * Inclusion du footer
- */<?php
-
-require __DIR__ . '/partials/footer.php'; ?>
+ */<?php require __DIR__ . '/partials/footer.php'; ?>
 
     <!-- Scripts JavaScript -->
     <script src="/_assets/js/common.js" defer></script>
