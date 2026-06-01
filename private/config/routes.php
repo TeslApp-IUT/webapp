@@ -11,10 +11,10 @@
 declare(strict_types=1);
 
 return [
-  // Routes des pages statiques accessibles à tous
-  'site/home' => ['StaticPagesController', 'home', false],
-  'site/sitemap' => ['StaticPagesController', 'sitemap', false],
-  'site/legal' => ['StaticPagesController', 'legal', false],
-  'site/privacy' => ['StaticPagesController', 'privacy', false],
-  'error/404' => ['StaticPagesController', 'notFound', false],
+    // Routes des pages statiques accessibles à tous
+    'site/home' => ['StaticPagesController', 'home', false],
+    'site/sitemap' => ['StaticPagesController', 'sitemap', false],
+    'site/legal' => ['StaticPagesController', 'legal', false],
+    'site/privacy' => ['StaticPagesController', 'privacy', false],
+    'error/404' => ['StaticPagesController', 'notFound', false],
 ];
