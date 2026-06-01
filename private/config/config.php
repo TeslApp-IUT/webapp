@@ -1,41 +1,27 @@
 <?php
-/**
- * Fichier de configuration principale de l'application MedBoard
- *
- * Ce fichier définit toutes les constantes globales nécessaires au fonctionnement de l'application :
- * - Chemins du système de fichiers (modules, racine du projet)
- * - Paramètres de connexion à la base de données PostgreSQL
- *
- * Toutes les valeurs sensibles (identifiants, mots de passe) sont récupérées
- * depuis les variables d'environnement pour des raisons de sécurité.
- */
 
 /**
- * Définition des chemins du projet
+ * Configuration principale de TeslApp.
  *
- * MODULES_PATH : Chemin absolu vers le dossier contenant l'architecture MVC (controllers, models, views)
- * BASE_PATH : Chemin absolu vers la racine du projet (contient private/ et www/)
+ * Définit les constantes globales : chemin racine du projet et paramètres
+ * de connexion PostgreSQL (lus depuis l'environnement, jamais en dur).
  */
-define('MODULES_PATH', dirname(__DIR__) . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR);
+
+declare(strict_types=1);
+
+/**
+ * BASE_PATH : chemin absolu vers la racine du projet (contient private/ et www/).
+ */
 define('BASE_PATH', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR);
 
 /**
- * Configuration de la connexion à la base de données
+ * Paramètres de connexion PostgreSQL, lus depuis l'environnement (.env).
  *
- * Ces constantes définissent les paramètres de connexion à PostgreSQL.
- * Les valeurs sont récupérées depuis les variables d'environnement (.env)
- * Si une variable n'existe pas, une chaîne vide est utilisée par défaut.
- *
- * DB_HOST : Adresse du serveur de base de données
- * DB_PORT : Port du serveur de base de données
- * DB_USER : Nom d'utilisateur pour la connexion
- * DB_PASS : Mot de passe pour la connexion
- * DB_NAME : Nom de la base de données
- * DB_CHARSET : Encodage des caractères (généralement UTF-8)
+ * Note : getenv() retourne `false` (et non `null`) si la variable est absente,
+ * donc on utilise `?:` pour retomber sur une chaîne vide (`??` ne capterait pas le `false`).
  */
-define('DB_HOST', getenv('DB_HOST') ?? '');
-define('DB_PORT', getenv('DB_PORT') ?? '');
-define('DB_USER', getenv('DB_USER') ?? '');
-define('DB_PASS', getenv('DB_PASS') ?? '');
-define('DB_NAME', getenv('DB_NAME') ?? '');
-define('DB_CHARSET', getenv('DB_CHARSET') ?? '');
+define('DB_HOST', getenv('DB_HOST') ?: '');
+define('DB_PORT', getenv('DB_PORT') ?: '');
+define('DB_USER', getenv('DB_USER') ?: '');
+define('DB_PASS', getenv('DB_PASS') ?: '');
+define('DB_NAME', getenv('DB_NAME') ?: '');

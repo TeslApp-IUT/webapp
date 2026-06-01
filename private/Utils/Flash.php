@@ -12,7 +12,7 @@ namespace Teslapp\Utils;
  * de succès, et la conservation des données de formulaire entre requêtes.
  *
  * Les messages flash sont typiquement utilisés pour :
- * - Afficher des messages de confirmation après une action (inscription, connexion, etc.)
+ * - Afficher des messages de confirmation après une action (verrouillage, connexion Tesla, etc.)
  * - Conserver les erreurs de validation entre requêtes
  * - Préserver les données saisies dans un formulaire après redirection
  *
@@ -33,7 +33,7 @@ final class Flash
      *
      * Exemple d'usage :
      * - Flash::set('errors', ['Email invalide'])
-     * - Flash::set('success', 'Inscription réussie')
+     * - Flash::set('success', 'Véhicule verrouillé')
      * - Flash::set('old', $_POST)
      *
      * @param string $key Clé d'identification de la donnée

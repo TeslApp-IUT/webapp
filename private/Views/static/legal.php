@@ -49,13 +49,9 @@ ob_start();
             <h3 class="legal-subheading">C. Hébergeur</h3>
             <div class="legal-highlight">
                 <p class="legal-paragraph">
-                    Le site TeslApp est hébergé par :<br>
-                    <strong>alwaysdata (SARL)</strong><br>
-                    Adresse : 91, rue du Faubourg Saint-Honoré, 75008 Paris, France<br>
-                    Téléphone : +33 1 84 16 23 49<br>
-                    Site web : <a href="https://www.alwaysdata.com/" target="_blank" rel="noopener">https://www.alwaysdata.com/</a><br>
-                    Support : <a href="mailto:support@alwaysdata.com">support@alwaysdata.com</a><br>
-                    Espace client : <a href="https://admin.alwaysdata.com/" target="_blank" rel="noopener">https://admin.alwaysdata.com/</a><br>
+                    Le site TeslApp est hébergé par <strong>Feyli</strong>, accessible à
+                    l'adresse <a href="https://teslapp.feyli.dev" target="_blank" rel="noopener noreferrer">teslapp.feyli.dev</a>.<br>
+                    Coordonnées complètes de l'hébergeur : à compléter avant la mise en ligne.<br>
                     (ci-après « l'Hébergeur »)
                 </p>
             </div>

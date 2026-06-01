@@ -39,7 +39,7 @@ final class Http
      *
      * // Redirection après traitement
      * if ($success) {
-     *     Flash::set('success', 'Inscription réussie');
+     *     Flash::set('success', 'Véhicule verrouillé');
      *     Http::redirect('/site/home');
      * }
      * ```
