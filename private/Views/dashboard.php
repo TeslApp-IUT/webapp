@@ -1,5 +1,5 @@
 <?php
-// Valeur de la telemetry
+/* Telemetry value */
 $battery_level = $data['battery_level'] ?? 'N/A';
 $charge_enable_request = $data['charge_enable_request'] ?? false;
 $scheduled_charging_start_time = $data['scheduled_charging_start_time'] ?? null;
@@ -43,7 +43,7 @@ $keeper_modes = [
 
 <section>
   <h2>Actions disponibles</h2>
-<!--  Autre dans le futur-->
+  <!--  Autre dans le futur-->
   <button disabled>Verrouiller / Déverrouiller</button>
   <button disabled>Klaxon</button>
   <button disabled>Batterie</button>

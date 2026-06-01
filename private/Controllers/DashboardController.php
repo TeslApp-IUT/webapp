@@ -1,19 +1,26 @@
 <?php
 
+/* Controller responsible for displaying the vehicle dashboard */
 class DashboardController
 {
+    /* Database connection */
     private PDO $db;
 
+    /* Initializes the controller with a database connection */
     public function __construct(PDO $db)
     {
         $this->db = $db;
     }
 
+    /* Entry point of the dashboard
+     * Retrieves the connected user, their vehicle and telemetry data, then loads the view */
     public function index(): void
     {
         $userId = $_SESSION['user_id'] ?? null;
 
-        if (!$userId) {
+        /* Redirect to login if no user is found in session */
+        if (!$userId)
+        {
             header('Location: /login');
             exit;
         }
@@ -21,7 +28,9 @@ class DashboardController
         $token = $this->getAccessToken($userId);
         $vin = $this->getSelectedVin($userId);
 
-        if (!$token || !$vin) {
+        /* Redirect to vehicle selection if token or VIN is missing */
+        if (!$token || !$vin)
+        {
             header('Location: /vehicles');
             exit;
         }
@@ -31,6 +40,8 @@ class DashboardController
         require_once '../private/Views/dashboard.php';
     }
 
+    /* Retrieves the Tesla OAuth2 access token for the given user
+     * Returns null if no token is found */
     private function getAccessToken(int $userId): ?string
     {
         $token = $this->db->prepare("SELECT access_token_encrypted
@@ -43,6 +54,8 @@ class DashboardController
         return $row['access_token_encrypted'] ?? null;
     }
 
+    /* Retrieves the VIN of the vehicle selected by the given user
+     * Returns null if no vehicle is found */
     private function getSelectedVin(int $userId): ?string
     {
         $selectVin = $this->db->prepare("SELECT vin
@@ -54,6 +67,7 @@ class DashboardController
         return $row['vin'] ?? null;
     }
 
+    /* Retrieves the latest telemetry data for the given VIN from the fleet_telemetry schema */
     private function getTelemetryData(string $vin): array
     {
         /* Battery */
