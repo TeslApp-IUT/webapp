@@ -1,5 +1,5 @@
 /* ===================================================================================================
-   TESLAPP - STYLESHEET
+   TeslApp - STYLESHEET
    Description: Application web de contrôle de véhicules Tesla (thème sombre)
    =================================================================================================== */
 
@@ -42,7 +42,6 @@
 
   /* FAQ Specific Colors */
   --color-faq-bg: #111111;
-  --color-faq-link-bg: #2a2a2a99;
 
   /* Shadow Presets */
   --shadow-sm: 0 1px 3px var(--color-shadow);
@@ -109,40 +108,6 @@ img {
    4. GLOBAL COMPONENTS - BUTTONS
    =================================================================================================== */
 
-/* ----- Icon Button ----- */
-.btn-icon {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-}
-
-.btn-icon:hover {
-  background-color: var(--color-bg-hover);
-}
-
-.btn-icon img {
-  position: absolute;
-  width: 16px;
-  height: 16px;
-}
-
-/* ----- Text Button ----- */
-.btn-text {
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text);
-  border-radius: 8px;
-}
-
-.btn-text:hover {
-  background-color: var(--color-bg-hover);
-}
-
 /* ----- Primary Button ----- */
 .btn-primary {
   display: inline-flex;
@@ -160,80 +125,9 @@ img {
   background-color: var(--color-primary-hover);
 }
 
-/* ----- Secondary Button ----- */
-.btn-secondary {
-  padding: 8px 24px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text);
-  background-color: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-}
-
-.btn-secondary:hover {
-  background-color: var(--color-bg-hover);
-}
-
-/* ----- Submit Button ----- */
-.btn-submit {
-  width: 100%;
-  margin-top: 8px;
-  padding: 14px 24px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #ffffff;
-  background-color: var(--color-primary);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.btn-submit:hover {
-  background-color: var(--color-primary-hover);
-}
-
-.btn-submit:active {
-  transform: scale(0.98);
-}
-
-.btn-submit:disabled {
-  color: #525252;
-  background-color: #262626;
-  cursor: not-allowed;
-}
-
-/* ----- Profile Button (Dashboard) ----- */
-.btn-profile {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  font-weight: 700;
-  color: #f5f5f5;
-  background-color: #2a2a2a;
-  border: none;
-  border-radius: 50%;
-}
-
-.profile-initials {
-  letter-spacing: 0.05em;
-}
-
 /* ===================================================================================================
-   5. GLOBAL COMPONENTS - FORMS
+   5. HELPERS (accessibility & navigation)
    =================================================================================================== */
-
-/* ----- Fieldset & Accessibility ----- */
-fieldset {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin: 0;
-  padding: 0;
-  border: none;
-}
 
 .sr-only {
   position: absolute;
@@ -245,136 +139,6 @@ fieldset {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
-}
-
-/* ----- Form Structure ----- */
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-/* ----- Form Labels ----- */
-.form-label {
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-  color: var(--color-text);
-}
-
-.required {
-  margin-left: 2px;
-  color: var(--color-error);
-}
-
-/* ----- Form Inputs ----- */
-.form-input {
-  width: 100%;
-  padding: 12px 16px;
-  font-family: inherit;
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--color-text);
-  background-color: var(--color-input-bg);
-  border: 1px solid var(--color-input-border);
-  border-radius: 8px;
-  outline: none;
-}
-
-.form-input:focus {
-  background-color: var(--color-input-bg);
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px #e8212733;
-}
-
-.form-input::placeholder {
-  color: var(--color-placeholder);
-}
-
-/* ----- Form Select ----- */
-.form-select {
-  width: 100%;
-  padding: 12px 16px;
-  padding-right: 40px;
-  font-family: inherit;
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--color-text);
-  background-color: var(--color-input-bg);
-  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23737373' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 16px center;
-  border: 1px solid var(--color-input-border);
-  border-radius: 8px;
-  outline: none;
-  cursor: pointer;
-  appearance: none;
-}
-
-.form-select:focus {
-  background-color: var(--color-input-bg);
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px #e8212733;
-}
-
-/* ----- Input with Icon ----- */
-.input-with-icon {
-  position: relative;
-  width: 100%;
-}
-
-.input-icon {
-  position: absolute;
-  top: 50%;
-  left: 16px;
-  width: 16px;
-  height: 16px;
-  color: #737373;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-
-.input-with-icon .form-input {
-  padding-left: 44px;
-}
-
-/* ----- Checkbox ----- */
-.form-checkbox {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.form-checkbox input[type='checkbox'] {
-  width: 20px;
-  height: 20px;
-  margin-top: 2px;
-  cursor: pointer;
-  accent-color: var(--color-primary);
-}
-
-.checkbox-label {
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-}
-
-/* ----- Form Links ----- */
-.form-link {
-  font-weight: 600;
-  color: var(--color-primary);
-  text-decoration: underline;
-}
-
-.form-link:hover {
-  color: var(--color-primary-hover);
 }
 
 .back-link {
@@ -389,6 +153,22 @@ fieldset {
 
 .back-link:hover {
   color: var(--color-text);
+}
+
+/* ----- Skip link (WCAG 2.4.1) ----- */
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: -9999px;
+  z-index: 1100;
+}
+
+.skip-link:focus {
+  left: 0;
+  padding: 12px 16px;
+  color: #ffffff;
+  background-color: var(--color-primary);
+  border-radius: 0 0 8px 0;
 }
 
 /* ===================================================================================================
@@ -488,11 +268,6 @@ input:focus-visible {
   gap: 16px;
 }
 
-.logout-icon img {
-  width: 18px;
-  height: 18px;
-}
-
 /* ===================================================================================================
    8. HERO SECTION
    =================================================================================================== */
@@ -565,8 +340,7 @@ input:focus-visible {
   gap: 16px;
 }
 
-.hero-actions .btn-primary,
-.hero-actions .btn-secondary {
+.hero-actions .btn-primary {
   height: 40px;
 }
 
@@ -734,24 +508,6 @@ input:focus-visible {
   margin-bottom: 0;
 }
 
-.faq-link {
-  display: inline-block;
-  margin-top: 8px;
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text);
-  background-color: var(--color-faq-link-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-}
-
-.faq-link:hover {
-  background-color: #333333;
-  border-color: var(--color-border-hover);
-  box-shadow: 0 2px 4px #00000033;
-}
-
 /* ===================================================================================================
    11. CTA SECTION
    =================================================================================================== */
@@ -768,8 +524,7 @@ input:focus-visible {
   margin-top: 32px;
 }
 
-.cta-actions .btn-primary,
-.cta-actions .btn-secondary {
+.cta-actions .btn-primary {
   height: 40px;
 }
 
@@ -982,144 +737,12 @@ input:focus-visible {
   padding: 0;
 }
 
-.mobile-menu-actions .btn-text {
-  width: 100%;
-  padding: 14px 16px;
-  font-size: 16px;
-  text-align: center;
-  background-color: #1a1a1a;
-  border: 1px solid #2a2a2a;
-}
-
 .mobile-menu-actions .btn-primary {
   width: 100%;
   padding: 14px 16px;
   font-size: 16px;
   text-align: center;
   justify-content: center;
-}
-
-/* ===================================================================================================
-   14. DASHBOARD PAGE
-   =================================================================================================== */
-
-/* Dashboard specific nav styling */
-body.dashboard-page .nav-link {
-  color: #a3a3a3;
-}
-
-body.dashboard-page .nav-link.active {
-  font-weight: 600;
-  color: var(--color-primary);
-}
-
-body.dashboard-page .header-actions {
-  gap: 16px;
-}
-
-.dashboard-hero {
-  min-height: calc(100vh - 64px - 200px);
-  padding: 64px 0 96px;
-  background-color: var(--color-bg-secondary);
-}
-
-.dashboard-container {
-  max-width: 1080px;
-  margin: 0 auto;
-  padding: 0 32px;
-}
-
-/* ----- Dashboard Header ----- */
-.dashboard-header {
-  margin-bottom: 8px;
-}
-
-.dashboard-greeting {
-  margin-bottom: 4px;
-  font-size: 36px;
-  font-weight: 700;
-  color: #f5f5f5;
-}
-
-.dashboard-specialization {
-  margin-bottom: 0;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-}
-
-.dashboard-subtitle {
-  margin-bottom: 32px;
-  font-size: 16px;
-  color: #737373;
-}
-
-/* ----- Dashboard Grid ----- */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-bottom: 48px;
-}
-
-.dashboard-card {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 24px;
-  background-color: var(--color-bg);
-  border: 1px solid var(--color-input-border);
-  border-radius: 16px;
-  box-shadow: var(--shadow-lg);
-}
-
-.dashboard-card .card-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #f5f5f5;
-}
-
-.dashboard-card .card-placeholder {
-  height: 52px;
-  background: linear-gradient(90deg, #262626 15%, #333333 50%, #262626 85%);
-  border-radius: 12px;
-}
-
-.dashboard-card .card-badge {
-  align-self: flex-start;
-  padding: 6px 14px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #e82127;
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 999px;
-}
-
-.dashboard-card:nth-child(2) .card-badge,
-.dashboard-card:nth-child(6) .card-badge {
-  color: #a3a3a3;
-  background-color: #262626;
-  border-color: #3a3a3a;
-}
-
-.dashboard-card:nth-child(3) .card-badge {
-  color: #92400e;
-  background-color: #fef3c7;
-  border-color: #fcd34d;
-}
-
-.dashboard-card:nth-child(5) .card-badge {
-  color: #5b21b6;
-  background-color: #f5f3ff;
-  border-color: #ddd6fe;
-}
-
-.dashboard-footer-text {
-  margin-top: 8px;
-  font-size: 15px;
-  color: #737373;
-  text-align: center;
 }
 
 /* ===================================================================================================
@@ -1356,24 +979,6 @@ body.dashboard-page .header-actions {
   box-shadow: 0 30px 80px #00000073;
 }
 
-.error-heading {
-  text-align: center;
-}
-
-.error-heading .error-code {
-  font-size: 32px;
-  font-weight: 700;
-  letter-spacing: 4px;
-  color: #f87171;
-}
-
-.error-heading .error-subtitle {
-  margin-top: 4px;
-  font-size: 18px;
-  font-weight: 500;
-  color: #ffffffcc;
-}
-
 .error-image {
   position: relative;
   width: 100%;
@@ -1461,13 +1066,6 @@ body.dashboard-page .header-actions {
   }
 }
 
-/* ----- Tablet (max-width: 992px) ----- */
-@media (max-width: 992px) {
-  .dashboard-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 /* ----- Mobile & Tablet (max-width: 768px) ----- */
 @media (max-width: 768px) {
   /* Header */
@@ -1512,9 +1110,7 @@ body.dashboard-page .header-actions {
   }
 
   .hero-actions .btn-primary,
-  .hero-actions .btn-secondary,
-  .cta-actions .btn-primary,
-  .cta-actions .btn-secondary {
+  .cta-actions .btn-primary {
     width: 100%;
     justify-content: center;
   }
@@ -1555,35 +1151,6 @@ body.dashboard-page .header-actions {
   .faq-answer p {
     font-size: 13px;
     line-height: 20px;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-
-  /* Form Inputs - Mobile Optimization */
-  .form-select {
-    min-height: 48px;
-    padding: 14px 40px 14px 16px;
-    font-size: 16px;
-    background-position: right 14px center;
-  }
-
-  .form-select option {
-    padding: 12px 16px;
-    min-height: 44px;
-    font-size: 16px;
-    line-height: 1.5;
-  }
-
-  .form-input {
-    min-height: 48px;
-    padding: 14px 16px;
-    font-size: 16px;
-  }
-
-  .form-label {
-    font-size: 15px;
   }
 
   /* Sitemap */
@@ -1678,36 +1245,9 @@ body.dashboard-page .header-actions {
     padding: 32px 24px;
   }
 
-  .error-heading .error-code {
-    font-size: 28px;
-  }
-
   .error-hero {
     flex-direction: column;
     gap: 8px;
-  }
-}
-
-/* ----- Mobile (max-width: 640px) ----- */
-@media (max-width: 640px) {
-  .dashboard-container {
-    padding: 0 16px;
-  }
-
-  .dashboard-greeting {
-    font-size: 28px;
-  }
-
-  .dashboard-specialization {
-    font-size: 14px;
-  }
-
-  .dashboard-subtitle {
-    font-size: 15px;
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -1746,11 +1286,6 @@ body.dashboard-page .header-actions {
     line-height: 18px;
   }
 
-  .faq-link {
-    font-size: 12px;
-    padding: 6px 12px;
-  }
-
   .cta {
     padding: 48px 0;
   }
@@ -1766,29 +1301,6 @@ body.dashboard-page .header-actions {
   .back-link {
     font-size: 13px;
     margin-bottom: 20px;
-  }
-
-  /* Additional Mobile Form Optimization */
-  .form-select {
-    min-height: 52px;
-    padding: 16px 44px 16px 18px;
-    font-size: 17px;
-  }
-
-  .form-input {
-    min-height: 52px;
-    padding: 16px 18px;
-    font-size: 17px;
-  }
-
-  .input-with-icon .form-input {
-    padding-left: 46px;
-  }
-
-  .btn-submit {
-    min-height: 52px;
-    padding: 16px 24px;
-    font-size: 17px;
   }
 }
 
