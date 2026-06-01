@@ -1,5 +1,8 @@
 <?php
+
 declare(strict_types=1);
+
+namespace Teslapp\Utils;
 
 /**
  * Classe de gestion des tokens CSRF (Cross-Site Request Forgery)
@@ -11,8 +14,8 @@ declare(strict_types=1);
  * Le token est stocké en session et comparé avec celui soumis via POST
  * en utilisant hash_equals() pour se prémunir contre les attaques par timing.
  *
- * @package MedBoard\Utils
- * @author MedBoard Team
+ * @package Teslapp\Utils
+ * @author Teslapp Team
  */
 final class Csrf
 {

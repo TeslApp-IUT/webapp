@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Teslapp\Utils;
+
 /**
  * Classe utilitaire pour les opérations HTTP
  *
@@ -9,8 +13,8 @@
  * Cette classe utilise le pattern statique pour un accès facile
  * depuis n'importe quel point de l'application.
  *
- * @package MedBoard\Utils
- * @author MedBoard Team
+ * @package Teslapp\Utils
+ * @author Teslapp Team
  */
 final class Http
 {
@@ -31,12 +35,12 @@ final class Http
      * Exemple d'usage :
      * ```php
      * // Redirection simple
-     * Http::redirect('/auth/login');
+     * Http::redirect('/site/home');
      *
      * // Redirection après traitement
      * if ($success) {
      *     Flash::set('success', 'Inscription réussie');
-     *     Http::redirect('/dashboard/index');
+     *     Http::redirect('/site/home');
      * }
      * ```
      *

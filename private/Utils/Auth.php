@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Teslapp\Utils;
+
 /**
  * Classe de gestion de l'authentification utilisateur
  *
@@ -10,8 +14,8 @@
  * d'authentification dans toute l'application. Elle s'appuie sur le système
  * de sessions PHP.
  *
- * @package MedBoard\Utils
- * @author MedBoard Team
+ * @package Teslapp\Utils
+ * @author Teslapp Team
  */
 final class Auth
 {

@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Teslapp\Utils;
+
 /**
  * Classe de gestion des messages flash en session
  *
@@ -16,8 +20,8 @@
  * des méthodes "consume" pour récupérer et supprimer automatiquement
  * les données après lecture (pattern "flash").
  *
- * @package MedBoard\Utils
- * @author MedBoard Team
+ * @package Teslapp\Utils
+ * @author Teslapp Team
  */
 final class Flash
 {
@@ -69,7 +73,7 @@ final class Flash
      * ```php
      * // Dans le contrôleur (après validation)
      * Flash::set('errors', ['Email invalide']);
-     * Http::redirect('/auth/login');
+     * Http::redirect('/site/home');
      *
      * // Dans la vue
      * $errors = Flash::consume('errors', []);

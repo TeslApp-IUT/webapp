@@ -4,7 +4,8 @@
  *
  * Ce fichier enregistre une fonction d'autoload qui cherche et inclut automatiquement
  * les fichiers de classes lorsqu'elles sont utilisées dans le code.
- * Les classes sont recherchées dans les dossiers controllers, models et utils.
+ * Les classes sont recherchées dans les dossiers controllers et models.
+ * (Les utilitaires sont désormais sous le namespace Teslapp\Utils et chargés via Composer PSR-4.)
  */
 
 /**
@@ -17,8 +18,7 @@
  * @return void
  */
 spl_autoload_register(function (string $class): void {
-    // Récupération des chemins de base définis dans config.php
-    $baseDir = BASE_PATH;
+    // Récupération du chemin des modules défini dans config.php
     $modulesPath = MODULES_PATH;
 
     /**
@@ -26,12 +26,10 @@ spl_autoload_register(function (string $class): void {
      * L'ordre de recherche est important :
      * 1. Contrôleurs (gèrent les requêtes HTTP)
      * 2. Modèles (interactions avec la base de données)
-     * 3. Utilitaires (classes helper)
      */
     $paths = [
         $modulesPath . 'controllers/' . $class . '.php',
         $modulesPath . 'models/' . $class . '.php',
-        $baseDir . 'private/utils/' . $class . '.php',
     ];
 
     // Inclusion du premier fichier trouvé correspondant au nom de classe

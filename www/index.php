@@ -2,6 +2,8 @@
 // medboard/index.php — Front Controller
 declare(strict_types=1);
 
+use Teslapp\Utils\Csrf;
+
 /**
  * Chargements : autoloader (connait déjà "modules\"),
  * config générale (définit notamment MODULES_PATH),

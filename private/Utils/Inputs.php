@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Teslapp\Utils;
+
 /**
  * Classe utilitaire de validation et sanitization des entrées utilisateur
  *
@@ -14,8 +18,8 @@
  * 1. Sanitize : nettoie et normalise la donnée (trim, lowercase, collapse spaces)
  * 2. Validate : vérifie la conformité et retourne un message d'erreur ou null
  *
- * @package MedBoard\Utils
- * @author MedBoard Team
+ * @package Teslapp\Utils
+ * @author Teslapp Team
  */
 final class Inputs
 {

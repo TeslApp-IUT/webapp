@@ -1,5 +1,8 @@
 <?php
+
 declare(strict_types=1);
+
+namespace Teslapp\Utils;
 
 /**
  * Classe de limitation de débit (Rate Limiting)
@@ -20,8 +23,8 @@ declare(strict_types=1);
  * Le stockage se fait en session pour des raisons de simplicité. Pour une application
  * à fort trafic, il serait préférable d'utiliser Redis ou Memcached.
  *
- * @package MedBoard\Utils
- * @author MedBoard Team
+ * @package Teslapp\Utils
+ * @author Teslapp Team
  */
 final class RateLimit
 {
@@ -48,7 +51,7 @@ final class RateLimit
      * if (!RateLimit::check('login', 5, 900)) {
      *     $remaining = RateLimit::getRemainingTime('login');
      *     Flash::set('errors', ["Trop de tentatives. Réessayez dans {$remaining}s"]);
-     *     Http::redirect('/auth/login');
+     *     Http::redirect('/site/home');
      * }
      * ```
      *
