@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Teslapp\Utils\Csrf;
+use Teslapp\Utils\Flash;
 
 /**
  * Chargements : configuration globale, autoload Composer (PSR-4),
@@ -23,15 +24,20 @@ $routes = require __DIR__ . '/../private/config/routes.php';
 // Conteneur DI maison : résout les controllers et leurs dépendances (cf. private/config/container.php)
 $container = require __DIR__ . '/../private/config/container.php';
 
-session_name('MEDBOARD_SESSION');
-session_start([
+session_name('TESLAPP_SESSION');
+
+// Paramètres du cookie de session. SameSite=Lax (et non Strict) pour que le cookie
+// soit bien renvoyé au retour du callback OAuth Tesla (navigation top-level cross-site
+// depuis auth.tesla.com) ; la protection CSRF reste assurée par le token synchronizer.
+$sessionCookieParams = [
     'cookie_secure' => true,
     'cookie_httponly' => true,
-    'cookie_samesite' => 'Strict',
+    'cookie_samesite' => 'Lax',
     'use_strict_mode' => true,
     'use_only_cookies' => true,
     'cookie_lifetime' => 0,
-]);
+];
+session_start($sessionCookieParams);
 
 // ==================== POLITIQUE D'INACTIVITÉ & ROTATION ====================
 $now = time();
@@ -40,16 +46,9 @@ $idleTimeout = 1800; // 30 min
 if (isset($_SESSION['LAST_ACTIVITY']) && $now - (int) $_SESSION['LAST_ACTIVITY'] >= $idleTimeout) {
     $_SESSION = [];
     session_destroy();
-    session_start([
-        'cookie_secure' => true,
-        'cookie_httponly' => true,
-        'cookie_samesite' => 'Strict',
-        'use_strict_mode' => true,
-        'use_only_cookies' => true,
-        'cookie_lifetime' => 0,
-    ]);
+    session_start($sessionCookieParams);
     session_regenerate_id(true);
-    $_SESSION['flash']['info'] = 'Votre session a expiré.';
+    Flash::set('info', 'Votre session a expiré.');
 }
 $_SESSION['LAST_ACTIVITY'] = $now;
 
@@ -64,11 +63,19 @@ if (!isset($_SESSION['CREATED'])) {
 Csrf::ensureToken();
 
 /** ==================== Résolution de la route ====================
- * L'.htaccess doit réécrire /site/home -> index.php?route=site/home
- * Route par défaut : site/home
+ * La route est dérivée du CHEMIN de la requête (front controller — cf. cours MVC §5.5).
+ * En prod, le .htaccess réécrit tout vers index.php en préservant REQUEST_URI ; en dev
+ * (php -S), les chemins inconnus arrivent aussi à index.php. La query string ?route=
+ * reste acceptée en repli explicite. Route par défaut : site/home.
  */
 $route = filter_input(INPUT_GET, 'route', FILTER_UNSAFE_RAW);
-$route = $route ? trim($route, "/ \t\n\r\0\x0B") : 'site/home';
+if (!is_string($route) || $route === '') {
+    $route = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+}
+$route = trim($route, "/ \t\n\r\0\x0B");
+if ($route === '' || $route === 'index.php') {
+    $route = 'site/home';
+}
 
 if (!isset($routes[$route])) {
     http_response_code(404);
@@ -76,10 +83,11 @@ if (!isset($routes[$route])) {
     [$errClass, $errMethod] = $routes['error/404'];
     try {
         $container->get($errClass)->{$errMethod}();
-        exit();
-    } catch (Exception $e) {
-        error_log($e->getMessage());
+    } catch (Throwable $e) {
+        error_log('Échec du rendu de la page 404 : ' . $e->getMessage());
+        echo '404 — Page introuvable';
     }
+    exit();
 }
 
 [$class, $method] = $routes[$route];
