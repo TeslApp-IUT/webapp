@@ -1,22 +1,17 @@
-<!-- 
-    Partial : Header Invité
-    
-    En-tête affiché pour les utilisateurs non connectés.
-    Contient :
-    - Logo MedBoard
-    - Menu de navigation principal
-    - Bouton de changement de thème
-    - Boutons de connexion et d'inscription
+<!--
+    Partial : Header invité
+
+    En-tête affiché aux visiteurs non connectés :
+    - Logo TeslApp
+    - Navigation principale
+    - Connexion via « Login with Tesla »
     - Menu mobile responsive
 -->
-
-<!-- En-tête principal -->
 <header class="header">
     <div class="container">
-        <!-- Logo MedBoard -->
+        <!-- Logo TeslApp -->
         <a href="/site/home" class="logo">
-            <img src="/_assets/images/LogoMedBoard.svg" alt="MedBoard" class="logo-light">
-            <img src="/_assets/images/LogoMedBoardDarkMode.svg" alt="MedBoard" class="logo-dark">
+            <img src="/_assets/images/Logo.svg" alt="TeslApp">
         </a>
 
         <!-- Navigation principale -->
@@ -26,13 +21,9 @@
             <a href="/site/legal" class="nav-link">Mentions légales</a>
         </nav>
 
-        <!-- Actions du header -->
+        <!-- Action : connexion Tesla -->
         <div class="header-actions">
-            <!-- Bouton de changement de thème -->
-            <button class="btn-icon" id="themeToggle" aria-label="Changer le thème">
-                <img src="/_assets/images/lune.svg" alt="" class="moon-icon" aria-hidden="true">
-                <img src="/_assets/images/soleil.svg" alt="" class="sun-icon" aria-hidden="true">
-            </button>
+            <a href="/auth/tesla/login" class="btn-primary">Se connecter avec Tesla</a>
         </div>
 
         <!-- Bouton du menu mobile -->
@@ -48,22 +39,16 @@
 
 <!-- Menu mobile -->
 <div class="mobile-menu" id="mobileMenu">
-    <!-- En-tête du menu mobile -->
     <div class="mobile-menu-header">
         <a href="/site/home" class="logo">
-            <img src="/_assets/images/LogoMedBoard.svg" alt="MedBoard" class="logo-light">
-            <img src="/_assets/images/LogoMedBoardDarkMode.svg" alt="MedBoard" class="logo-dark">
+            <img src="/_assets/images/Logo.svg" alt="TeslApp">
         </a>
-        <!-- Bouton de fermeture -->
         <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Fermer le menu">
-            <img src="/_assets/images/croix-light.svg" alt="" class="close-icon-light" aria-hidden="true">
-            <img src="/_assets/images/croix-dark.svg" alt="" class="close-icon-dark" aria-hidden="true">
+            <img src="/_assets/images/croix-light.svg" alt="" aria-hidden="true">
         </button>
     </div>
 
-    <!-- Contenu du menu mobile -->
     <div class="mobile-menu-content">
-        <!-- Section navigation -->
         <div class="mobile-menu-section-title">NAVIGATION</div>
         <nav class="mobile-menu-nav">
             <a href="/site/home" class="mobile-menu-link">Accueil</a>
@@ -71,15 +56,8 @@
             <a href="/site/legal" class="mobile-menu-link">Mentions légales</a>
         </nav>
 
-        <!-- Section changement de thème -->
-        <div class="mobile-menu-theme">
-            <span class="mobile-menu-theme-label">Thème</span>
-            <button class="mobile-theme-toggle" id="mobileThemeToggle" aria-label="Changer le thème">
-                <img src="/_assets/images/lune.svg" alt="" class="mobile-moon-icon" aria-hidden="true">
-                <img src="/_assets/images/soleil.svg" alt="" class="mobile-sun-icon" aria-hidden="true">
-                <span class="mobile-theme-text">Sombre</span>
-            </button>
+        <div class="mobile-menu-actions">
+            <a href="/auth/tesla/login" class="btn-primary">Se connecter avec Tesla</a>
         </div>
-
     </div>
 </div>

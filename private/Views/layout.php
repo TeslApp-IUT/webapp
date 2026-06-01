@@ -19,7 +19,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="<?= e($description ?? '') ?>">
-    <title><?= e($title ?? 'MedBoard') ?></title>
+    <title><?= e($title ?? 'TeslApp') ?></title>
     <link rel="icon" type="image/svg+xml" href="/_assets/images/favicon.svg">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" href="/_assets/css/styles.css">
@@ -28,7 +28,7 @@
     <?php endforeach; ?>
     <?= $headExtra ?? '' ?>
 </head>
-<body class="<?= e($bodyClass ?? 'light-theme') ?>">
+<body class="<?= e($bodyClass ?? '') ?>">
 
     <?php require __DIR__ . '/partials/header_guest.php'; ?>
 

@@ -1,66 +1,93 @@
 <?php
-$title = 'MedBoard - Plateforme médicale nouvelle génération';
-$description = 'MedBoard - Plateforme médicale nouvelle génération pour la gestion hospitalière intelligente';
+$title = 'TeslApp - Votre Tesla, partout avec vous';
+$description = "TeslApp - Contrôlez votre Tesla à distance. Climatisation, recharge, verrouillage et historique de trajets via l'API Fleet.";
 $extraJs = ['script'];
+$headExtra = <<<'HTML'
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "TeslApp",
+  "url": "https://teslapp.feyli.dev",
+  "logo": "https://teslapp.feyli.dev/_assets/images/Logo.svg",
+  "description": "Application web de contrôle de véhicules Tesla via l'API Fleet",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "TeslApp",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "413, Avenue Gaston Berger",
+      "addressLocality": "Aix-en-Provence",
+      "postalCode": "13100",
+      "addressCountry": "FR"
+    }
+  }
+}
+</script>
+HTML;
 
 ob_start();
 ?>
 <!-- Section Hero (bandeau principal) -->
 <section class="hero" aria-labelledby="hero-title">
-    <!-- Images de fond responsive avec différents formats -->
+    <!-- Image de fond responsive -->
     <picture>
         <source srcset="/_assets/images/banniere_light.avif" type="image/avif">
         <source srcset="/_assets/images/banniere_light.webp" type="image/webp">
         <img src="/_assets/images/banniere_light.jpg" alt="" class="hero-bg hero-bg-light" aria-hidden="true" fetchpriority="high">
-    </picture>
-    <picture>
-        <source srcset="/_assets/images/banniere_dark.avif" type="image/avif">
-        <source srcset="/_assets/images/banniere_dark.webp" type="image/webp">
-        <img src="/_assets/images/banniere_dark.jpg" alt="" class="hero-bg hero-bg-dark" aria-hidden="true" fetchpriority="high">
     </picture>
     <div class="hero-overlay" aria-hidden="true"></div>
 
     <!-- Contenu principal du hero -->
     <div class="container">
         <h1 id="hero-title" class="hero-title">
-            Plateforme médicale <span class="text-highlight">nouvelle génération</span>
+            Votre Tesla, <span class="text-highlight">partout avec vous</span>
         </h1>
         <p class="hero-description">
-            MedBoard révolutionne la gestion hospitalière avec des outils intelligents, un monitoring en temps réel et une interface intuitive pensée pour les professionnels de santé.
+            Contrôlez votre véhicule Tesla à distance : climatisation, recharge, verrouillage, localisation et historique de trajets. Une interface intuitive et sécurisée connectée à l'API Fleet.
         </p>
+        <!-- Action : connexion Tesla -->
+        <div class="hero-actions">
+            <a href="/auth/tesla/login" class="btn-primary">Se connecter avec Tesla</a>
+        </div>
     </div>
 </section>
 
 <!-- Section des fonctionnalités -->
 <section class="features" aria-labelledby="features-title">
     <div class="container">
-        <!-- En-tête de section -->
         <div class="section-header">
-            <h2 id="features-title" class="section-title">Une plateforme médicale complète</h2>
+            <h2 id="features-title" class="section-title">Tout le contrôle de votre Tesla en un clic</h2>
             <p class="section-description">
-                Découvrez les fonctionnalités avancées de notre solution développée spécialement pour optimiser les flux de travail médicaux
+                Découvrez les fonctionnalités de TeslApp pour piloter votre véhicule à distance, où que vous soyez
             </p>
         </div>
 
-        <!-- Grille des fonctionnalités -->
         <div class="features-grid">
             <article class="feature-card">
-                <div class="feature-icon feature-icon-green" aria-hidden="true">
+                <div class="feature-icon feature-icon-red" aria-hidden="true">
                     <img src="/_assets/images/features-1.svg" alt="">
                 </div>
-                <h3 class="feature-title">Gestion des patients</h3>
+                <h3 class="feature-title">Climatisation intelligente</h3>
                 <p class="feature-description">
-                    Centralisation complète des dossiers médicaux avec historique, allergies et traitements en cours
+                    Activez la climatisation à distance, réglez la température et programmez le préchauffage ou le refroidissement de votre habitacle
                 </p>
             </article>
 
             <article class="feature-card">
-                <div class="feature-icon feature-icon-orange" aria-hidden="true">
+                <div class="feature-icon feature-icon-red" aria-hidden="true">
                     <img src="/_assets/images/features-2.svg" alt="">
                 </div>
-                <h3 class="feature-title">Monitoring temps réel</h3>
+                <h3 class="feature-title">Gestion de la recharge</h3>
                 <p class="feature-description">
-                    Surveillance continue des signes vitaux avec alertes automatiques et tableaux de bord personnalisables
+                    Suivez le niveau de batterie en temps réel, définissez une limite de charge et planifiez vos sessions de recharge
                 </p>
             </article>
 
@@ -68,39 +95,39 @@ ob_start();
                 <div class="feature-icon feature-icon-red" aria-hidden="true">
                     <img src="/_assets/images/features-3.svg" alt="">
                 </div>
-                <h3 class="feature-title">Sécurité renforcée</h3>
+                <h3 class="feature-title">Verrouillage et sécurité</h3>
                 <p class="feature-description">
-                    Protection optimale des données sensibles avec chiffrement et conformité aux normes médicales
+                    Verrouillez ou déverrouillez votre véhicule, activez le mode Sentinelle et déclenchez klaxon ou phares à distance
                 </p>
             </article>
 
             <article class="feature-card">
-                <div class="feature-icon feature-icon-blue" aria-hidden="true">
+                <div class="feature-icon feature-icon-red" aria-hidden="true">
                     <img src="/_assets/images/features-4.svg" alt="">
                 </div>
-                <h3 class="feature-title">Planning intelligent</h3>
+                <h3 class="feature-title">Localisation GPS</h3>
                 <p class="feature-description">
-                    Gestion optimisée des rendez-vous, rotations d'équipes et disponibilités des ressources médicales
+                    Retrouvez votre Tesla sur une carte interactive et consultez sa position en temps réel depuis votre tableau de bord
                 </p>
             </article>
 
             <article class="feature-card">
-                <div class="feature-icon feature-icon-cyan" aria-hidden="true">
+                <div class="feature-icon feature-icon-red" aria-hidden="true">
                     <img src="/_assets/images/features-5.svg" alt="">
                 </div>
-                <h3 class="feature-title">Collaboration médicale</h3>
+                <h3 class="feature-title">Historique des trajets</h3>
                 <p class="feature-description">
-                    Communication fluide entre services avec messagerie sécurisée et partage d'informations cliniques
+                    Consultez tous vos trajets passés avec distance, durée et consommation. Exportez vos données au format CSV
                 </p>
             </article>
 
             <article class="feature-card">
-                <div class="feature-icon feature-icon-orange" aria-hidden="true">
+                <div class="feature-icon feature-icon-red" aria-hidden="true">
                     <img src="/_assets/images/features-6.svg" alt="">
                 </div>
-                <h3 class="feature-title">Analyses avancées</h3>
+                <h3 class="feature-title">Tableau de bord complet</h3>
                 <p class="feature-description">
-                    Rapports détaillés et statistiques médicales pour optimiser les soins et la gestion hospitalière
+                    Visualisez d'un coup d'œil l'état de votre véhicule : batterie, kilométrage, état de verrouillage et statut de charge
                 </p>
             </article>
         </div>
@@ -110,52 +137,49 @@ ob_start();
 <!-- Section FAQ -->
 <section class="faq" aria-labelledby="faq-title">
     <div class="container-narrow">
-        <!-- En-tête de section -->
         <div class="section-header">
             <h2 id="faq-title" class="section-title">Questions fréquentes</h2>
-            <p class="section-description">Trouvez rapidement les réponses à vos questions</p>
+            <p class="section-description">Trouvez rapidement les réponses à vos questions sur TeslApp</p>
         </div>
 
-        <!-- Liste des questions/réponses -->
         <div class="faq-list">
             <div class="faq-item">
                 <button class="faq-question" aria-expanded="false">
-                    <span>Comment s'organise le développement de notre projet R3.01 ?</span>
+                    <span>Comment TeslApp se connecte-t-il à ma Tesla ?</span>
                     <img src="/_assets/images/fleche-bas.svg" alt="" class="faq-icon" aria-hidden="true">
                 </button>
                 <div class="faq-answer">
-                    <p>Nous avons structuré notre travail en plusieurs étapes : analyse du besoin, conception de la base de données, développement front-end et back-end, puis tests et déploiement.</p>
+                    <p>TeslApp utilise l'API Fleet officielle de Tesla avec une authentification OAuth2 sécurisée. Vous vous connectez avec votre compte Tesla et autorisez TeslApp à accéder à votre véhicule. Vos identifiants Tesla ne sont jamais stockés sur nos serveurs.</p>
                 </div>
             </div>
 
             <div class="faq-item">
                 <button class="faq-question" aria-expanded="false">
-                    <span>Où trouver les consignes officielles du rendu ?</span>
+                    <span>Pourquoi ma Tesla met-elle du temps à répondre aux commandes ?</span>
                     <img src="/_assets/images/fleche-bas.svg" alt="" class="faq-icon" aria-hidden="true">
                 </button>
                 <div class="faq-answer">
-                    <p>Toutes les consignes détaillées sont accessibles dans le document fourni par l'enseignant :</p>
-                    <a href="https://www.mickael-martin-nevot.com/univ-amu/iut/but-informatique/developpement-web/?:s24-projet.pdf" class="faq-link" target="_blank" rel="noopener noreferrer">Consignes du projet R3.01</a>
+                    <p>Votre Tesla peut être en mode veille pour économiser la batterie. TeslApp envoie automatiquement une commande "wake-up" avant chaque action. Ce réveil peut prendre quelques secondes selon l'état du véhicule et la qualité du réseau.</p>
                 </div>
             </div>
 
             <div class="faq-item">
                 <button class="faq-question" aria-expanded="false">
-                    <span>Quelles technologies utilisons-nous pour ce projet ?</span>
+                    <span>Mes données de localisation sont-elles protégées ?</span>
                     <img src="/_assets/images/fleche-bas.svg" alt="" class="faq-icon" aria-hidden="true">
                 </button>
                 <div class="faq-answer">
-                    <p>Le projet repose sur un stack HTML, CSS, JavaScript et PHP. La base de données est en MySQL, hébergée chez Alwaysdata.</p>
+                    <p>Absolument. TeslApp respecte le RGPD : vos données de localisation sont minimisées, chiffrées en base de données et vous pouvez les supprimer à tout moment. Les tokens OAuth sont stockés de manière sécurisée et jamais exposés côté client.</p>
                 </div>
             </div>
 
             <div class="faq-item">
                 <button class="faq-question" aria-expanded="false">
-                    <span>Comment gérez-vous la sécurité des données ?</span>
+                    <span>Quelles actions puis-je effectuer avec TeslApp ?</span>
                     <img src="/_assets/images/fleche-bas.svg" alt="" class="faq-icon" aria-hidden="true">
                 </button>
                 <div class="faq-answer">
-                    <p>Nous mettons en place une gestion stricte des comptes utilisateurs : mots de passe hachés avec Argon2id, validation des entrées côté serveur, et bonnes pratiques de protection contre les injections SQL ou XSS.</p>
+                    <p>TeslApp vous permet de : verrouiller/déverrouiller votre véhicule, activer la climatisation et régler la température, gérer la recharge (limite, planification), ouvrir les coffres et la trappe de recharge, déclencher le klaxon et les phares, consulter l'historique de vos trajets et localiser votre véhicule sur une carte.</p>
                 </div>
             </div>
         </div>
@@ -165,10 +189,13 @@ ob_start();
 <!-- Section CTA (Call to Action) -->
 <section class="cta" aria-labelledby="cta-title">
     <div class="container">
-        <h2 id="cta-title" class="section-title">Prêt à commencer ?</h2>
+        <h2 id="cta-title" class="section-title">Prenez le contrôle de votre Tesla</h2>
         <p class="section-description">
-            La plateforme médicale nouvelle génération qui révolutionne la gestion des soins de santé.
+            Rejoignez TeslApp et pilotez votre véhicule à distance en toute simplicité et sécurité.
         </p>
+        <div class="cta-actions">
+            <a href="/auth/tesla/login" class="btn-primary">Se connecter avec Tesla</a>
+        </div>
     </div>
 </section>
 <?php

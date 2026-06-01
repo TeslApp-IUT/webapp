@@ -1,6 +1,6 @@
 <?php
-$title = 'Plan du site - MedBoard';
-$description = 'Plan du site MedBoard - Accédez rapidement à toutes les pages de notre plateforme médicale';
+$title = 'Plan du site - TeslApp';
+$description = 'Plan du site TeslApp - Accédez rapidement à toutes les pages de notre application';
 
 ob_start();
 ?>
@@ -15,14 +15,14 @@ ob_start();
         <!-- En-tête du plan du site -->
         <div class="sitemap-header">
             <h1 class="sitemap-title">Plan du site</h1>
-            <p class="sitemap-subtitle">Toutes les pages de MedBoard</p>
+            <p class="sitemap-subtitle">Toutes les pages de TeslApp</p>
         </div>
 
         <!-- Carte listant les pages -->
         <div class="sitemap-card">
             <h2 class="sitemap-card-title">Pages disponibles</h2>
 
-            <!-- Liste des pages du site -->
+            <!-- Liste des pages publiques réellement accessibles -->
             <div class="sitemap-list">
                 <a class="sitemap-item" href="/site/home">
                     <span class="sitemap-page-name">Accueil</span>

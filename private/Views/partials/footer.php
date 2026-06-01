@@ -1,12 +1,7 @@
-<!-- 
+<!--
     Partial : Footer
-    
-    Pied de page du site contenant :
-    - Logo et description de MedBoard
-    - Liste des membres de l'équipe
-    - Liens de navigation principaux
-    - Informations de contact
-    - Copyright
+
+    Pied de page : logo + description, équipe, navigation, contact, copyright.
 -->
 <footer class="footer">
     <div class="container">
@@ -14,13 +9,11 @@
             <!-- Colonne : Logo et description -->
             <div class="footer-col">
                 <a href="/site/home" class="logo">
-                    <img src="/_assets/images/LogoMedBoard.svg" alt="MedBoard" class="logo-light">
-                    <img src="/_assets/images/LogoMedBoardDarkMode.svg" alt="MedBoard" class="logo-dark">
+                    <img src="/_assets/images/Logo.svg" alt="TeslApp">
                 </a>
                 <p class="footer-description">
-                    La plateforme médicale nouvelle génération<br>
-                    qui révolutionne la gestion des soins de<br>
-                    santé.
+                    Contrôlez votre Tesla depuis n'importe où,<br>
+                    simplement et en toute sécurité.
                 </p>
             </div>
 
@@ -29,7 +22,9 @@
                 <h3 class="footer-heading">Équipe</h3>
                 <ul class="footer-list">
                     <li>Alexis BARBERIS</li>
-                    <li>Vassili REGNIER</li>
+                    <li>Mathis FAUTSCH</li>
+                    <li>Mathis LAURIOL-TORCQ</li>
+                    <li>Oriane MEJEAN</li>
                     <li>Jérémy WATRIPONT</li>
                 </ul>
             </div>
@@ -48,12 +43,10 @@
             <div class="footer-col">
                 <h3 class="footer-heading">Contact</h3>
                 <ul class="footer-list contact">
-                    <!-- Email de contact -->
                     <li>
                         <img src="/_assets/images/mail.svg" alt="">
-                        <a href="mailto:contact@medboard.fr">contact@medboard.fr</a>
+                        <a href="mailto:contact@teslapp.feyli.dev">contact@teslapp.feyli.dev</a>
                     </li>
-                    <!-- Adresse physique -->
                     <li>
                         <img src="/_assets/images/localisation.svg" alt="">
                         <span>413, Avenue Gaston Berger<br>13100 Aix-en-Provence</span>
@@ -64,7 +57,7 @@
 
         <!-- Barre de copyright -->
         <div class="footer-bottom">
-            <p>© 2025 MedBoard. Tous droits réservés.</p>
+            <p>© 2026 Teslapp. Tous droits réservés. Non affilié à Tesla, Inc.</p>
         </div>
     </div>
 </footer>

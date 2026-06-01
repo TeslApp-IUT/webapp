@@ -1,6 +1,6 @@
 <?php
-$title = 'Politique de confidentialité - MedBoard';
-$description = 'Politique de confidentialité MedBoard - Protection de vos données personnelles et conformité RGPD';
+$title = 'Politique de confidentialité - TeslApp';
+$description = 'Politique de confidentialité TeslApp - Protection de vos données personnelles et conformité RGPD';
 
 ob_start();
 ?>
@@ -65,7 +65,7 @@ ob_start();
                 <li>le traitement est nécessaire aux fins des intérêts légitimes poursuivis.</li>
             </ol>
             <p class="legal-paragraph">
-                Pour les résidents de l'État de Californie, cette politique de confidentialité vise à se conformer à la California Consumer Privacy Act (CCPA, SP14). Si des incohérences entre ce document et la CCPA, la législation de l'État s'appliquera.
+                Pour les résidents de l'État de Californie, cette politique de confidentialité vise à se conformer à la California Consumer Privacy Act (CCPA). En cas d'incohérences entre ce document et la CCPA, la législation de l'État s'appliquera.
             </p>
 
             <h2 class="legal-section-heading">Consentement</h2>
@@ -79,19 +79,19 @@ ob_start();
 
             <h2 class="legal-section-heading">Données personnelles que nous collectons</h2>
             <p class="legal-paragraph">
-                Nous ne collectons, ne stockons, ni n'utilisons aucune donnée utilisateur sur notre site. Dans l'éventualité où nous aurions besoin de recueillir vos données, nous vous en informerons à l'avance.
+                Dans le cadre de la connexion à votre compte Tesla via l'API Fleet, TeslApp traite les données strictement nécessaires au service : identifiants OAuth (chiffrés), informations de véhicule et, le cas échéant, données de localisation. Ces données sont minimisées et ne sont jamais revendues à des tiers.
             </p>
 
             <h2 class="legal-section-heading">Modifications</h2>
             <p class="legal-paragraph">
-                Cette politique de confidentialité peut être modifiée à des temps à autre afin de maintenir la conformité avec la loi et de tenir compte de tout changement à notre processus de collecte de données. Nous recommandons à nos utilisateurs de vérifier notre politique de confidentialité de temps à autre pour s'assurer qu'ils soient informés de toute mise à jour. Au besoin, nous informerons les utilisateurs par courriel des changements apportés à cette politique.
+                Cette politique de confidentialité peut être modifiée de temps à autre afin de maintenir la conformité avec la loi et de tenir compte de tout changement de notre processus de collecte de données. Nous recommandons à nos utilisateurs de la vérifier régulièrement pour s'assurer qu'ils sont informés de toute mise à jour.
             </p>
 
             <h2 class="legal-section-heading">Contact</h2>
             <div class="legal-highlight">
                 <p class="legal-paragraph">
                     Si vous avez des questions à nous poser, n'hésitez pas à communiquer avec nous :<br>
-                    Email : <a href="mailto:contact@medboard.fr">contact@medboard.fr</a>
+                    Email : <a href="mailto:contact@teslapp.feyli.dev">contact@teslapp.feyli.dev</a>
                 </p>
             </div>
         </div>

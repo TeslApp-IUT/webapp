@@ -1,7 +1,7 @@
 <?php
-$title = 'Erreur 404 - MedBoard';
+$title = 'Erreur 404 - TeslApp';
 $description = "Page non trouvée - La page que vous recherchez n'existe pas ou a été déplacée";
-$bodyClass = 'light-theme error-page-body';
+$bodyClass = 'error-page-body';
 $headExtra = '<meta name="robots" content="noindex, nofollow">';
 
 ob_start();
