@@ -20,10 +20,13 @@
 </head>
 <body class="light-theme error-page-body">
     
-    <?php /**
+     /**
+ * Inclusion du header approprié selon le statut de connexion
+ */<?php
+/**
      * Inclusion du header approprié selon le statut de connexion
      */
-    if (Auth::check()) {
+if (Auth::check()) {
       require __DIR__ . '/partials/header_user.php';
     } else {
       require __DIR__ . '/partials/header_guest.php';
@@ -70,10 +73,11 @@
         </div>
     </main>
 
-    <?php /**
-     * Inclusion du footer
-     */
-    require __DIR__ . '/partials/footer.php'; ?>
+     /**
+ * Inclusion du footer
+ */<?php
+
+require __DIR__ . '/partials/footer.php'; ?>
 
     <!-- Scripts JavaScript -->
     <script src="/_assets/js/common.js" defer></script>

@@ -33,10 +33,13 @@
 </head>
 <body class="light-theme">
     
-    <?php /**
+     /**
+ * Inclusion du header approprié selon le statut de connexion
+ */<?php
+/**
      * Inclusion du header approprié selon le statut de connexion
      */
-    if (Auth::check()) {
+if (Auth::check()) {
       require __DIR__ . '/partials/header_user.php';
     } else {
       require __DIR__ . '/partials/header_guest.php';
@@ -60,10 +63,11 @@
                         <p class="signup-subtitle">Rejoignez MedBoard et découvrez une nouvelle façon de gérer vos données médicales</p>
                     </div>
 
-                    <?php /**
-                     * Affichage des messages flash (erreurs/succès)
-                     */
-                    require __DIR__ . '/partials/flash_message.php'; ?>
+                     /**
+ * Affichage des messages flash (erreurs/succès)
+ */<?php
+
+require __DIR__ . '/partials/flash_message.php'; ?>
 
                     <!-- Formulaire d'inscription -->
                     <form class="signup-form" method="post" action="/auth/register" novalidate>
@@ -200,10 +204,11 @@
         </section>
     </main>
 
-    <?php /**
-     * Inclusion du footer
-     */
-    require __DIR__ . '/partials/footer.php'; ?>
+     /**
+ * Inclusion du footer
+ */<?php
+
+require __DIR__ . '/partials/footer.php'; ?>
 
     <!-- Scripts JavaScript -->
     <script src="/_assets/js/common.js" defer></script>

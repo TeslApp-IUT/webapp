@@ -32,10 +32,13 @@
 </head>
 <body class="light-theme dashboard-page">
     
-    <?php /**
+     /**
+ * Inclusion du header approprié selon le statut de connexion
+ */<?php
+/**
      * Inclusion du header approprié selon le statut de connexion
      */
-    if (Auth::check()) {
+if (Auth::check()) {
       require __DIR__ . '/partials/header_user.php';
     } else {
       require __DIR__ . '/partials/header_guest.php';
@@ -53,10 +56,11 @@
  ) ?>
                     </p>
 
-                    <?php /**
-                     * Affichage de la spécialisation si définie
-                     */
-                    if (!empty($specialization)): ?>
+                     /**
+ * Affichage de la spécialisation si définie
+ */<?php
+
+if (!empty($specialization)): ?>
                         <p class="dashboard-specialization">
                             <?= htmlspecialchars($specialization) ?>
                         </p>
@@ -116,10 +120,11 @@
         </div>
     </main>
 
-    <?php /**
-     * Inclusion du footer
-     */
-    require __DIR__ . '/partials/footer.php'; ?>
+     /**
+ * Inclusion du footer
+ */<?php
+
+require __DIR__ . '/partials/footer.php'; ?>
 
     <!-- Scripts JavaScript -->
     <script src="/_assets/js/common.js" defer></script>
