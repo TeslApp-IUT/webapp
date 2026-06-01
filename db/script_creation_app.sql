@@ -1,22 +1,22 @@
 ------------------------------------------------------------------
---                           VERSION 8                          --
+--                           VERSION 9                          --
 ------------------------------------------------------------------
 
-DROP TABLE IF EXISTS vehicles CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
-DROP TABLE IF EXISTS oauth2_token CASCADE;
-DROP TABLE IF EXISTS vehicle_models CASCADE;
-DROP TABLE IF EXISTS paths CASCADE;
-DROP TABLE IF EXISTS path_points CASCADE;
-DROP TABLE IF EXISTS air_conditioning_planner CASCADE;
-DROP TABLE IF EXISTS charging_planner CASCADE;
-DROP TABLE IF EXISTS ac_plans CASCADE;
-DROP TABLE IF EXISTS charging_plans CASCADE;
-DROP TABLE IF EXISTS day_of_week CASCADE;
-DROP TABLE IF EXISTS jwt CASCADE;
-DROP TABLE IF EXISTS rate_limits CASCADE;
+DROP TABLE IF EXISTS app.vehicles CASCADE;
+DROP TABLE IF EXISTS app.users CASCADE;
+DROP TABLE IF EXISTS app.oauth2_token CASCADE;
+DROP TABLE IF EXISTS app.vehicle_models CASCADE;
+DROP TABLE IF EXISTS app.paths CASCADE;
+DROP TABLE IF EXISTS app.path_points CASCADE;
+DROP TABLE IF EXISTS app.air_conditioning_planner CASCADE;
+DROP TABLE IF EXISTS app.charging_planner CASCADE;
+DROP TABLE IF EXISTS app.ac_plans CASCADE;
+DROP TABLE IF EXISTS app.charging_plans CASCADE;
+DROP TABLE IF EXISTS app.day_of_week CASCADE;
+DROP TABLE IF EXISTS app.jwt CASCADE;
+DROP TABLE IF EXISTS app.rate_limits CASCADE;
 
-CREATE TABLE vehicle_models
+CREATE TABLE app.vehicle_models
 (
     id   UUID,
     name VARCHAR(32) NOT NULL UNIQUE,
@@ -24,7 +24,7 @@ CREATE TABLE vehicle_models
     CONSTRAINT pk_vehicle_models PRIMARY KEY (id)
 );
 
-CREATE TABLE users
+CREATE TABLE app.users
 (
     id         UUID,
     email      VARCHAR(320) NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE users
     CONSTRAINT unique_email UNIQUE (email)
 );
 
-CREATE TABLE vehicles
+CREATE TABLE app.vehicles
 (
     vin      VARCHAR(17),
     user_id  UUID        NOT NULL,
@@ -46,15 +46,15 @@ CREATE TABLE vehicles
     CONSTRAINT pk_vehicles PRIMARY KEY (vin),
 
     CONSTRAINT fk_vehicles_vehicle_models FOREIGN KEY (model_id)
-        REFERENCES vehicle_models (id)
+        REFERENCES app.vehicle_models (id)
         ON DELETE CASCADE,
 
     CONSTRAINT fk_vehicles_users FOREIGN KEY (user_id)
-        REFERENCES users (id)
+        REFERENCES app.users (id)
         ON DELETE CASCADE
 );
 
-CREATE TABLE jwt
+CREATE TABLE app.jwt
 (
     id         UUID        NOT NULL,
     user_id    UUID        NOT NULL,
@@ -69,11 +69,11 @@ CREATE TABLE jwt
     CONSTRAINT pk_jwt PRIMARY KEY (id),
 
     CONSTRAINT fk_jwt_users FOREIGN KEY (user_id)
-        REFERENCES users (id)
+        REFERENCES app.users (id)
         ON DELETE CASCADE
 );
 
-CREATE TABLE oauth2_token
+CREATE TABLE app.oauth2_token
 (
     id                       UUID,
     user_id                  UUID                    NOT NULL,
@@ -92,11 +92,11 @@ CREATE TABLE oauth2_token
     CONSTRAINT pk_oauth2_token PRIMARY KEY (id),
 
     CONSTRAINT fk_oauth2_token_users FOREIGN KEY (user_id)
-        REFERENCES users (id)
+        REFERENCES app.users (id)
         ON DELETE CASCADE
 );
 
-CREATE TABLE paths
+CREATE TABLE app.paths
 (
     id                 UUID                    NOT NULL,
     vin                VARCHAR(17)             NOT NULL,
@@ -109,11 +109,11 @@ CREATE TABLE paths
     CONSTRAINT pk_path PRIMARY KEY (id),
 
     CONSTRAINT fk_path_vehicle FOREIGN KEY (vin)
-        REFERENCES vehicles (vin)
+        REFERENCES app.vehicles (vin)
         ON DELETE CASCADE
 );
 
-CREATE TABLE path_points
+CREATE TABLE app.path_points
 (
     id                   UUID                    NOT NULL,
     path_id              UUID                    NOT NULL,
@@ -124,11 +124,11 @@ CREATE TABLE path_points
     CONSTRAINT pk_path_point PRIMARY KEY (id),
 
     CONSTRAINT fk_path_point_path FOREIGN KEY (path_id)
-        REFERENCES paths (id)
+        REFERENCES app.paths (id)
         ON DELETE CASCADE
 );
 
-CREATE TABLE air_conditioning_planner
+CREATE TABLE app.air_conditioning_planner
 (
     id                       UUID,
     vin                      VARCHAR(17) NOT NULL,
@@ -138,11 +138,11 @@ CREATE TABLE air_conditioning_planner
     CONSTRAINT pk_air_conditioning_planner PRIMARY KEY (id),
 
     CONSTRAINT fk_air_conditioning_planner_vehicle FOREIGN KEY (vin)
-        REFERENCES vehicles (vin)
+        REFERENCES app.vehicles (vin)
         ON DELETE CASCADE
 );
 
-CREATE TABLE charging_planner
+CREATE TABLE app.charging_planner
 (
     id                       UUID,
     vin                      VARCHAR(17) NOT NULL,
@@ -155,11 +155,11 @@ CREATE TABLE charging_planner
     CONSTRAINT pk_charging_planner PRIMARY KEY (id),
 
     CONSTRAINT fk_charging_planner_vehicle FOREIGN KEY (vin)
-        REFERENCES vehicles (vin)
+        REFERENCES app.vehicles (vin)
         ON DELETE CASCADE
 );
 
-CREATE TABLE day_of_week
+CREATE TABLE app.day_of_week
 (
     id   INT GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(8) NOT NULL UNIQUE,
@@ -167,7 +167,7 @@ CREATE TABLE day_of_week
     CONSTRAINT pk_day_of_week PRIMARY KEY (id)
 );
 
-CREATE TABLE ac_plans
+CREATE TABLE app.ac_plans
 (
     id     UUID,
     day_id INT,
@@ -175,15 +175,15 @@ CREATE TABLE ac_plans
     CONSTRAINT pk_ac_plans PRIMARY KEY (id, day_id),
 
     CONSTRAINT fk_ac_plans_air_conditioning_planner FOREIGN KEY (id)
-        REFERENCES air_conditioning_planner (id)
+        REFERENCES app.air_conditioning_planner (id)
         ON DELETE CASCADE,
 
     CONSTRAINT fk_ac_plans_day_of_week FOREIGN KEY (day_id)
-        REFERENCES day_of_week (id)
+        REFERENCES app.day_of_week (id)
         ON DELETE CASCADE
 );
 
-CREATE TABLE charging_plans
+CREATE TABLE app.charging_plans
 (
     id     UUID,
     day_id INT,
@@ -191,15 +191,15 @@ CREATE TABLE charging_plans
     CONSTRAINT pk_charging_plans PRIMARY KEY (id, day_id),
 
     CONSTRAINT fk_charging_plans_charging_planner FOREIGN KEY (id)
-        REFERENCES charging_planner (id)
+        REFERENCES app.charging_planner (id)
         ON DELETE CASCADE,
 
     CONSTRAINT fk_charging_plans_day_of_week FOREIGN KEY (day_id)
-        REFERENCES day_of_week (id)
+        REFERENCES app.day_of_week (id)
         ON DELETE CASCADE
 );
 
-CREATE TABLE rate_limits
+CREATE TABLE app.rate_limits
 (
     id         BIGINT GENERATED ALWAYS AS IDENTITY,
     key_hash   CHAR(64)  NOT NULL,           -- SHA-256 de (action + ip) ou (action + user_id)
@@ -209,4 +209,4 @@ CREATE TABLE rate_limits
     CONSTRAINT pk_rate_limits PRIMARY KEY (id)
 );
 
-CREATE INDEX idx_rate_limits_key_expires ON rate_limits (key_hash, expires_at);
+CREATE INDEX idx_rate_limits_key_expires ON app.rate_limits (key_hash, expires_at);
