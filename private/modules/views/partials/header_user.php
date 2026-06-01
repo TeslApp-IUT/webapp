@@ -39,7 +39,11 @@
             <!-- Formulaire de déconnexion -->
             <form method="POST" action="/auth/logout" style="display: inline;">
                 <!-- Token CSRF pour sécuriser la déconnexion -->
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(
+                  $_SESSION['csrf_token'],
+                  ENT_QUOTES,
+                  'UTF-8',
+                ) ?>">
 
                 <!-- Bouton de déconnexion -->
                 <button type="submit" class="btn-icon logout-icon" aria-label="Déconnexion">
@@ -59,11 +63,15 @@
                     $user = $_SESSION['user'] ?? null;
 
                     if ($user) {
-                        $firstnameLetter = mb_strtoupper(mb_substr($user['firstname'], 0, 1));
-                        $lastnameLetter = mb_strtoupper(mb_substr($user['lastname'], 0, 1));
+                      $firstnameLetter = mb_strtoupper(mb_substr($user['firstname'], 0, 1));
+                      $lastnameLetter = mb_strtoupper(mb_substr($user['lastname'], 0, 1));
 
-                        $initials = htmlspecialchars($firstnameLetter . $lastnameLetter, ENT_QUOTES, 'UTF-8');
-                        echo $initials;
+                      $initials = htmlspecialchars(
+                        $firstnameLetter . $lastnameLetter,
+                        ENT_QUOTES,
+                        'UTF-8',
+                      );
+                      echo $initials;
                     }
                     ?>
                 </span>
@@ -121,7 +129,11 @@
         <div class="mobile-menu-actions">
             <form method="POST" action="/auth/logout" style="margin: 0; width: 100%;">
                 <!-- Token CSRF -->
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(
+                  $_SESSION['csrf_token'],
+                  ENT_QUOTES,
+                  'UTF-8',
+                ) ?>">
                 
                 <!-- Bouton de déconnexion -->
                 <button type="submit" class="btn-primary">

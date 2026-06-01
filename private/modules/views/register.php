@@ -33,16 +33,14 @@
 </head>
 <body class="light-theme">
     
-    <?php 
-    /**
+    <?php /**
      * Inclusion du header approprié selon le statut de connexion
      */
     if (Auth::check()) {
-        require __DIR__ ."/partials/header_user.php";
+      require __DIR__ . '/partials/header_user.php';
     } else {
-        require __DIR__ ."/partials/header_guest.php";
-    }
-    ?>
+      require __DIR__ . '/partials/header_guest.php';
+    } ?>
 
     <main>
         <!-- Section d'inscription -->
@@ -62,17 +60,19 @@
                         <p class="signup-subtitle">Rejoignez MedBoard et découvrez une nouvelle façon de gérer vos données médicales</p>
                     </div>
 
-                    <?php
-                    /**
+                    <?php /**
                      * Affichage des messages flash (erreurs/succès)
                      */
-                    require __DIR__ ."/partials/flash_message.php";
-                    ?>
+                    require __DIR__ . '/partials/flash_message.php'; ?>
 
                     <!-- Formulaire d'inscription -->
                     <form class="signup-form" method="post" action="/auth/register" novalidate>
                         <!-- Token CSRF pour la sécurité -->
-                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(
+                          $_SESSION['csrf_token'],
+                          ENT_QUOTES,
+                          'UTF-8',
+                        ) ?>">
 
                         <!-- Groupe de champs : Informations personnelles -->
                         <fieldset>
@@ -82,24 +82,40 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="firstName" class="form-label">Prénom <span class="required">*</span></label>
-                                    <input type="text" id="firstName" name="firstname" class="form-input" placeholder="Votre prénom" autocomplete="given-name" required value="<?= htmlspecialchars($old['firstname'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                                    <input type="text" id="firstName" name="firstname" class="form-input" placeholder="Votre prénom" autocomplete="given-name" required value="<?= htmlspecialchars(
+                                      $old['firstname'] ?? '',
+                                      ENT_QUOTES,
+                                      'UTF-8',
+                                    ) ?>">
                                 </div>
                                 <div class="form-group">
                                     <label for="lastName" class="form-label">Nom <span class="required">*</span></label>
-                                    <input type="text" id="lastName" name="lastname" class="form-input" placeholder="Votre nom" autocomplete="family-name" required value="<?= htmlspecialchars($old['lastname'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                                    <input type="text" id="lastName" name="lastname" class="form-input" placeholder="Votre nom" autocomplete="family-name" required value="<?= htmlspecialchars(
+                                      $old['lastname'] ?? '',
+                                      ENT_QUOTES,
+                                      'UTF-8',
+                                    ) ?>">
                                 </div>
                             </div>
 
                             <!-- Champ Login -->
                             <div class="form-group">
                                 <label for="login" class="form-label">Login <span class="required">*</span></label>
-                                <input type="text" id="login" name="username" class="form-input" placeholder="Votre identifiant unique" autocomplete="username" required value="<?= htmlspecialchars($old['username'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                                <input type="text" id="login" name="username" class="form-input" placeholder="Votre identifiant unique" autocomplete="username" required value="<?= htmlspecialchars(
+                                  $old['username'] ?? '',
+                                  ENT_QUOTES,
+                                  'UTF-8',
+                                ) ?>">
                             </div>
 
                             <!-- Champ Email -->
                             <div class="form-group">
                                 <label for="email" class="form-label">Adresse email <span class="required">*</span></label>
-                                <input type="email" id="email" name="email" class="form-input" placeholder="votre.email@exemple.com" autocomplete="email" required value="<?= htmlspecialchars($old['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                                <input type="email" id="email" name="email" class="form-input" placeholder="votre.email@exemple.com" autocomplete="email" required value="<?= htmlspecialchars(
+                                  $old['email'] ?? '',
+                                  ENT_QUOTES,
+                                  'UTF-8',
+                                ) ?>">
                             </div>
 
                             <!-- Champ Spécialisation -->
@@ -114,13 +130,18 @@
                                      */
                                     $current = $old['specialization'] ?? '';
                                     foreach ($specializations as $id => $label):
-                                        $display = ucfirst($label);
-                                    ?>
-                                        <option value="<?= htmlspecialchars((string)$id, ENT_QUOTES, 'UTF-8') ?>"
-                                            <?= ($current === (string)$id) ? 'selected' : '' ?>>
+                                      $display = ucfirst($label); ?>
+                                        <option value="<?= htmlspecialchars(
+                                          (string) $id,
+                                          ENT_QUOTES,
+                                          'UTF-8',
+                                        ) ?>"
+                                            <?= $current === (string) $id ? 'selected' : '' ?>>
                                             <?= htmlspecialchars($display, ENT_QUOTES, 'UTF-8') ?>
                                         </option>
-                                    <?php endforeach; ?>
+                                    <?php
+                                    endforeach;
+                                    ?>
                                 </select>
                             </div>
                         </fieldset>
@@ -179,12 +200,10 @@
         </section>
     </main>
 
-    <?php
-    /**
+    <?php /**
      * Inclusion du footer
      */
-    require __DIR__ ."/partials/footer.php";
-    ?>
+    require __DIR__ . '/partials/footer.php'; ?>
 
     <!-- Scripts JavaScript -->
     <script src="/_assets/js/common.js" defer></script>

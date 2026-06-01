@@ -17,29 +17,28 @@
  * @return void
  */
 spl_autoload_register(function (string $class): void {
-    // Récupération des chemins de base définis dans config.php
-    $baseDir = BASE_PATH;
-    $modulesPath = MODULES_PATH;
+  // Récupération des chemins de base définis dans config.php
+  $baseDir = BASE_PATH;
+  $modulesPath = MODULES_PATH;
 
-    /**
-     * Liste des chemins possibles pour trouver la classe
-     * L'ordre de recherche est important :
-     * 1. Contrôleurs (gèrent les requêtes HTTP)
-     * 2. Modèles (interactions avec la base de données)
-     * 3. Utilitaires (classes helper)
-     */
-    $paths = [
-        $modulesPath . 'controllers/' . $class . '.php',
-        $modulesPath . 'models/' . $class . '.php',
-        $baseDir . 'private/utils/' . $class . '.php',
-    ];
+  /**
+   * Liste des chemins possibles pour trouver la classe
+   * L'ordre de recherche est important :
+   * 1. Contrôleurs (gèrent les requêtes HTTP)
+   * 2. Modèles (interactions avec la base de données)
+   * 3. Utilitaires (classes helper)
+   */
+  $paths = [
+    $modulesPath . 'controllers/' . $class . '.php',
+    $modulesPath . 'models/' . $class . '.php',
+    $baseDir . 'private/utils/' . $class . '.php',
+  ];
 
-    // Inclusion du premier fichier trouvé correspondant au nom de classe
-    foreach ($paths as $file) {
-        if (is_file($file)) {
-            require $file;
-            return; // Arrêt dès que la classe est chargée
-        }
+  // Inclusion du premier fichier trouvé correspondant au nom de classe
+  foreach ($paths as $file) {
+    if (is_file($file)) {
+      require $file;
+      return; // Arrêt dès que la classe est chargée
     }
+  }
 });
-

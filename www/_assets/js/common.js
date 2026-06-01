@@ -1,8 +1,118 @@
-function initCommon(){const themeToggle=document.getElementById('themeToggle');const mobileThemeToggle=document.getElementById('mobileThemeToggle');const body=document.body;const moonIcon=document.querySelector('.moon-icon');const sunIcon=document.querySelector('.sun-icon');const mobileMoonIcon=document.querySelector('.mobile-moon-icon');const mobileSunIcon=document.querySelector('.mobile-sun-icon');const mobileThemeText=document.querySelector('.mobile-theme-text');const savedTheme=localStorage.getItem('theme')||'light';function updateThemeIcons(isDark){if(isDark){if(moonIcon)moonIcon.style.display='none';if(sunIcon)sunIcon.style.display='block';if(mobileMoonIcon)mobileMoonIcon.style.display='none';if(mobileSunIcon)mobileSunIcon.style.display='block';if(mobileThemeText)mobileThemeText.textContent='Sombre'}else{if(moonIcon)moonIcon.style.display='block';if(sunIcon)sunIcon.style.display='none';if(mobileMoonIcon)mobileMoonIcon.style.display='block';if(mobileSunIcon)mobileSunIcon.style.display='none';if(mobileThemeText)mobileThemeText.textContent='Sombre'}}
-if(savedTheme==='dark'){body.classList.replace('light-theme','dark-theme');updateThemeIcons(!0)}
-function toggleTheme(){const isDark=body.classList.contains('dark-theme');if(isDark){body.classList.replace('dark-theme','light-theme');updateThemeIcons(!1);localStorage.setItem('theme','light')}else{body.classList.replace('light-theme','dark-theme');updateThemeIcons(!0);localStorage.setItem('theme','dark')}}
-if(themeToggle){themeToggle.addEventListener('click',toggleTheme)}
-if(mobileThemeToggle){mobileThemeToggle.addEventListener('click',toggleTheme)}
-const mobileMenuToggle=document.getElementById('mobileMenuToggle');const mobileMenu=document.getElementById('mobileMenu');const mobileMenuClose=document.getElementById('mobileMenuClose');if(mobileMenuToggle&&mobileMenu&&mobileMenuClose){mobileMenuToggle.addEventListener('click',function(){mobileMenu.classList.add('active');document.body.style.overflow='hidden'});mobileMenuClose.addEventListener('click',function(){mobileMenu.classList.remove('active');document.body.style.overflow=''});const mobileMenuLinks=mobileMenu.querySelectorAll('.mobile-menu-link, .mobile-menu-actions a');mobileMenuLinks.forEach(link=>{link.addEventListener('click',function(){mobileMenu.classList.remove('active');document.body.style.overflow=''})})}
-const currentPath=window.location.pathname;const navLinks=document.querySelectorAll('.nav-link, .mobile-menu-link');navLinks.forEach(function(link){link.classList.remove('active');const linkPath=link.getAttribute('href');if(linkPath&&currentPath===linkPath){link.classList.add('active')}else if(linkPath==='/site/home'&&(currentPath==='/'||currentPath==='/site/home')){link.classList.add('active')}});document.querySelectorAll('.password-toggle').forEach(function(button){button.addEventListener('click',function(event){event.preventDefault();const allPasswordWrappers=document.querySelectorAll('.password-wrapper, .input-wrapper');const allPasswordInputs=[];allPasswordWrappers.forEach(function(wrapper){const input=wrapper.querySelector('input[type="password"]')||wrapper.querySelector('input[type="text"][id*="assword"]')||wrapper.querySelector('input[type="text"][name*="password"]');if(input){allPasswordInputs.push(input)}});if(allPasswordInputs.length===0)return;const shouldShow=allPasswordInputs[0].type==='password';allPasswordInputs.forEach(function(input){if(shouldShow){input.type='text'}else{input.type='password'}});document.querySelectorAll('.password-toggle').forEach(function(btn){if(shouldShow){btn.setAttribute('aria-label','Masquer le mot de passe')}else{btn.setAttribute('aria-label','Afficher le mot de passe')}})})})}
-if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initCommon)}else{initCommon()}
+function initCommon() {
+  const themeToggle = document.getElementById('themeToggle');
+  const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+  const body = document.body;
+  const moonIcon = document.querySelector('.moon-icon');
+  const sunIcon = document.querySelector('.sun-icon');
+  const mobileMoonIcon = document.querySelector('.mobile-moon-icon');
+  const mobileSunIcon = document.querySelector('.mobile-sun-icon');
+  const mobileThemeText = document.querySelector('.mobile-theme-text');
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  function updateThemeIcons(isDark) {
+    if (isDark) {
+      if (moonIcon) moonIcon.style.display = 'none';
+      if (sunIcon) sunIcon.style.display = 'block';
+      if (mobileMoonIcon) mobileMoonIcon.style.display = 'none';
+      if (mobileSunIcon) mobileSunIcon.style.display = 'block';
+      if (mobileThemeText) mobileThemeText.textContent = 'Sombre';
+    } else {
+      if (moonIcon) moonIcon.style.display = 'block';
+      if (sunIcon) sunIcon.style.display = 'none';
+      if (mobileMoonIcon) mobileMoonIcon.style.display = 'block';
+      if (mobileSunIcon) mobileSunIcon.style.display = 'none';
+      if (mobileThemeText) mobileThemeText.textContent = 'Sombre';
+    }
+  }
+  if (savedTheme === 'dark') {
+    body.classList.replace('light-theme', 'dark-theme');
+    updateThemeIcons(!0);
+  }
+  function toggleTheme() {
+    const isDark = body.classList.contains('dark-theme');
+    if (isDark) {
+      body.classList.replace('dark-theme', 'light-theme');
+      updateThemeIcons(!1);
+      localStorage.setItem('theme', 'light');
+    } else {
+      body.classList.replace('light-theme', 'dark-theme');
+      updateThemeIcons(!0);
+      localStorage.setItem('theme', 'dark');
+    }
+  }
+  if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+  }
+  if (mobileThemeToggle) {
+    mobileThemeToggle.addEventListener('click', toggleTheme);
+  }
+  const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const mobileMenuClose = document.getElementById('mobileMenuClose');
+  if (mobileMenuToggle && mobileMenu && mobileMenuClose) {
+    mobileMenuToggle.addEventListener('click', function () {
+      mobileMenu.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+    mobileMenuClose.addEventListener('click', function () {
+      mobileMenu.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+    const mobileMenuLinks = mobileMenu.querySelectorAll(
+      '.mobile-menu-link, .mobile-menu-actions a',
+    );
+    mobileMenuLinks.forEach((link) => {
+      link.addEventListener('click', function () {
+        mobileMenu.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    });
+  }
+  const currentPath = window.location.pathname;
+  const navLinks = document.querySelectorAll('.nav-link, .mobile-menu-link');
+  navLinks.forEach(function (link) {
+    link.classList.remove('active');
+    const linkPath = link.getAttribute('href');
+    if (linkPath && currentPath === linkPath) {
+      link.classList.add('active');
+    } else if (linkPath === '/site/home' && (currentPath === '/' || currentPath === '/site/home')) {
+      link.classList.add('active');
+    }
+  });
+  document.querySelectorAll('.password-toggle').forEach(function (button) {
+    button.addEventListener('click', function (event) {
+      event.preventDefault();
+      const allPasswordWrappers = document.querySelectorAll('.password-wrapper, .input-wrapper');
+      const allPasswordInputs = [];
+      allPasswordWrappers.forEach(function (wrapper) {
+        const input =
+          wrapper.querySelector('input[type="password"]') ||
+          wrapper.querySelector('input[type="text"][id*="assword"]') ||
+          wrapper.querySelector('input[type="text"][name*="password"]');
+        if (input) {
+          allPasswordInputs.push(input);
+        }
+      });
+      if (allPasswordInputs.length === 0) return;
+      const shouldShow = allPasswordInputs[0].type === 'password';
+      allPasswordInputs.forEach(function (input) {
+        if (shouldShow) {
+          input.type = 'text';
+        } else {
+          input.type = 'password';
+        }
+      });
+      document.querySelectorAll('.password-toggle').forEach(function (btn) {
+        if (shouldShow) {
+          btn.setAttribute('aria-label', 'Masquer le mot de passe');
+        } else {
+          btn.setAttribute('aria-label', 'Afficher le mot de passe');
+        }
+      });
+    });
+  });
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initCommon);
+} else {
+  initCommon();
+}

@@ -36,16 +36,14 @@
 </head>
 <body class="light-theme">
 
-    <?php 
-    /**
+    <?php /**
      * Inclusion du header approprié selon le statut de connexion
      */
     if (Auth::check()) {
-        require __DIR__ ."/partials/header_user.php";
+      require __DIR__ . '/partials/header_user.php';
     } else {
-        require __DIR__ ."/partials/header_guest.php";
-    }
-    ?>
+      require __DIR__ . '/partials/header_guest.php';
+    } ?>
 
     <main>
         <!-- Section du plan du site -->
@@ -134,12 +132,10 @@
         </section>
     </main>
 
-    <?php
-    /**
+    <?php /**
      * Inclusion du footer
      */
-    require __DIR__ ."/partials/footer.php";
-    ?>
+    require __DIR__ . '/partials/footer.php'; ?>
 
     <!-- Scripts JavaScript -->
     <script src="/_assets/js/common.js" defer></script>

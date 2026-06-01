@@ -20,16 +20,14 @@
 </head>
 <body class="light-theme">
     
-    <?php 
-    /**
+    <?php /**
      * Inclusion du header approprié selon le statut de connexion
      */
     if (Auth::check()) {
-        require __DIR__ ."/partials/header_user.php";
+      require __DIR__ . '/partials/header_user.php';
     } else {
-        require __DIR__ ."/partials/header_guest.php";
-    }
-    ?>
+      require __DIR__ . '/partials/header_guest.php';
+    } ?>
 
     <main>
         <!-- Section de récupération de mot de passe -->
@@ -49,22 +47,28 @@
                         <p class="signup-subtitle">Saisissez votre adresse email pour recevoir un lien de réinitialisation</p>
                     </div>
 
-                    <?php
-                    /**
+                    <?php /**
                      * Affichage des messages flash (erreurs/succès)
                      */
-                    require __DIR__ ."/partials/flash_message.php";
-                    ?>
+                    require __DIR__ . '/partials/flash_message.php'; ?>
 
                     <!-- Formulaire de demande de réinitialisation -->
                     <form class="signup-form" method="post" action="/auth/forgot-password" novalidate>
                         <!-- Token CSRF pour la sécurité -->
-                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(
+                          $_SESSION['csrf_token'],
+                          ENT_QUOTES,
+                          'UTF-8',
+                        ) ?>">
 
                         <!-- Champ email -->
                         <div class="form-group">
                             <label for="email" class="form-label">Adresse email</label>
-                            <input type="email" id="email" name="email" class="form-input" placeholder="votre.email@example.com" autocomplete="email" required maxlength="254" value="<?= htmlspecialchars((string)($old['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+                            <input type="email" id="email" name="email" class="form-input" placeholder="votre.email@example.com" autocomplete="email" required maxlength="254" value="<?= htmlspecialchars(
+                              (string) ($old['email'] ?? ''),
+                              ENT_QUOTES,
+                              'UTF-8',
+                            ) ?>">
                         </div>
 
                         <!-- Bouton de soumission -->
@@ -82,12 +86,10 @@
         </section>
     </main>
 
-    <?php
-    /**
+    <?php /**
      * Inclusion du footer
      */
-    require __DIR__ ."/partials/footer.php";
-    ?>
+    require __DIR__ . '/partials/footer.php'; ?>
 
     <!-- Scripts JavaScript -->
     <script src="/_assets/js/common.js" defer></script>
