@@ -1,5 +1,5 @@
 <?php
-// medboard/index.php — Front Controller
+// www/index.php — Front Controller TeslApp
 declare(strict_types=1);
 
 use Teslapp\Utils\Csrf;
@@ -19,6 +19,9 @@ if (!is_file($autoload)) {
 require $autoload;
 
 $routes = require __DIR__ . '/../private/config/routes.php';
+
+// Conteneur DI maison : résout les controllers et leurs dépendances (cf. private/config/container.php)
+$container = require __DIR__ . '/../private/config/container.php';
 
 session_name('MEDBOARD_SESSION');
 session_start([
@@ -72,7 +75,7 @@ if (!isset($routes[$route])) {
 
     [$errClass, $errMethod] = $routes['error/404'];
     try {
-        (new $errClass())->{$errMethod}();
+        $container->get($errClass)->{$errMethod}();
         exit();
     } catch (Exception $e) {
         error_log($e->getMessage());
@@ -83,15 +86,15 @@ if (!isset($routes[$route])) {
 
 /** ==================== Instanciation & exécution ==================== */
 try {
-    // Vérification du contrôleur
-    if (!class_exists($class)) {
+    // Vérification du contrôleur (le conteneur est la source de vérité du câblage)
+    if (!$container->has($class)) {
         http_response_code(500);
-        echo '500 — Classe contrôleur introuvable : ' .
+        echo '500 — Contrôleur non enregistré dans le conteneur : ' .
             htmlspecialchars($class, ENT_QUOTES, 'UTF-8');
         exit();
     }
 
-    $controller = new $class();
+    $controller = $container->get($class);
 
     if (!is_callable([$controller, $method])) {
         http_response_code(500);
