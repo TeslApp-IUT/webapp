@@ -8,7 +8,7 @@ ob_start();
     <div class="legal-container">
         <!-- Lien de retour -->
         <a href="/site/home" class="back-link">
-            <img src="/_assets/images/fleche-gauche.svg" alt="Retour">
+            <img src="/_assets/images/fleche-gauche.svg" alt="" aria-hidden="true">
             Retour à l'accueil
         </a>
 

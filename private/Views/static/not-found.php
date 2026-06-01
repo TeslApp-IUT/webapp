@@ -10,7 +10,7 @@ ob_start();
     <div class="error-container">
         <!-- Lien de retour vers l'accueil -->
         <a href="/site/home" class="error-top-link">
-            <img src="/_assets/images/fleche-gauche.svg" alt="Retour">
+            <img src="/_assets/images/fleche-gauche.svg" alt="" aria-hidden="true">
             Échapper à cette dimension
         </a>
 

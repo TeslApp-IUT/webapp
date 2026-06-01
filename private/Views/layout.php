@@ -30,9 +30,11 @@
 </head>
 <body class="<?= e($bodyClass ?? '') ?>">
 
+    <a class="skip-link" href="#main">Aller au contenu principal</a>
+
     <?php require __DIR__ . '/partials/header_guest.php'; ?>
 
-    <main>
+    <main id="main">
         <?php
         // Messages flash : consommés une fois depuis la session, puis supprimés.
         $errors = \Teslapp\Utils\Flash::consume('errors', []);

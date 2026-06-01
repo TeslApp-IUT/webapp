@@ -36,6 +36,7 @@
                     <li><a href="/site/home">Accueil</a></li>
                     <li><a href="/site/sitemap">Plan du site</a></li>
                     <li><a href="/site/legal">Mentions légales</a></li>
+                    <li><a href="/site/privacy">Politique de confidentialité</a></li>
                 </ul>
             </div>
 
@@ -57,7 +58,7 @@
 
         <!-- Barre de copyright -->
         <div class="footer-bottom">
-            <p>© 2026 Teslapp. Tous droits réservés. Non affilié à Tesla, Inc.</p>
+            <p>© 2026 TeslApp. Tous droits réservés. Non affilié à Tesla, Inc.</p>
         </div>
     </div>
 </footer>

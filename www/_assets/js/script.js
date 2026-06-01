@@ -7,9 +7,14 @@ document.addEventListener('DOMContentLoaded', function () {
       faqItems.forEach((otherItem) => {
         if (otherItem !== item) {
           otherItem.classList.remove('active');
+          const otherQuestion = otherItem.querySelector('.faq-question');
+          if (otherQuestion) {
+            otherQuestion.setAttribute('aria-expanded', 'false');
+          }
         }
       });
       item.classList.toggle('active', !isActive);
+      question.setAttribute('aria-expanded', String(!isActive));
     });
     question.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
