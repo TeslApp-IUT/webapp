@@ -93,9 +93,8 @@ final class Csrf
                 Flash::set('old', $_POST);
             }
 
-            // Redirection et arrêt de l'exécution
+            // Redirection (Http::redirect arrête déjà l'exécution : type de retour `never`).
             Http::redirect($redirectUrl);
-            exit();
         }
     }
 }

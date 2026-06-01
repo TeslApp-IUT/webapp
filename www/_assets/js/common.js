@@ -5,24 +5,33 @@ function initCommon() {
   const mobileMenuClose = document.getElementById('mobileMenuClose');
 
   if (mobileMenuToggle && mobileMenu && mobileMenuClose) {
-    mobileMenuToggle.addEventListener('click', function () {
+    const openMenu = function () {
       mobileMenu.classList.add('active');
       document.body.style.overflow = 'hidden';
-    });
+      mobileMenuToggle.setAttribute('aria-expanded', 'true');
+    };
 
-    mobileMenuClose.addEventListener('click', function () {
+    const closeMenu = function () {
       mobileMenu.classList.remove('active');
       document.body.style.overflow = '';
-    });
+      mobileMenuToggle.setAttribute('aria-expanded', 'false');
+    };
+
+    mobileMenuToggle.addEventListener('click', openMenu);
+    mobileMenuClose.addEventListener('click', closeMenu);
 
     const mobileMenuLinks = mobileMenu.querySelectorAll(
       '.mobile-menu-link, .mobile-menu-actions a',
     );
     mobileMenuLinks.forEach((link) => {
-      link.addEventListener('click', function () {
-        mobileMenu.classList.remove('active');
-        document.body.style.overflow = '';
-      });
+      link.addEventListener('click', closeMenu);
+    });
+
+    // Fermeture au clavier (Échap) lorsque le menu est ouvert — accessibilité.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+        closeMenu();
+      }
     });
   }
 

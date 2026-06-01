@@ -105,8 +105,8 @@ final class Flash
      * // $data = ['errors' => [...], 'success' => null, 'old' => [...]]
      * ```
      *
-     * @param array $keys Tableau des clés à récupérer et supprimer
-     * @return array Tableau associatif clé => valeur
+     * @param list<string> $keys Tableau des clés à récupérer et supprimer
+     * @return array<string, mixed> Tableau associatif clé => valeur
      */
     public static function consumeMany(array $keys): array
     {

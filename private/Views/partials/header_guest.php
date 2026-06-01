@@ -27,7 +27,7 @@
         </div>
 
         <!-- Bouton du menu mobile -->
-        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Ouvrir le menu" aria-expanded="false">
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobileMenu">
             <span class="hamburger">
                 <span></span>
                 <span></span>
