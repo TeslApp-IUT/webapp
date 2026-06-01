@@ -62,13 +62,9 @@
     
     <?php 
     /**
-     * Inclusion du header approprié selon le statut de connexion
+     * Inclusion de l'en-tête du site
      */
-    if (Auth::check()) {
-        require __DIR__ ."/partials/header_user.php";
-    } else {
-        require __DIR__ ."/partials/header_guest.php";
-    }
+    require __DIR__ . "/partials/header_guest.php";
     ?>
 
     <main>
@@ -95,11 +91,6 @@
                 <p class="hero-description">
                     MedBoard révolutionne la gestion hospitalière avec des outils intelligents, un monitoring en temps réel et une interface intuitive pensée pour les professionnels de santé.
                 </p>
-                <!-- Boutons d'action -->
-                <div class="hero-actions">
-                    <a href="/auth/register" class="btn-primary">Créer un compte</a>
-                    <a href="/auth/login" class="btn-secondary">Se connecter</a>
-                </div>
             </div>
         </section>
 
@@ -251,11 +242,6 @@
                 <p class="section-description">
                     La plateforme médicale nouvelle génération qui révolutionne la gestion des soins de santé.
                 </p>
-                <!-- Boutons d'action -->
-                <div class="cta-actions">
-                    <a href="/auth/register" class="btn-primary">Créer un compte</a>
-                    <a href="/auth/login" class="btn-secondary">Se connecter</a>
-                </div>
             </div>
         </section>
     </main>

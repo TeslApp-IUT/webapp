@@ -33,10 +33,6 @@
                 <img src="/_assets/images/lune.svg" alt="" class="moon-icon" aria-hidden="true">
                 <img src="/_assets/images/soleil.svg" alt="" class="sun-icon" aria-hidden="true">
             </button>
-            <!-- Bouton de connexion -->
-            <a href="/auth/login" class="btn-text">Se connecter</a>
-            <!-- Bouton d'inscription -->
-            <a href="/auth/register" class="btn-primary">Créer un compte</a>
         </div>
 
         <!-- Bouton du menu mobile -->
@@ -85,10 +81,5 @@
             </button>
         </div>
 
-        <!-- Actions du menu mobile -->
-        <div class="mobile-menu-actions">
-            <a href="/auth/login" class="btn-text">Se connecter</a>
-            <a href="/auth/register" class="btn-primary">Créer un compte</a>
-        </div>
     </div>
 </div>

@@ -27,7 +27,6 @@ session_start([
   'use_only_cookies' => true,
   'cookie_lifetime' => 0,
 ]);
-Auth::autoLoginFromRememberCookie();
 
 // ==================== POLITIQUE D'INACTIVITÉ & ROTATION ====================
 $now = time();
@@ -78,11 +77,7 @@ if (!isset($routes[$route])) {
   }
 }
 
-[$class, $method, $requiresAuth] = $routes[$route];
-
-if ($requiresAuth === true) {
-  Auth::requireLogin();
-}
+[$class, $method] = $routes[$route];
 
 /** ==================== Instanciation & exécution ==================== */
 try {

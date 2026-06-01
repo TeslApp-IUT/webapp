@@ -22,13 +22,9 @@
     
     <?php 
     /**
-     * Inclusion du header approprié selon le statut de connexion
+     * Inclusion de l'en-tête du site
      */
-    if (Auth::check()) {
-        require __DIR__ ."/partials/header_user.php";
-    } else {
-        require __DIR__ ."/partials/header_guest.php";
-    }
+    require __DIR__ . "/partials/header_guest.php";
     ?>
 
     <main>

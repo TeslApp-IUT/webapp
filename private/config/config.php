@@ -5,7 +5,6 @@
  * Ce fichier définit toutes les constantes globales nécessaires au fonctionnement de l'application :
  * - Chemins du système de fichiers (modules, racine du projet)
  * - Paramètres de connexion à la base de données PostgreSQL
- * - Paramètres du serveur SMTP pour l'envoi d'emails
  *
  * Toutes les valeurs sensibles (identifiants, mots de passe) sont récupérées
  * depuis les variables d'environnement pour des raisons de sécurité.
@@ -40,21 +39,3 @@ define('DB_USER', getenv('DB_USER') ?? '');
 define('DB_PASS', getenv('DB_PASS') ?? '');
 define('DB_NAME', getenv('DB_NAME') ?? '');
 define('DB_CHARSET', getenv('DB_CHARSET') ?? '');
-
-/**
- * Configuration du serveur SMTP pour l'envoi d'emails
- *
- * Ces constantes définissent les paramètres du serveur SMTP utilisé pour l'envoi d'emails.
- * Utilisé notamment pour la réinitialisation de mot de passe et les notifications.
- *
- * SMTP_HOST : Adresse du serveur SMTP
- * SMTP_USERNAME : Nom d'utilisateur pour l'authentification SMTP
- * SMTP_PASSWORD : Mot de passe pour l'authentification SMTP
- * SMTP_FROM_EMAIL : Adresse email de l'expéditeur
- * SMTP_FROM_NAME : Nom affiché comme expéditeur
- */
-define('SMTP_HOST', getenv('SMTP_HOST') ?? '');
-define('SMTP_USERNAME', getenv('SMTP_USERNAME') ?? '');
-define('SMTP_PASSWORD', getenv('SMTP_PASSWORD') ?? '');
-define('SMTP_FROM_EMAIL', getenv('SMTP_FROM_EMAIL') ?? '');
-define('SMTP_FROM_NAME', getenv('SMTP_FROM_NAME') ?? '');

@@ -17,16 +17,4 @@ return [
   'site/legal' => ['StaticPagesController', 'legal', false],
   'site/privacy' => ['StaticPagesController', 'privacy', false],
   'error/404' => ['StaticPagesController', 'notFound', false],
-
-  // Routes d'authentification : connexion, déconnexion et inscription
-  'auth/login' => ['SessionController', 'login', false],
-  'auth/logout' => ['SessionController', 'logout', true],
-  'auth/register' => ['RegistrationController', 'register', false],
-
-  // Routes de réinitialisation du mot de passe (demande + confirmation)
-  'auth/forgot-password' => ['PasswordsController', 'forgotPassword', false],
-  'auth/reset-password' => ['PasswordsController', 'resetPassword', false],
-
-  // Routes protégées nécessitant une authentification
-  'dashboard/index' => ['DashboardController', 'index', true],
 ];
