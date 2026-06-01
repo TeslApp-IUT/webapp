@@ -8,14 +8,14 @@ ob_start();
     <div class="legal-container">
         <!-- Lien de retour -->
         <a href="/site/home" class="back-link">
-            <img src="/_assets/images/fleche-gauche.svg" alt="Retour">
+            <img src="/_assets/images/fleche-gauche.svg" alt="" aria-hidden="true">
             Retour à l'accueil
         </a>
 
         <!-- En-tête de la page -->
         <div class="legal-header">
             <h1 class="legal-title">Mentions légales</h1>
-            <p class="legal-subtitle">Dernière mise à jour : <span>29/09/2025</span></p>
+            <p class="legal-subtitle">Dernière mise à jour : <span>01/06/2026</span></p>
         </div>
 
         <!-- Contenu des mentions légales -->
@@ -49,10 +49,19 @@ ob_start();
             <h3 class="legal-subheading">C. Hébergeur</h3>
             <div class="legal-highlight">
                 <p class="legal-paragraph">
-                    Le site TeslApp est hébergé par <strong>Feyli</strong>, accessible à
-                    l'adresse <a href="https://teslapp.feyli.dev" target="_blank" rel="noopener noreferrer">teslapp.feyli.dev</a>.<br>
-                    Coordonnées complètes de l'hébergeur : à compléter avant la mise en ligne.<br>
-                    (ci-après « l'Hébergeur »)
+                    Le site TeslApp est hébergé par <strong>Feyli</strong>, l'infrastructure du projet, et accessible
+                    à l'adresse <a href="https://teslapp.feyli.dev" target="_blank" rel="noopener noreferrer">teslapp.feyli.dev</a>
+                    (ci-après « l'Hébergeur »).
+                </p>
+                <p class="legal-paragraph">
+                    Le nom de domaine <strong>feyli.dev</strong> est enregistré auprès du bureau d'enregistrement
+                    <strong>Namecheap, Inc.</strong> — 4600 East Washington Street, Suite 300, Phoenix, AZ 85034,
+                    États-Unis (signalement d'abus : <a href="mailto:abuse@namecheap.com">abuse@namecheap.com</a>,
+                    +1&nbsp;661&nbsp;310&nbsp;2107).
+                </p>
+                <p class="legal-paragraph">
+                    La résolution DNS et la distribution du site sont assurées par <strong>Cloudflare,&nbsp;Inc.</strong>
+                    — 101 Townsend Street, San Francisco, CA 94107, États-Unis.
                 </p>
             </div>
 
