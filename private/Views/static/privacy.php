@@ -15,7 +15,7 @@ ob_start();
         <!-- En-tête de la page -->
         <div class="legal-header">
             <h1 class="legal-title">Politique de Confidentialité</h1>
-            <p class="legal-subtitle">Dernière mise à jour : <span>29/09/2025</span></p>
+            <p class="legal-subtitle">Dernière mise à jour : <span>01/06/2026</span></p>
         </div>
 
         <!-- Contenu de la politique -->
@@ -23,7 +23,7 @@ ob_start();
             <p class="legal-paragraph">
                 Le but de cette politique de confidentialité est d'informer les utilisateurs de notre site des données personnelles que nous recueillons ainsi que des informations suivantes, le cas échéant :
             </p>
-            <ol style="list-style-type: lower-alpha;">
+            <ol class="legal-list--alpha">
                 <li>Les données personnelles que nous recueillerons</li>
                 <li>L'utilisation des données recueillies</li>
                 <li>Qui a accès aux données recueillies</li>
@@ -43,7 +43,7 @@ ob_start();
             <p class="legal-paragraph">
                 Les données à caractère personnel doivent être :
             </p>
-            <ol style="list-style-type: lower-alpha;">
+            <ol class="legal-list--alpha">
                 <li>traitées de manière licite, loyale et transparente au regard de la personne concernée (licéité, loyauté, transparence) ;</li>
                 <li>collectées pour des finalités déterminées, explicites et légitimes, et ne pas être traitées ultérieurement d'une manière incompatible avec ces finalités (limitation des finalités) ;</li>
                 <li>adéquates, pertinentes et limitées à ce qui est nécessaire au regard des finalités pour lesquelles elles sont traitées (minimisation des données) ;</li>
@@ -56,7 +56,7 @@ ob_start();
             <p class="legal-paragraph">
                 Le traitement n'est licite que si, et dans la mesure où, au moins une des conditions suivantes est remplie :
             </p>
-            <ol style="list-style-type: lower-alpha;">
+            <ol class="legal-list--alpha">
                 <li>la personne concernée a consenti au traitement de ses données à caractère personnel ;</li>
                 <li>le traitement est nécessaire à l'exécution d'un contrat ;</li>
                 <li>le traitement est nécessaire au respect d'une obligation légale ;</li>
@@ -72,7 +72,7 @@ ob_start();
             <p class="legal-paragraph">
                 Les utilisateurs conviennent qu'en utilisant notre site, ils acceptent :
             </p>
-            <ol style="list-style-type: lower-alpha;">
+            <ol class="legal-list--alpha">
                 <li>les conditions énoncées dans la présente politique de confidentialité ; et</li>
                 <li>la collecte, l'utilisation et la conservation des données énumérées dans la présente politique.</li>
             </ol>

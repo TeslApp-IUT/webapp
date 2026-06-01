@@ -5,94 +5,78 @@ declare(strict_types=1);
 namespace Teslapp\Models;
 
 /**
- * Classe de gestion de la connexion à la base de données PostgreSQL.
+ * Connexion PostgreSQL partagée (PDO), façon singleton.
  *
- * Encapsule la création d'une connexion PDO sécurisée à PostgreSQL
- * (mode exception, fetch associatif, requêtes préparées natives) à partir
- * des paramètres fournis ou des constantes de configuration globales.
+ * Une seule instance PDO est créée par cycle de requête puis réutilisée par
+ * tous les Repositories — ce qui corrige l'anti-pattern « une connexion par
+ * objet ». Les paramètres proviennent des constantes définies dans
+ * private/config/config.php (lues depuis l'environnement, jamais en dur).
  *
  * @package Teslapp\Models
  */
 final class Database
 {
     /**
-     * Instance PDO pour la connexion à la base de données
+     * Instance PDO partagée pour tout le cycle de requête.
      *
      * @var \PDO|null
      */
-    private ?\PDO $pdo = null;
+    private static ?\PDO $instance = null;
 
     /**
-     * Constructeur - Initialise la connexion à la base de données PostgreSQL
+     * Classe utilitaire à état statique : pas d'instanciation.
+     */
+    private function __construct() {}
+
+    /**
+     * Retourne l'instance PDO partagée, en la créant à la première demande.
      *
-     * Crée une nouvelle connexion PDO avec les paramètres fournis ou ceux
-     * définis dans les constantes globales. Configure automatiquement les
-     * options de sécurité PDO (mode exception, fetch associatif, prepared statements).
+     * Options : exceptions sur erreur SQL, fetch associatif, requêtes préparées
+     * natives (pas d'émulation) et préservation des types int/bool natifs. Le DSN
+     * inclut `sslmode` (DB_SSLMODE) — « require » en production Feyli.
      *
-     * @param string|null $host    Hôte de la base de données (défaut: DB_HOST)
-     * @param int|null    $port    Port de connexion (défaut: DB_PORT)
-     * @param string|null $dbName  Nom de la base de données (défaut: DB_NAME)
-     * @param string|null $user    Nom d'utilisateur (défaut: DB_USER)
-     * @param string|null $pass    Mot de passe (défaut: DB_PASS)
-     * @param array       $options Options PDO supplémentaires
+     * @return \PDO Instance partagée connectée à la base de données
      *
      * @throws \RuntimeException Si la connexion à la base de données échoue
      */
-    public function __construct(
-        ?string $host = null,
-        ?int $port = null,
-        ?string $dbName = null,
-        ?string $user = null,
-        ?string $pass = null,
-        array $options = [],
-    ) {
-        // Utilisation des valeurs par défaut si non fournies
-        $host = $host ?? DB_HOST;
-        $port = $port ?? DB_PORT;
-        $dbName = $dbName ?? DB_NAME;
-        $user = $user ?? DB_USER;
-        $pass = $pass ?? DB_PASS;
+    public static function pdo(): \PDO
+    {
+        if (self::$instance === null) {
+            $dsn = sprintf(
+                'pgsql:host=%s;port=%d;dbname=%s;sslmode=%s',
+                DB_HOST,
+                (int) DB_PORT,
+                DB_NAME,
+                DB_SSLMODE,
+            );
 
-        // Configuration des options PDO sécurisées par défaut
-        // ERRMODE_EXCEPTION : Lance des exceptions en cas d'erreur SQL
-        // FETCH_ASSOC : Retourne les résultats sous forme de tableaux associatifs
-        // EMULATE_PREPARES : Désactive l'émulation pour utiliser les vrais prepared statements
-        $defaultOptions = [
-            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
-            \PDO::ATTR_EMULATE_PREPARES => false,
-        ];
-        $options = $options + $defaultOptions;
-
-        // Construction du DSN (Data Source Name) pour PostgreSQL
-        $dsn = sprintf('pgsql:host=%s;port=%d;dbname=%s', $host, $port, $dbName);
-
-        try {
-            // Tentative de connexion à la base de données
-            $this->pdo = new \PDO($dsn, $user, $pass, $options);
-        } catch (\PDOException $e) {
-            // Log de l'erreur pour le débogage (sans exposer les détails sensibles)
-            error_log('DB connection error: ' . $e->getMessage());
-            // Lancement d'une exception générique pour l'utilisateur
-            throw new \RuntimeException('Erreur de connexion à la base de données.');
+            try {
+                self::$instance = new \PDO($dsn, DB_USER, DB_PASS, [
+                    \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                    \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+                    \PDO::ATTR_EMULATE_PREPARES => false,
+                    \PDO::ATTR_STRINGIFY_FETCHES => false,
+                ]);
+            } catch (\PDOException $e) {
+                // On journalise le détail technique mais on n'expose jamais
+                // l'erreur SQL brute à l'utilisateur (cf. erreurs-exceptions.md).
+                error_log('DB connection error: ' . $e->getMessage());
+                throw new \RuntimeException('Erreur de connexion à la base de données.');
+            }
         }
+
+        return self::$instance;
     }
 
     /**
-     * Retourne l'instance PDO active
+     * Réinitialise l'instance partagée.
      *
-     * Méthode d'accès à l'objet PDO pour exécuter des requêtes.
-     * Vérifie que la connexion est bien initialisée avant de la retourner.
+     * Utile pour isoler les tests d'intégration entre eux (cf. bdd-pdo.md §10).
      *
-     * @return \PDO Instance PDO connectée à la base de données
-     *
-     * @throws \RuntimeException Si l'instance PDO n'est pas initialisée
+     * @return void
      */
-    public function getPdo(): \PDO
+    public static function reset(): void
     {
-        if (!$this->pdo instanceof \PDO) {
-            throw new \RuntimeException('PDO non initialisé.');
-        }
-        return $this->pdo;
+        self::$instance = null;
     }
 }
