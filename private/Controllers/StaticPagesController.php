@@ -10,8 +10,8 @@ namespace Teslapp\Controllers;
  * Ce contrôleur gère l'affichage de toutes les pages statiques de l'application
  * qui ne nécessitent pas de traitement particulier ni d'authentification.
  *
- * Note : les templates de vues vivent encore dans private/modules/views/
- * (ils seront déplacés vers private/Views/ au lot layout factorisé).
+ * Note : les templates de vues vivent dans private/Views/static/ et sont
+ * rendus via le layout factorisé private/Views/layout.php.
  */
 final class StaticPagesController
 {
@@ -22,7 +22,7 @@ final class StaticPagesController
      */
     public function home(): void
     {
-        require __DIR__ . '/../modules/views/home.php';
+        require __DIR__ . '/../Views/static/home.php';
     }
 
     /**
@@ -32,7 +32,7 @@ final class StaticPagesController
      */
     public function sitemap(): void
     {
-        require __DIR__ . '/../modules/views/sitemap.php';
+        require __DIR__ . '/../Views/static/sitemap.php';
     }
 
     /**
@@ -42,7 +42,7 @@ final class StaticPagesController
      */
     public function legal(): void
     {
-        require __DIR__ . '/../modules/views/legal.php';
+        require __DIR__ . '/../Views/static/legal.php';
     }
 
     /**
@@ -52,7 +52,7 @@ final class StaticPagesController
      */
     public function privacy(): void
     {
-        require __DIR__ . '/../modules/views/privacy.php';
+        require __DIR__ . '/../Views/static/privacy.php';
     }
 
     /**
@@ -62,6 +62,6 @@ final class StaticPagesController
      */
     public function notFound(): void
     {
-        require __DIR__ . '/../modules/views/not-found.php';
+        require __DIR__ . '/../Views/static/not-found.php';
     }
 }
