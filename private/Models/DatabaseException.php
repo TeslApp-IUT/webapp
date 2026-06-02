@@ -9,7 +9,4 @@ use RuntimeException;
 /**
  * Exception levée lorsqu'une erreur critique survient avec la base de données.
  */
-class DatabaseException extends RuntimeException
-{
-
-}
+class DatabaseException extends RuntimeException {}

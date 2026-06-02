@@ -76,8 +76,7 @@ final class Container
      */
     private function build(string $id): object
     {
-        if (!isset($this->recipes[$id]))
-        {
+        if (!isset($this->recipes[$id])) {
             throw new ServiceNotFoundException("Service non enregistré dans le conteneur : {$id}");
         }
 

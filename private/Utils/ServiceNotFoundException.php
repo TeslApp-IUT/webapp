@@ -9,7 +9,4 @@ use RuntimeException;
 /**
  * Exception levée lorsqu'un service demandé n'existe pas dans le conteneur.
  */
-class ServiceNotFoundException extends RuntimeException
-{
-
-}
+class ServiceNotFoundException extends RuntimeException {}
