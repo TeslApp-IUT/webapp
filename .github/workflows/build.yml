@@ -16,15 +16,22 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Download PostgreSQL JDBC Driver
+        run: |
+          curl -L -o /tmp/postgresql.jar \
+            https://jdbc.postgresql.org/download/postgresql-42.7.4.jar
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_DB_URL: ${{ secrets.SONAR_JDBC_URL }}
-          SONAR_DB_USER: ${{ secrets.SONAR_JDBC_USER }}
-          SONAR_DB_PASSWORD: ${{ secrets.SONAR_JDBC_PASSWORD }}
+          SONAR_DB_URL: ${{ secrets.SONAR_DB_URL }}
+          SONAR_DB_USER: ${{ secrets.SONAR_DB_USER }}
+          SONAR_DB_PASSWORD: ${{ secrets.SONAR_DB_PASSWORD }}
         with:
           args: >
-            -Dsonar.plsql.jdbc.url=${{ env.SONAR_JDBC_URL }}
-            -Dsonar.plsql.jdbc.user=${{ env.SONAR_JDBC_USER }}
-            -Dsonar.plsql.jdbc.password=${{ env.SONAR_JDBC_PASSWORD }}
+            -Dsonar.plsql.jdbc.url=${{ env.SONAR_DB_URL }}
+            -Dsonar.plsql.jdbc.user=${{ env.SONAR_DB_USER }}
+            -Dsonar.plsql.jdbc.password=${{ env.SONAR_DB_PASSWORD }}
+            -Dsonar.plsql.jdbc.driver.path=/tmp/postgresql.jar
+            -Dsonar.plsql.jdbc.driver.class=org.postgresql.Driver
