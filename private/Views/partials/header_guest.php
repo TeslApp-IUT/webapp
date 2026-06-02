@@ -4,7 +4,7 @@
     Header displayed to visitors who are not logged in:
     - TeslApp logo
     - Main navigation
-    - Log in via “Login with Tesla”
+    - Log in via "Login with Tesla"
     - Responsive mobile menu
 -->
 <header class="header">
@@ -15,7 +15,7 @@
         </a>
 
         <!-- Main navigation -->
-        <nav class="nav" aria-label="navigation principal"->
+        <nav class="nav" aria-label="navigation principale">
             <a href="/site/home" class="nav-link">Accueil</a>
             <a href="/site/sitemap" class="nav-link">Plan du site</a>
             <a href="/site/legal" class="nav-link">Mentions légales</a>

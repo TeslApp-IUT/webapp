@@ -20,7 +20,7 @@ final class Http
     /**
      * Performs an HTTP redirect and stops execution
      *
-     * Sends an HTTP “Location” header to redirect the browser to
+     * Sends an HTTP "Location" header to redirect the browser to
      * a new URL and immediately terminates script execution.
      *
      * The method uses status code 302 (Found), which indicates a
@@ -28,18 +28,18 @@ final class Http
      * most application use cases (after form submission,
      * login, logout, etc.).
      *
-     * The “never” return type indicates that this method never returns
+     * The "never" return type indicates that this method never returns
      * (it always terminates with exit), which aids in static code analysis.
      *
      * Example usage:
      * ```php
      * // Simple redirect
-     * Http::redirect(‘/site/home’);
+     * Http::redirect('/site/home');
      *
      * // Redirect after processing
      * if ($success) {
-     *     Flash::set(‘success’, ‘Vehicle locked’);
-     *     Http::redirect(‘/site/home’);
+     *     Flash::set('success', 'Vehicle locked');
+     *     Http::redirect('/site/home');
      * }
      * ```
      *

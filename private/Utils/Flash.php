@@ -17,8 +17,8 @@ namespace Teslapp\Utils;
  * - Preserving data entered in a form after redirection
  *
  * This class uses $_SESSION as its storage backend and provides
- * “consume” methods to automatically retrieve and delete
- * data after reading (the “flash” pattern).
+ * "consume" methods to automatically retrieve and delete
+ * data after reading (the "flash" pattern).
  *
  * @package Teslapp\Utils
  */
@@ -31,9 +31,9 @@ final class Flash
      * in the session for later use.
      *
      * Example usage:
-     * - Flash::set(‘errors’, [‘Invalid email’])
-     * - Flash::set(‘success’, ‘Vehicle locked’)
-     * - Flash::set(‘old’, $_POST)
+     * - Flash::set('errors', ['Invalid email'])
+     * - Flash::set('success', 'Vehicle locked')
+     * - Flash::set('old', $_POST)
      *
      * @param string $key Data identification key
      * @param mixed $value Value to store
@@ -64,18 +64,18 @@ final class Flash
     /**
      * Retrieves a value from the session and immediately removes it
      *
-     * Implements the “flash message” pattern: reads a value once
+     * Implements the "flash message" pattern: reads a value once
      * and then removes it from the session. Perfect for error
      * or success messages that should only be displayed once.
      *
      * Typical usage example:
      * ```php
      * // In the controller (after validation)
-     * Flash::set(‘errors’, [‘Invalid email’]);
-     * Http::redirect(‘/site/home’);
+     * Flash::set('errors', ['Invalid email']);
+     * Http::redirect('/site/home');
      *
      * // In the view
-     * $errors = Flash::consume(‘errors’, []);
+     * $errors = Flash::consume('errors', []);
      * // The $errors variable contains the array, and it is removed from the session
      * ```
      *
@@ -101,8 +101,8 @@ final class Flash
      *
      * Example usage:
      * ```php
-     * $data = Flash::consumeMany([‘errors’, ‘success’, ‘old’]);
-     * // $data = [‘errors’ => [...], ‘success’ => null, ‘old’ => [...]]
+     * $data = Flash::consumeMany(['errors', 'success', 'old']);
+     * // $data = ['errors' => [...], 'success' => null, 'old' => [...]]
      * ```
      *
      * @param list<string> $keys Array of keys to retrieve and delete
@@ -128,9 +128,9 @@ final class Flash
      *
      * Example usage:
      * ```php
-     * Flash::push(‘errors’, ‘Invalid email’);
-     * Flash::push(‘errors’, ‘Password too short’);
-     * // $_SESSION[‘errors’] = [‘Invalid email’, ‘Password too short’]
+     * Flash::push('errors', 'Invalid email');
+     * Flash::push('errors', 'Password too short');
+     * // $_SESSION['errors'] = ['Invalid email', 'Password too short']
      * ```
      *
      * @param string $key Array key

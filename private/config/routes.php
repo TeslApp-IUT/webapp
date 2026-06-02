@@ -2,7 +2,7 @@
 /**
  * Application routing configuration
  *
- * Structure: ‘URL’ => [Controller name, Method name, Authentication required (boolean)]
+ * Structure: 'URL' => [Controller name, Method name, Authentication required (boolean)]
  *
  * - The first element is the name of the controller class to instantiate
  * - The second element is the name of the method to call on this controller

@@ -27,7 +27,7 @@ define('DB_PASS', getenv('DB_PASS') ?: '');
 define('DB_NAME', getenv('DB_NAME') ?: '');
 
 /**
- * SSL mode for the PostgreSQL connection (libpq): “prefer” in local development,
- * “require” enforced in Feyli production via .env (see bdd-pdo.md §2, securite-php.md §1).
+ * SSL mode for the PostgreSQL connection (libpq): "prefer" in local development,
+ * "require" enforced in Feyli production via .env (see bdd-pdo.md §2, securite-php.md §1).
  */
 define('DB_SSLMODE', getenv('DB_SSLMODE') ?: 'prefer');
