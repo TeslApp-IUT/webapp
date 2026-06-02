@@ -69,10 +69,9 @@ final class Inputs
      */
     public static function sanitizeString(
         string $s,
-        bool   $lower = false,
-        bool   $collapseSpaces = true,
-    ): string
-    {
+        bool $lower = false,
+        bool $collapseSpaces = true,
+    ): string {
         $s = trim($s);
         if ($collapseSpaces) {
             $s = self::collapseSpaces($s);
@@ -97,11 +96,10 @@ final class Inputs
      */
     public static function validateLength(
         string $s,
-        ?int   $min = null,
-        ?int   $max = null,
+        ?int $min = null,
+        ?int $max = null,
         string $label = 'The value',
-    ): ?string
-    {
+    ): ?string {
         $len = mb_strlen($s, 'UTF-8');
         if ($min !== null && $len < $min) {
             return "$label must be at least $min characters.";
@@ -170,14 +168,14 @@ final class Inputs
      */
     public static function sanitizeIntId(?string $s): ?int
     {
-        $s = trim((string)$s);
+        $s = trim((string) $s);
         if ($s === '') {
             return null;
         }
         if (!ctype_digit($s)) {
             return null;
         }
-        $i = (int)$s;
+        $i = (int) $s;
         return $i > 0 ? $i : null;
     }
 
@@ -240,11 +238,10 @@ final class Inputs
      */
     public static function validateBase64UrlToken(
         string $s,
-        int    $min = 24,
-        int    $max = 128,
+        int $min = 24,
+        int $max = 128,
         string $label = 'The token',
-    ): ?string
-    {
+    ): ?string {
         if ($s === '') {
             return "$label is required.";
         }
@@ -274,8 +271,7 @@ final class Inputs
         string $s,
         string $regex,
         string $label = 'The value',
-    ): ?string
-    {
+    ): ?string {
         if (!preg_match($regex, $s)) {
             return "$label has an invalid format.";
         }
