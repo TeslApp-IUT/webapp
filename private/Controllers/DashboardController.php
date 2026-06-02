@@ -19,20 +19,18 @@ class DashboardController
         $userId = $_SESSION['user_id'] ?? null;
 
         /* Redirect to login if no user is found in session */
-        if (!$userId)
-        {
+        if (!$userId) {
             header('Location: /login');
-            exit;
+            exit();
         }
 
         $token = $this->getAccessToken($userId);
         $vin = $this->getSelectedVin($userId);
 
         /* Redirect to vehicle selection if token or VIN is missing */
-        if (!$token || !$vin)
-        {
+        if (!$token || !$vin) {
             header('Location: /vehicles');
-            exit;
+            exit();
         }
 
         $data = $this->getTelemetryData($vin);
@@ -89,7 +87,6 @@ class DashboardController
         $row = $chargeEnable->fetch();
         $charge_enable_request = $row['charge_enable_request'] ?? null;
 
-
         $scheduledCharge = $this->db->prepare("SELECT scheduled_charging_start_time
                                 FROM fleet_telemetry.charge_scheduled
                                 WHERE vin = ?
@@ -117,7 +114,6 @@ class DashboardController
         $keeper->execute([$vin]);
         $row = $keeper->fetch();
         $climate_keeper_mode = $row['climate_keeper_mode'] ?? null;
-
 
         $ac = $this->db->prepare("SELECT hvac_ac_enabled
                                 FROM fleet_telemetry.ac_enabled
