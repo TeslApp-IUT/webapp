@@ -15,6 +15,43 @@ declare(strict_types=1);
 define('BASE_PATH', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR);
 
 /**
+ * Load variables from the project .env into the environment when present.
+ * In Docker, env vars are already injected via docker-compose (env_file: .env),
+ * so this is a fallback that mainly helps local runs (php -S, CLI scripts).
+ * Existing environment values always take precedence (never overwritten).
+ */
+$envFile = BASE_PATH . '.env';
+if (is_file($envFile)) {
+    foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $envLine) {
+        $envLine = ltrim($envLine);
+
+        // Skip blank lines and comments (# or ;). Values are never inline-commented.
+        if ($envLine === '' || $envLine[0] === '#' || $envLine[0] === ';' || !str_contains($envLine, '=')) {
+            continue;
+        }
+
+        [$envKey, $envValue] = explode('=', $envLine, 2);
+        $envKey = trim($envKey);
+        $envValue = trim($envValue);
+
+        // Strip a single pair of surrounding quotes, if present.
+        if (
+            strlen($envValue) >= 2
+            && ($envValue[0] === '"' || $envValue[0] === "'")
+            && $envValue[strlen($envValue) - 1] === $envValue[0]
+        ) {
+            $envValue = substr($envValue, 1, -1);
+        }
+
+        // Existing environment values always win (never overwritten).
+        if ($envKey !== '' && getenv($envKey) === false) {
+            putenv($envKey . '=' . $envValue);
+            $_ENV[$envKey] = $envValue;
+        }
+    }
+}
+
+/**
  * PostgreSQL connection parameters, read from the environment (.env).
  *
  * Note: getenv() returns `false` (not `null`) if the variable is missing,
@@ -31,3 +68,28 @@ define('DB_NAME', getenv('DB_NAME') ?: '');
  * "require" enforced in Feyli production via .env (see bdd-pdo.md §2, securite-php.md §1).
  */
 define('DB_SSLMODE', getenv('DB_SSLMODE') ?: 'prefer');
+
+/**
+ * Tesla API mode: 'simulated' (dev/CI — reads the documented fixtures) or 'real'
+ * (live Fleet API). Defaults to 'simulated' so the app runs out of the box.
+ */
+define('TESLA_API_MODE', getenv('TESLA_API_MODE') ?: 'simulated');
+
+/**
+ * Filesystem path to the Tesla fixtures (documented API responses) consumed by
+ * SimulatedTeslaApiClient.
+ */
+define('TESLA_FIXTURES_PATH', getenv('TESLA_FIXTURES_PATH') ?: BASE_PATH . 'tests/fixtures/tesla');
+
+/**
+ * Development access token placeholder, used while the OAuth login is not wired
+ * yet. The simulated client ignores its content; the real client will use the
+ * OAuth token provided by AuthService instead (see oauth2-tesla.md).
+ */
+define('DEV_ACCESS_TOKEN', getenv('DEV_ACCESS_TOKEN') ?: 'dev-placeholder-token');
+
+/**
+ * Development user id, used while there is no real login. Must match the user
+ * seeded by db/script_insertion_dev.sql.
+ */
+define('DEV_USER_ID', getenv('DEV_USER_ID') ?: '00000000-0000-0000-0000-000000000001');
