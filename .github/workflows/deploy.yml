@@ -1,0 +1,20 @@
+name: Deploy to Kárkharos
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Pull latest code
+        run: |
+          cd /home/feyli/iut/teslapp/webapp
+          git fetch origin
+          git reset --hard origin/main
+
+      - name: Deploy webapp
+        run: |
+          cd /home/feyli/iut/teslapp
+          docker compose up -d --build --force-recreate webapp
