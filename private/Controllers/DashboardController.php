@@ -1,19 +1,25 @@
 <?php
 
-/* Controller responsible for displaying the vehicle dashboard */
+/**
+ * Controller responsible for displaying the vehicle dashboard
+ **/
 class DashboardController
 {
     /* Database connection */
     private PDO $db;
 
-    /* Initializes the controller with a database connection */
+    /**
+     * Initializes the controller with a database connection
+     **/
     public function __construct(PDO $db)
     {
         $this->db = $db;
     }
 
-    /* Entry point of the dashboard
-     * Retrieves the connected user, their vehicle and telemetry data, then loads the view */
+    /**
+     * Entry point of the dashboard
+     * Retrieves the connected user, their vehicle and telemetry data, then loads the view
+     **/
     public function index(): void
     {
         $userId = $_SESSION['user_id'] ?? null;
@@ -38,22 +44,39 @@ class DashboardController
         require_once '../private/Views/dashboard.php';
     }
 
-    /* Retrieves the Tesla OAuth2 access token for the given user
-     * Returns null if no token is found */
+    /**
+     * Retrieves and decrypts the Tesla OAuth2 access token for the given user
+     * Returns null if no token is found
+     * TODO: load TESLAPP_TOKEN_ENCRYPTION_KEY once auth is set up
+     **/
     private function getAccessToken(int $userId): ?string
     {
-        $token = $this->db->prepare("SELECT access_token_encrypted
+        require_once '../private/Models/Shared/TokenCipher.php';
+
+        $token = $this->db->prepare("SELECT access_token_encrypted, access_token_nonce
                                     FROM oauth2_token
                                     WHERE user_id = ?
                                     ORDER BY created_at DESC LIMIT 1");
         $token->execute([$userId]);
-
         $row = $token->fetch();
-        return $row['access_token_encrypted'] ?? null;
+
+        if (!$row)
+        {
+            return null;
+        }
+
+        $cipher = new \Teslapp\Models\Shared\TokenCipher(base64_decode($_ENV['TESLAPP_TOKEN_ENCRYPTION_KEY']));
+
+        return $cipher->decrypt(
+            $row['access_token_encrypted'],
+            $row['access_token_nonce']
+        );
     }
 
-    /* Retrieves the VIN of the vehicle selected by the given user
-     * Returns null if no vehicle is found */
+    /**
+     * Retrieves the VIN of the vehicle selected by the given user
+     * Returns null if no vehicle is found
+     **/
     private function getSelectedVin(int $userId): ?string
     {
         $selectVin = $this->db->prepare("SELECT vin
@@ -65,7 +88,9 @@ class DashboardController
         return $row['vin'] ?? null;
     }
 
-    /* Retrieves the latest telemetry data for the given VIN from the fleet_telemetry schema */
+    /**
+     * Retrieves the latest telemetry data for the given VIN from the fleet_telemetry schema
+     **/
     private function getTelemetryData(string $vin): array
     {
         /* Battery */
