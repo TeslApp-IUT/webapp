@@ -18,7 +18,7 @@ jobs:
         run: rsync -a --delete $GITHUB_WORKSPACE/ /home/feyli/iut/teslapp/webapp/
 
       - name: Write .env
-        run: echo "${{ secrets.WEBAPP_ENV }}" > /home/feyli/iut/teslapp/webapp/.env
+        run: echo '${{ secrets.WEBAPP_ENV }}' > /home/feyli/iut/teslapp/webapp/.env
 
       - name: Deploy webapp
         run: |
