@@ -127,35 +127,35 @@ img {
 
 /* ----- Icon Button (header user: logout) ----- */
 .btn-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    color: var(--color-text-secondary);
-    border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--color-text-secondary);
+  border-radius: 8px;
 }
 
 .btn-icon:hover {
-    color: var(--color-text);
-    background-color: var(--color-bg-hover);
+  color: var(--color-text);
+  background-color: var(--color-bg-hover);
 }
 
 /* ----- Profile Button (header user: email initial) ----- */
 .btn-profile {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    font-weight: 700;
-    color: var(--color-text);
-    background-color: var(--color-border);
-    border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  font-weight: 700;
+  color: var(--color-text);
+  background-color: var(--color-border);
+  border-radius: 50%;
 }
 
 .profile-initials {
-    letter-spacing: 0.05em;
+  letter-spacing: 0.05em;
 }
 
 /* ===================================================================================================

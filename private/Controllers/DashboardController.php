@@ -60,17 +60,15 @@ class DashboardController
         $token->execute([$userId]);
         $row = $token->fetch();
 
-        if (!$row)
-        {
+        if (!$row) {
             return null;
         }
 
-        $cipher = new \Teslapp\Models\Shared\TokenCipher(base64_decode($_ENV['TESLAPP_TOKEN_ENCRYPTION_KEY']));
-
-        return $cipher->decrypt(
-            $row['access_token_encrypted'],
-            $row['access_token_nonce']
+        $cipher = new \Teslapp\Models\Shared\TokenCipher(
+            base64_decode($_ENV['TESLAPP_TOKEN_ENCRYPTION_KEY']),
         );
+
+        return $cipher->decrypt($row['access_token_encrypted'], $row['access_token_nonce']);
     }
 
     /**
