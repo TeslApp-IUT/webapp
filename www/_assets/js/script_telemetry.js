@@ -11,8 +11,7 @@ const BASE_URL = 'https://fleet-api.prd.eu.vn.cloud.tesla.com';
 const body = {
   vins: [VIN],
 
-  config:
-  {
+  config: {
     hostname: 'telemetry.teslapp.feyli.dev',
     port: 4445,
 
@@ -61,26 +60,22 @@ const body = {
 };
 
 async function startTelemetry() {
-  try
-  {
+  try {
     const response = await fetch(`${BASE_URL}/api/1/vehicles/fleet_telemetry_config`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${ACCESS_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
 
       body: JSON.stringify(body),
-      }
-    );
+    });
 
     const data = await response.json();
 
     console.log('Status:', response.status);
     console.log(JSON.stringify(data, null, 2));
-  }
-  catch (err)
-  {
+  } catch (err) {
     console.error(err);
   }
 }
