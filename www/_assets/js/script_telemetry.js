@@ -1,45 +1,87 @@
+/*
+------------------------------------------------------------------
+--                           VERSION 2                          --
+------------------------------------------------------------------
+*/
+
 const VIN = process.argv[2];
 const ACCESS_TOKEN = process.argv[3];
-const TELEMETRY_URL = 'telemetry.teslapp.feyli.dev:4445';
+const BASE_URL = 'https://fleet-api.prd.eu.vn.cloud.tesla.com';
 
-// Config télémétrie
-const telemetryConfig = {
-  connection_url: TELEMETRY_URL,
-  max_retries: 3,
+const body = {
+  vins: [VIN],
 
-  fields: {
-    // Battery
-    BatteryLevel: 10000,
-    ChargeEnableRequest: 10000,
-    ScheduledChargingStartTime: 10000,
+  config:
+  {
+    hostname: 'telemetry.teslapp.feyli.dev',
+    port: 4445,
 
-    // Climate
-    InsideTemp: 10000,
-    ClimateKeeperMode: 10000,
-    HvacACEnabled: 10000,
+    delivery_policy: 'latest',
+
+    exp: Math.floor(Date.now() / 1000) + 86400 * 30,
+
+    fields: {
+      // Battery
+      BatteryLevel: {
+        interval_seconds: 10,
+        minimum_delta: 1,
+        resend_interval_seconds: 3600,
+      },
+      ChargeEnableRequest: {
+        interval_seconds: 10,
+        minimum_delta: 1,
+        resend_interval_seconds: 3600,
+      },
+      ScheduledChargingStartTime: {
+        interval_seconds: 10,
+        minimum_delta: 1,
+        resend_interval_seconds: 3600,
+      },
+
+      // Climate
+      InsideTemp: {
+        interval_seconds: 10,
+        minimum_delta: 1,
+        resend_interval_seconds: 3600,
+      },
+      ClimateKeeperMode: {
+        interval_seconds: 10,
+        minimum_delta: 1,
+        resend_interval_seconds: 3600,
+      },
+      HvacACEnabled: {
+        interval_seconds: 10,
+        minimum_delta: 1,
+        resend_interval_seconds: 3600,
+      },
+    },
+
+    ca: process.env.TESLA_CA_CERT,
   },
 };
 
 async function startTelemetry() {
-  try {
-    const url = `https://fleet-api.prd.eu.vn.cloud.tesla.com/api/1/vehicles/${VIN}/fleet_telemetry_config`;
+  try
+  {
+    const response = await fetch(`${BASE_URL}/api/1/vehicles/fleet_telemetry_config`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-
-      body: JSON.stringify(telemetryConfig),
-    });
+      body: JSON.stringify(body),
+      }
+    );
 
     const data = await response.json();
 
-    console.log('configuration envoyée avec succès');
-    console.log('réponse de tesla :', data);
-  } catch (error) {
-    console.error(error.message);
+    console.log('Status:', response.status);
+    console.log(JSON.stringify(data, null, 2));
+  }
+  catch (err)
+  {
+    console.error(err);
   }
 }
 
