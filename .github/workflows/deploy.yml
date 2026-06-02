@@ -10,8 +10,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          path: /home/feyli/iut/teslapp/webapp
+
+      - name: Sync to target directory
+        run: rsync -a --delete $GITHUB_WORKSPACE/ /home/feyli/iut/teslapp/webapp/
 
       - name: Deploy webapp
         run: |
