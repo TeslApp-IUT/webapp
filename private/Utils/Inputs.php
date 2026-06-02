@@ -144,13 +144,10 @@ final class Inputs
         if ($s === '') {
             return 'Email is required.';
         }
-        if ($msg = self::validateLength($s, min: null, max: $max, label: 'Email')) {
-            return $msg;
-        }
         if (!preg_match(self::RE_EMAIL, $s)) {
             return 'Invalid email format.';
         }
-        return null;
+        return self::validateLength($s, max: $max, label: 'Email');
     }
 
     /* ===============================
@@ -248,11 +245,7 @@ final class Inputs
         if (!preg_match('/^[A-Za-z0-9\-_]+$/', $s)) {
             return "$label has an invalid format.";
         }
-        $len = strlen($s);
-        if ($len < $min || $len > $max) {
-            return "$label has an invalid length.";
-        }
-        return null;
+        return self::validateLength($s, min: $min, max: $max, label: $label);
     }
 
     /* ===============================

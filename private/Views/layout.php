@@ -3,7 +3,7 @@
  * Main layout — factored HTML skeleton (R4.01 chap 1 §5.4).
  *
  * A view fills an output buffer (ob_start) then exposes the following
- * variables before calling `require __DIR__ . '/../layout.php';` :
+ * variables before calling `require_once __DIR__ . '/../layout.php';` :
  *   $title       string    page title
  *   $content     string    page body (already rendered HTML)
  *   $description string    meta description (optional)
@@ -45,7 +45,7 @@
         <?= $content ?? '' ?>
     </main>
 
-    <?php require __DIR__ . '/partials/footer.php'; ?>
+    <?php require_once __DIR__ . '/partials/footer.php'; ?>
 
     <script src="/_assets/js/common.js" defer></script>
     <?php foreach (($extraJs ?? []) as $js): ?>
