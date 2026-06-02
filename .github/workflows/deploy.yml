@@ -8,11 +8,10 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
-      - name: Pull latest code
-        run: |
-          cd /home/feyli/iut/teslapp/webapp
-          git fetch origin
-          git reset --hard origin/main
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: /home/feyli/iut/teslapp/webapp
 
       - name: Deploy webapp
         run: |
