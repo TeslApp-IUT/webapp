@@ -2,6 +2,6 @@ services:
   webapp:
     build: .
     ports:
-      - "50025:80"
+      - '50025:80'
     env_file: .env
     restart: unless-stopped
