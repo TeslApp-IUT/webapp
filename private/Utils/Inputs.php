@@ -241,17 +241,19 @@ final class Inputs
         int $max = 128,
         string $label = 'Le token',
     ): ?string {
+        $error = null;
+
         if ($s === '') {
-            return "$label est requis.";
+            $error = "$label est requis.";
         }
         if (!preg_match('/^[A-Za-z0-9\-_]+$/', $s)) {
-            return "$label a un format invalide.";
+            $error = "$label a un format invalide.";
         }
         $len = strlen($s);
         if ($len < $min || $len > $max) {
-            return "$label a une longueur invalide.";
+            $error = "$label a une longueur invalide.";
         }
-        return null;
+        return $error;
     }
 
     /* ===============================

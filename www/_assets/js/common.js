@@ -36,14 +36,15 @@ function initCommon() {
   }
 
   // Active Nav Link
-  const currentPath = window.location.pathname;
+  const currentPath = globalThis.location.pathname;
   const navLinks = document.querySelectorAll('.nav-link, .mobile-menu-link');
   navLinks.forEach(function (link) {
     link.classList.remove('active');
     const linkPath = link.getAttribute('href');
-    if (linkPath && currentPath === linkPath) {
-      link.classList.add('active');
-    } else if (linkPath === '/site/home' && (currentPath === '/' || currentPath === '/site/home')) {
+    if (
+      (linkPath && currentPath === linkPath) ||
+      (linkPath === '/site/home' && (currentPath === '/' || currentPath === '/site/home'))
+    ) {
       link.classList.add('active');
     }
   });

@@ -23,9 +23,9 @@
 <?php endif; ?>
 
 <?php if (!empty($success)): ?>
-    <div class="flash flash--success" role="status"><?= e($success) ?></div>
+    <output class="flash flash--success"><?= e($success) ?></output>
 <?php endif; ?>
 
 <?php if (!empty($info)): ?>
-    <div class="flash flash--info" role="status"><?= e($info) ?></div>
+    <output class="flash flash--info"><?= e($info) ?></output>
 <?php endif; ?>

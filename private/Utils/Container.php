@@ -49,7 +49,7 @@ final class Container
      *
      * @param string $id Identifiant du service
      * @return object L'instance partagée du service
-     * @throws \RuntimeException Si aucune recette n'est enregistrée pour cet identifiant
+     * @throws ServiceNotFoundException Si aucune recette n'est enregistrée pour cet identifiant
      */
     public function get(string $id): object
     {
@@ -72,12 +72,13 @@ final class Container
      *
      * @param string $id Identifiant du service
      * @return object
-     * @throws \RuntimeException Si aucune recette n'est enregistrée pour cet identifiant
+     * @throws ServiceNotFoundException Si aucune recette n'est enregistrée pour cet identifiant
      */
     private function build(string $id): object
     {
-        if (!isset($this->recipes[$id])) {
-            throw new \RuntimeException("Service non enregistré dans le conteneur : {$id}");
+        if (!isset($this->recipes[$id]))
+        {
+            throw new ServiceNotFoundException("Service non enregistré dans le conteneur : {$id}");
         }
 
         return $this->recipes[$id]($this);

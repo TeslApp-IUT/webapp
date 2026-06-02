@@ -37,7 +37,7 @@ final class Database
      *
      * @return \PDO Instance partagée connectée à la base de données
      *
-     * @throws \RuntimeException Si la connexion à la base de données échoue
+     * @throws DatabaseException Si la connexion à la base de données échoue
      */
     public static function pdo(): \PDO
     {
@@ -61,7 +61,7 @@ final class Database
                 // On journalise le détail technique mais on n'expose jamais
                 // l'erreur SQL brute à l'utilisateur (cf. erreurs-exceptions.md).
                 error_log('DB connection error: ' . $e->getMessage());
-                throw new \RuntimeException('Erreur de connexion à la base de données.');
+                throw new DatabaseException('Erreur de connexion à la base de données.');
             }
         }
 

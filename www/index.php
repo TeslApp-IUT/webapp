@@ -9,7 +9,7 @@ use Teslapp\Utils\Flash;
  * Chargements : configuration globale, autoload Composer (PSR-4),
  * puis table des routes.
  */
-require __DIR__ . '/../private/config/config.php';
+require_once __DIR__ . '/../private/config/config.php';
 
 // Autoload Composer (PSR-4) — requis. Lancer `composer install` si absent.
 $autoload = BASE_PATH . '/vendor/autoload.php';
@@ -17,12 +17,12 @@ if (!is_file($autoload)) {
     http_response_code(500);
     exit('Autoload Composer manquant. Lancez `composer install`.');
 }
-require $autoload;
+require_once $autoload;
 
-$routes = require __DIR__ . '/../private/config/routes.php';
+$routes = require_once __DIR__ . '/../private/config/routes.php';
 
 // Conteneur DI maison : résout les controllers et leurs dépendances (cf. private/config/container.php)
-$container = require __DIR__ . '/../private/config/container.php';
+$container = require_once __DIR__ . '/../private/config/container.php';
 
 session_name('TESLAPP_SESSION');
 

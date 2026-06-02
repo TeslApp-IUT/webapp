@@ -45,4 +45,4 @@ ob_start();
 </div>
 <?php
 $content = ob_get_clean();
-require __DIR__ . '/../layout.php';
+require_once __DIR__ . '/../layout.php';

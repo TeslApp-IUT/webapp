@@ -32,7 +32,7 @@
 
     <a class="skip-link" href="#main">Aller au contenu principal</a>
 
-    <?php require __DIR__ . '/partials/header_guest.php'; ?>
+    <?php require_once __DIR__ . '/partials/header_guest.php'; ?>
 
     <main id="main">
         <?php
@@ -40,7 +40,7 @@
         $errors = \Teslapp\Utils\Flash::consume('errors', []);
         $success = \Teslapp\Utils\Flash::consume('success');
         $info = \Teslapp\Utils\Flash::consume('info');
-        require __DIR__ . '/partials/flash_message.php';
+        require_once __DIR__ . '/partials/flash_message.php';
         ?>
         <?= $content ?? '' ?>
     </main>

@@ -22,7 +22,7 @@ final class StaticPagesController
      */
     public function home(): void
     {
-        require __DIR__ . '/../Views/static/home.php';
+        require_once __DIR__ . '/../Views/static/home.php';
     }
 
     /**
@@ -32,7 +32,7 @@ final class StaticPagesController
      */
     public function sitemap(): void
     {
-        require __DIR__ . '/../Views/static/sitemap.php';
+        require_once __DIR__ . '/../Views/static/sitemap.php';
     }
 
     /**
@@ -42,7 +42,7 @@ final class StaticPagesController
      */
     public function legal(): void
     {
-        require __DIR__ . '/../Views/static/legal.php';
+        require_once __DIR__ . '/../Views/static/legal.php';
     }
 
     /**
@@ -52,7 +52,7 @@ final class StaticPagesController
      */
     public function privacy(): void
     {
-        require __DIR__ . '/../Views/static/privacy.php';
+        require_once __DIR__ . '/../Views/static/privacy.php';
     }
 
     /**
@@ -62,6 +62,6 @@ final class StaticPagesController
      */
     public function notFound(): void
     {
-        require __DIR__ . '/../Views/static/not-found.php';
+        require_once __DIR__ . '/../Views/static/not-found.php';
     }
 }

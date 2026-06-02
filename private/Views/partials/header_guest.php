@@ -15,7 +15,7 @@
         </a>
 
         <!-- Navigation principale -->
-        <nav class="nav">
+        <nav class="nav" aria-label="navigation principal"->
             <a href="/site/home" class="nav-link">Accueil</a>
             <a href="/site/sitemap" class="nav-link">Plan du site</a>
             <a href="/site/legal" class="nav-link">Mentions légales</a>
@@ -50,7 +50,7 @@
 
     <div class="mobile-menu-content">
         <div class="mobile-menu-section-title">NAVIGATION</div>
-        <nav class="mobile-menu-nav">
+        <nav class="mobile-menu-nav" aria-label="navigation">
             <a href="/site/home" class="mobile-menu-link">Accueil</a>
             <a href="/site/sitemap" class="mobile-menu-link">Plan du site</a>
             <a href="/site/legal" class="mobile-menu-link">Mentions légales</a>
