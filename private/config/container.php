@@ -2,7 +2,7 @@
 /**
  * Dependency injection container configuration
  *
- * Declares the “recipes” for building the application's services
+ * Declares the "recipes" for building the application's services
  * (controllers, and later services, repositories, Tesla ports, etc.) and then
  * returns the container ready for use.
  *

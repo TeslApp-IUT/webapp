@@ -5,7 +5,7 @@
  * Variables are provided by the layout via Flash::consume() (single-use
  *: read and then removed from the session). The styling is defined in styles.css
  * (classes .flash / .flash--error / .flash--success / .flash--info) — no
- * inline styles, to maintain a strict CSP (style-src ‘self’).
+ * inline styles, to maintain a strict CSP (style-src 'self').
  *
  * @var array<int, string> $errors  Error messages
  * @var string|null        $success Success message

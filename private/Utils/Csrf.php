@@ -51,7 +51,7 @@ final class Csrf
      * Uses hash_equals() for a timing-safe comparison that prevents
      * timing-based attacks.
      *
-     * @param string $key Name of the POST field containing the token (default: ‘csrf_token’)
+     * @param string $key Name of the POST field containing the token (default: 'csrf_token')
      * @return bool True if the token is valid, false otherwise
      */
     public static function checkFromPost(string $key = 'csrf_token'): bool
