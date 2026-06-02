@@ -13,5 +13,7 @@ node_modules
 
 # Templates de vues (HTML + PHP mêlés) : @prettier/plugin-php n'est pas idempotent
 # dessus (boucle de reformatage → CI rouge). Formatage manuel pour ces fichiers.
-private/modules/views/
 private/Views/
+
+# Ignore Composer dependencies
+vendor

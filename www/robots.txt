@@ -1,40 +1,26 @@
-# robots.txt pour MedBoard
-# Site: https://medboard.alwaysdata.net
-# Dernière mise à jour: 2025-10-08
+# robots.txt for TeslApp
+# Site : https://teslapp.feyli.dev
 
 User-agent: *
 
-# Routes publiques autorisées (MVC)
+# Authorized public pages
 Allow: /$
-Allow: /sitemap$
-Allow: /legal$
-
-# Autoriser les assets publics
+Allow: /site/home
+Allow: /site/sitemap
+Allow: /site/legal
+Allow: /site/privacy
 Allow: /_assets/
 
-# Bloquer les routes d'authentification et d'administration
-Disallow: /login
-Disallow: /register
-Disallow: /forgot-password
-Disallow: /reset-password
+# Block authenticated routes (Tesla OAuth + vehicle space coming soon)
+Disallow: /auth/
 Disallow: /dashboard
-Disallow: /404
 
-# Bloquer les fichiers de configuration
+# Block technical/configuration files
 Disallow: /.htaccess
 Disallow: /.env
-
-# Bloquer les fichiers techniques
 Disallow: /*.json$
 Disallow: /*.log$
 Disallow: /*.sql$
-Disallow: /*.env$
 Disallow: /*.php$
-Disallow: /*.config$
-Disallow: /*.bak$
 
-# Autoriser explicitement le sitemap XML
-Allow: /sitemap.xml
-
-# URL du sitemap
-Sitemap: https://medboard.alwaysdata.net/sitemap.xml
+Sitemap: https://teslapp.feyli.dev/sitemap.xml
