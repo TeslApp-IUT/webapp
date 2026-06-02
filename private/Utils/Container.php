@@ -5,38 +5,38 @@ declare(strict_types=1);
 namespace Teslapp\Utils;
 
 /**
- * Conteneur d'injection de dépendances maison.
+ * In-house dependencies injection container.
  *
- * Stocke des « recettes » (callables) qui savent construire chaque service, et
- * met en cache l'instance produite pour la partager (un seul exemplaire par
- * identifiant, façon singleton). Le câblage est explicite — pas d'autowiring
- * par réflexion — ce qui garde les dépendances visibles et défendables.
+ * Stores recipes (callables) that can build each service, and
+ * caches the instance produced to share it (only one copy per
+ * identifier, singleton-style). The wiring is explicit—no autowiring
+ * by reflection—what keeps the dependencies visible and defensible.
  *
- * Les recettes sont déclarées dans private/config/container.php.
+ * Revenue is reported in private/config/container.php.
  *
  * @package Teslapp\Utils
  */
 final class Container
 {
     /**
-     * Recettes de construction, indexées par identifiant de service.
+     * Build revenue, indexed by service ID.
      *
      * @var array<string, callable(self): object>
      */
     private array $recipes = [];
 
     /**
-     * Instances déjà construites, conservées pour être partagées.
+     * Instances already built, kept for sharing.
      *
      * @var array<string, object>
      */
     private array $shared = [];
 
     /**
-     * Enregistre la recette de construction d'un service.
+     * Saves a service build recipe.
      *
-     * @param string $id Identifiant du service (typiquement un FQCN via ::class)
-     * @param callable(self): object $recipe Fabrique recevant le conteneur et retournant l'instance
+     * @param string $id Service ID (typically an FQCN via ::class)
+     * @param callable(self): object $recipe Fabrique receiving container and returning instance
      * @return void
      */
     public function set(string $id, callable $recipe): void
@@ -45,11 +45,11 @@ final class Container
     }
 
     /**
-     * Résout un service, en réutilisant l'instance déjà construite si elle existe.
+     * Resolves a service, reusing the already built instance if it exists.
      *
-     * @param string $id Identifiant du service
-     * @return object L'instance partagée du service
-     * @throws ServiceNotFoundException Si aucune recette n'est enregistrée pour cet identifiant
+     * @param string $id Service ID
+     * @return object The shared instance of the service
+     * @throws ServiceNotFoundException If no recipe is logged for this ID
      */
     public function get(string $id): object
     {
@@ -57,9 +57,9 @@ final class Container
     }
 
     /**
-     * Indique si le conteneur connaît un service (recette enregistrée ou instance déjà construite).
+     * Indicates whether the container knows a service (either a saved receipt or an already built instance).
      *
-     * @param string $id Identifiant du service
+     * @param string $id Service ID
      * @return bool
      */
     public function has(string $id): bool
@@ -68,16 +68,16 @@ final class Container
     }
 
     /**
-     * Construit une instance à partir de sa recette.
+     * Creates an instance from its recipe.
      *
-     * @param string $id Identifiant du service
+     * @param string $id Service ID
      * @return object
-     * @throws ServiceNotFoundException Si aucune recette n'est enregistrée pour cet identifiant
+     * @throws ServiceNotFoundException If no recipe is registered for this ID
      */
     private function build(string $id): object
     {
         if (!isset($this->recipes[$id])) {
-            throw new ServiceNotFoundException("Service non enregistré dans le conteneur : {$id}");
+            throw new ServiceNotFoundException("Service isn't registered in the container: {$id}");
         }
 
         return $this->recipes[$id]($this);

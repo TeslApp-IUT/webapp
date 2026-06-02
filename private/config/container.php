@@ -1,14 +1,14 @@
 <?php
 /**
- * Câblage du conteneur d'injection de dépendances
+ * Dependency injection container configuration
  *
- * Déclare les « recettes » de construction des services de l'application
- * (controllers, et plus tard services, repositories, ports Tesla…) puis
- * retourne le conteneur prêt à l'emploi.
+ * Declares the “recipes” for building the application's services
+ * (controllers, and later services, repositories, Tesla ports, etc.) and then
+ * returns the container ready for use.
  *
- * Ce fichier est chargé par le front controller (www/index.php) après
- * l'autoload Composer, et grandit à chaque nouvelle dépendance à câbler.
- * Le câblage est explicite (pas d'autowiring) afin de rester lisible.
+ * This file is loaded by the front controller (www/index.php) after
+ * Composer autoloading, and grows with each new dependency to be wired.
+ * The wiring is explicit (no autowiring) to ensure readability.
  */
 declare(strict_types=1);
 

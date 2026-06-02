@@ -6,19 +6,19 @@ ob_start();
 ?>
 <section class="legal-section">
     <div class="legal-container">
-        <!-- Lien de retour -->
+        <!-- Back link -->
         <a href="/site/home" class="back-link">
             <img src="/_assets/images/fleche-gauche.svg" alt="" aria-hidden="true">
             Retour à l'accueil
         </a>
 
-        <!-- En-tête de la page -->
+        <!-- Page header -->
         <div class="legal-header">
             <h1 class="legal-title">Mentions légales</h1>
             <p class="legal-subtitle">Dernière mise à jour : <span>01/06/2026</span></p>
         </div>
 
-        <!-- Contenu des mentions légales -->
+        <!-- Legal notice content -->
         <div class="legal-content">
             <p class="legal-paragraph">
                 Conformément aux dispositions des articles 6-III et 19 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique (LCEN), il est porté à la connaissance des utilisateurs et visiteurs du site TeslApp les présentes mentions légales.

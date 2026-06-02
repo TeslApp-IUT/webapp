@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace Teslapp\Controllers;
 
 /**
- * Contrôleur des pages statiques
+ * Static Pages Controller
  *
- * Ce contrôleur gère l'affichage de toutes les pages statiques de l'application
- * qui ne nécessitent pas de traitement particulier ni d'authentification.
+ * This controller handles the display of all static pages in the application
+ * that do not require any special processing or authentication.
  *
- * Note : les templates de vues vivent dans private/Views/static/ et sont
- * rendus via le layout factorisé private/Views/layout.php.
+ * Note: View templates are located in private/Views/static/ and are
+ * rendered using the factored layout in private/Views/layout.php.
  */
 final class StaticPagesController
 {
     /**
-     * Affiche la page d'accueil
+     * Displays the home page
      *
      * @return void
      */
@@ -26,7 +26,7 @@ final class StaticPagesController
     }
 
     /**
-     * Affiche le plan du site
+     * Displays the site map
      *
      * @return void
      */
@@ -36,7 +36,7 @@ final class StaticPagesController
     }
 
     /**
-     * Affiche les mentions légales
+     * Displays the legal notice
      *
      * @return void
      */
@@ -46,7 +46,7 @@ final class StaticPagesController
     }
 
     /**
-     * Affiche la politique de confidentialité
+     * Displays the privacy policy
      *
      * @return void
      */
@@ -56,7 +56,7 @@ final class StaticPagesController
     }
 
     /**
-     * Affiche la page d'erreur 404
+     * Displays the 404 error page
      *
      * @return void
      */

@@ -5,46 +5,46 @@ declare(strict_types=1);
 namespace Teslapp\Utils;
 
 /**
- * Classe utilitaire pour les opérations HTTP
+ * Utility class for HTTP operations
  *
- * Fournit des méthodes simplifiées pour gérer les redirections HTTP
- * et d'autres opérations liées au protocole HTTP.
+ * Provides simplified methods for handling HTTP redirects
+ * and other HTTP-related operations.
  *
- * Cette classe utilise le pattern statique pour un accès facile
- * depuis n'importe quel point de l'application.
+ * This class uses the static pattern for easy access
+ * from anywhere in the application.
  *
  * @package Teslapp\Utils
  */
 final class Http
 {
     /**
-     * Effectue une redirection HTTP et arrête l'exécution
+     * Performs an HTTP redirect and stops execution
      *
-     * Envoie un header HTTP "Location" pour rediriger le navigateur vers
-     * une nouvelle URL et termine immédiatement l'exécution du script.
+     * Sends an HTTP “Location” header to redirect the browser to
+     * a new URL and immediately terminates script execution.
      *
-     * La méthode utilise le code de statut 302 (Found) qui indique une
-     * redirection temporaire. Ce type de redirection est approprié pour
-     * la plupart des cas d'usage de l'application (après soumission de
-     * formulaire, connexion, déconnexion, etc.).
+     * The method uses status code 302 (Found), which indicates a
+     * temporary redirect. This type of redirect is appropriate for
+     * most application use cases (after form submission,
+     * login, logout, etc.).
      *
-     * Le type de retour "never" indique que cette méthode ne retourne jamais
-     * (elle termine toujours par exit), ce qui aide l'analyse statique du code.
+     * The “never” return type indicates that this method never returns
+     * (it always terminates with exit), which aids in static code analysis.
      *
-     * Exemple d'usage :
+     * Example usage:
      * ```php
-     * // Redirection simple
-     * Http::redirect('/site/home');
+     * // Simple redirect
+     * Http::redirect(‘/site/home’);
      *
-     * // Redirection après traitement
+     * // Redirect after processing
      * if ($success) {
-     *     Flash::set('success', 'Véhicule verrouillé');
-     *     Http::redirect('/site/home');
+     *     Flash::set(‘success’, ‘Vehicle locked’);
+     *     Http::redirect(‘/site/home’);
      * }
      * ```
      *
-     * @param string $url URL de destination (relative ou absolue)
-     * @return never Cette méthode ne retourne jamais (exit)
+     * @param string $url Destination URL (relative or absolute)
+     * @return never This method never returns (exit)
      */
     public static function redirect(string $url): never
     {

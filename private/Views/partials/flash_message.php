@@ -1,15 +1,15 @@
 <?php
 /**
- * Partial : messages flash (erreurs, succès, info).
+ * Partial: flash messages (errors, success, info).
  *
- * Les variables sont fournies par le layout via Flash::consume() (consommation
- * unique : lues puis supprimées de la session). Le style vit dans styles.css
- * (classes .flash / .flash--error / .flash--success / .flash--info) — aucun
- * style inline, afin de préserver une CSP stricte (style-src 'self').
+ * Variables are provided by the layout via Flash::consume() (single-use
+ *: read and then removed from the session). The styling is defined in styles.css
+ * (classes .flash / .flash--error / .flash--success / .flash--info) — no
+ * inline styles, to maintain a strict CSP (style-src ‘self’).
  *
- * @var array<int, string> $errors  Messages d'erreur
- * @var string|null        $success Message de succès
- * @var string|null        $info    Message d'information
+ * @var array<int, string> $errors  Error messages
+ * @var string|null        $success Success message
+ * @var string|null        $info    Information message
  */
 ?>
 <?php if (!empty($errors)): ?>

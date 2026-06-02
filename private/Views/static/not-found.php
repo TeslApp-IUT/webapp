@@ -8,22 +8,22 @@ ob_start();
 ?>
 <div class="error-page">
     <div class="error-container">
-        <!-- Lien de retour vers l'accueil -->
+        <!-- Link back to the home page -->
         <a href="/site/home" class="error-top-link">
             <img src="/_assets/images/fleche-gauche.svg" alt="" aria-hidden="true">
             Échapper à cette dimension
         </a>
 
-        <!-- Carte d'erreur -->
+        <!-- Error map -->
         <div class="error-card">
-            <!-- Statut de l'erreur -->
+            <!-- Error status -->
             <div class="error-hero">
                 <span class="error-status">ERROR 404</span>
                 <span class="error-separator">•</span>
                 <span class="error-status">Vous êtes dans une zone interdite</span>
             </div>
 
-            <!-- Image d'illustration de l'erreur -->
+            <!-- Image illustrating the error -->
             <div class="error-image">
                 <picture>
                     <source srcset="/_assets/images/error-404.avif" type="image/avif">
@@ -32,7 +32,7 @@ ob_start();
                 </picture>
             </div>
 
-            <!-- Message d'avertissement -->
+            <!-- Warning message -->
             <div class="error-alert">
                 <div class="alert-title">⚠️ AVERTISSEMENT SYSTÈME ⚠️</div>
                 <p>Cette page a été corrompue par une entité inconnue.</p>

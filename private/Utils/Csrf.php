@@ -5,95 +5,95 @@ declare(strict_types=1);
 namespace Teslapp\Utils;
 
 /**
- * Classe de gestion des tokens CSRF (Cross-Site Request Forgery)
+ * Class for managing CSRF (Cross-Site Request Forgery) tokens
  *
- * Protège l'application contre les attaques CSRF en générant et validant
- * des tokens uniques pour chaque session utilisateur. Ces tokens doivent être
- * inclus dans tous les formulaires sensibles et vérifiés côté serveur.
+ * Protects the application against CSRF attacks by generating and validating
+ * unique tokens for each user session. These tokens must be
+ * included in all sensitive forms and verified on the server side.
  *
- * Le token est stocké en session et comparé avec celui soumis via POST
- * en utilisant hash_equals() pour se prémunir contre les attaques par timing.
+ * The token is stored in the session and compared with the one submitted via POST
+ * using hash_equals() to guard against timing attacks.
  *
  * @package Teslapp\Utils
  */
 final class Csrf
 {
     /**
-     * Génère et stocke un token CSRF en session s'il n'existe pas déjà
+     * Generates and stores a CSRF token in the session if one does not already exist
      *
-     * Cette méthode doit être appelée au début de chaque requête nécessitant
-     * une protection CSRF (généralement dans l'autoloader ou le routeur).
+     * This method must be called at the beginning of every request requiring
+     * CSRF protection (typically in the autoloader or router).
      *
-     * Le token est généré avec random_bytes(32) puis converti en hexadécimal,
-     * produisant une chaîne de 64 caractères cryptographiquement sécurisée.
+     * The token is generated using random_bytes(32) and then converted to hexadecimal,
+     * producing a cryptographically secure 64-character string.
      *
-     * Si la session n'est pas démarrée, cette méthode la démarre automatiquement.
+     * If the session is not started, this method starts it automatically.
      *
      * @return void
      */
     public static function ensureToken(): void
     {
-        // Démarrage de la session si nécessaire
+        // Start the session if necessary
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
 
-        // Génération du token s'il n'existe pas
+        // Generate the token if it doesn't exist
         if (empty($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
     }
 
     /**
-     * Vérifie la validité du token CSRF soumis via POST
+     * Checks the validity of the CSRF token submitted via POST
      *
-     * Compare le token stocké en session avec celui reçu dans $_POST.
-     * Utilise hash_equals() pour une comparaison timing-safe qui empêche
-     * les attaques par analyse temporelle.
+     * Compares the token stored in the session with the one received in $_POST.
+     * Uses hash_equals() for a timing-safe comparison that prevents
+     * timing-based attacks.
      *
-     * @param string $key Nom du champ POST contenant le token (défaut: 'csrf_token')
-     * @return bool True si le token est valide, false sinon
+     * @param string $key Name of the POST field containing the token (default: ‘csrf_token’)
+     * @return bool True if the token is valid, false otherwise
      */
     public static function checkFromPost(string $key = 'csrf_token'): bool
     {
         $sess = $_SESSION['csrf_token'] ?? '';
         $post = $_POST[$key] ?? '';
 
-        // Vérification que les deux tokens existent et correspondent
+        // Check that both tokens exist and match
         return $sess && $post && hash_equals($sess, $post);
     }
 
     /**
-     * Vérifie le token CSRF et redirige en cas d'échec
+     * Checks the CSRF token and redirects if validation fails
      *
-     * Méthode utilitaire qui combine la vérification du token CSRF avec
-     * une gestion automatique des erreurs et de la redirection.
+     * Utility method that combines CSRF token validation with
+     * automatic error handling and redirection.
      *
-     * En cas d'échec de validation :
-     * - Un message d'erreur est ajouté aux messages flash
-     * - Les anciennes données du formulaire peuvent être conservées (si $keepOld = true)
-     * - L'utilisateur est redirigé vers l'URL spécifiée
-     * - L'exécution du script est arrêtée
+     * If validation fails:
+     * - An error message is added to the flash messages
+     * - The old form data may be preserved (if $keepOld = true)
+     * - The user is redirected to the specified URL
+     * - Script execution is stopped
      *
-     * Cette méthode évite la duplication du code de vérification CSRF
-     * dans les différents contrôleurs.
+     * This method avoids duplication of CSRF validation code
+     * across different controllers.
      *
-     * @param string $redirectUrl URL de redirection en cas d'échec de validation
-     * @param bool $keepOld Si true, conserve les données POST dans les messages flash (défaut: false)
-     * @return void Redirige et arrête l'exécution si le token est invalide
+     * @param string $redirectUrl Redirect URL in case of validation failure
+     * @param bool $keepOld If true, retains POST data in flash messages (default: false)
+     * @return void Redirects and stops execution if the token is invalid
      */
     public static function requireValid(string $redirectUrl, bool $keepOld = false): void
     {
         if (!self::checkFromPost()) {
-            // Message d'erreur utilisateur
-            Flash::set('errors', ['Le formulaire a expiré. Merci de réessayer.']);
+            // User error message
+            Flash::set('errors', ['The form has expired. Please try again.']);
 
-            // Conservation des données saisies si demandé
+            // Save the entered data if requested
             if ($keepOld) {
                 Flash::set('old', $_POST);
             }
 
-            // Redirection (Http::redirect arrête déjà l'exécution : type de retour `never`).
+            // Redirection (Http::redirect already stops execution: return type `never`).
             Http::redirect($redirectUrl);
         }
     }

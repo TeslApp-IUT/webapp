@@ -1,19 +1,19 @@
 <?php
 /**
- * Configuration du routage de l'application
+ * Application routing configuration
  *
- * Structure : 'URL' => [Nom du contrôleur, Nom de la méthode, Authentification requise (boolean)]
+ * Structure: ‘URL’ => [Controller name, Method name, Authentication required (boolean)]
  *
- * - Le premier élément est le nom de la classe du contrôleur à instancier
- * - Le deuxième élément est le nom de la méthode à appeler sur ce contrôleur
- * - Le troisième élément indique si l'utilisateur doit être authentifié pour accéder à cette route
+ * - The first element is the name of the controller class to instantiate
+ * - The second element is the name of the method to call on this controller
+ * - The third element indicates whether the user must be authenticated to access this route
  */
 declare(strict_types=1);
 
 use Teslapp\Controllers\StaticPagesController;
 
 return [
-    // Routes des pages statiques accessibles à tous
+    // URLs for static pages accessible to everyone
     'site/home' => [StaticPagesController::class, 'home', false],
     'site/sitemap' => [StaticPagesController::class, 'sitemap', false],
     'site/legal' => [StaticPagesController::class, 'legal', false],

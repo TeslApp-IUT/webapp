@@ -5,38 +5,38 @@ declare(strict_types=1);
 namespace Teslapp\Utils;
 
 /**
- * Classe de gestion des messages flash en session
+ * Class for managing in-session flash messages
  *
- * Fournit une interface simplifiée pour stocker et récupérer des données
- * temporaires en session, particulièrement utile pour les messages d'erreur,
- * de succès, et la conservation des données de formulaire entre requêtes.
+ * Provides a simplified interface for storing and retrieving
+ * temporary data within a session, particularly useful for error messages,
+ * success messages, and preserving form data between requests.
  *
- * Les messages flash sont typiquement utilisés pour :
- * - Afficher des messages de confirmation après une action (verrouillage, connexion Tesla, etc.)
- * - Conserver les erreurs de validation entre requêtes
- * - Préserver les données saisies dans un formulaire après redirection
+ * Flash messages are typically used for:
+ * - Displaying confirmation messages after an action (locking, Tesla login, etc.)
+ * - Persisting validation errors across requests
+ * - Preserving data entered in a form after redirection
  *
- * Cette classe utilise $_SESSION comme backend de stockage et propose
- * des méthodes "consume" pour récupérer et supprimer automatiquement
- * les données après lecture (pattern "flash").
+ * This class uses $_SESSION as its storage backend and provides
+ * “consume” methods to automatically retrieve and delete
+ * data after reading (the “flash” pattern).
  *
  * @package Teslapp\Utils
  */
 final class Flash
 {
     /**
-     * Stocke une valeur en session sous une clé donnée
+     * Stores a value in the session under a given key
      *
-     * Permet de définir n'importe quelle valeur (string, array, etc.)
-     * dans la session pour un usage ultérieur.
+     * Allows you to set any value (string, array, etc.)
+     * in the session for later use.
      *
-     * Exemple d'usage :
-     * - Flash::set('errors', ['Email invalide'])
-     * - Flash::set('success', 'Véhicule verrouillé')
-     * - Flash::set('old', $_POST)
+     * Example usage:
+     * - Flash::set(‘errors’, [‘Invalid email’])
+     * - Flash::set(‘success’, ‘Vehicle locked’)
+     * - Flash::set(‘old’, $_POST)
      *
-     * @param string $key Clé d'identification de la donnée
-     * @param mixed $value Valeur à stocker
+     * @param string $key Data identification key
+     * @param mixed $value Value to store
      * @return void
      */
     public static function set(string $key, mixed $value): void
@@ -45,16 +45,16 @@ final class Flash
     }
 
     /**
-     * Récupère une valeur depuis la session sans la supprimer
+     * Retrieves a value from the session without deleting it
      *
-     * Lit une valeur en session et retourne une valeur par défaut
-     * si la clé n'existe pas. La valeur reste en session après lecture.
+     * Reads a value from the session and returns a default value
+     * if the key does not exist. The value remains in the session after being read.
      *
-     * Utilisé quand on veut consulter une valeur sans la consommer.
+     * Used when you want to view a value without consuming it.
      *
-     * @param string $key Clé d'identification de la donnée
-     * @param mixed $default Valeur retournée si la clé n'existe pas (défaut: null)
-     * @return mixed La valeur trouvée ou la valeur par défaut
+     * @param string $key Data identification key
+     * @param mixed $default Value returned if the key does not exist (default: null)
+     * @return mixed The value found or the default value
      */
     public static function get(string $key, mixed $default = null): mixed
     {
@@ -62,26 +62,26 @@ final class Flash
     }
 
     /**
-     * Récupère une valeur depuis la session et la supprime immédiatement
+     * Retrieves a value from the session and immediately removes it
      *
-     * Implémente le pattern "flash message" : lit une valeur une seule fois
-     * puis la supprime de la session. Parfait pour les messages d'erreur
-     * ou de succès qui ne doivent être affichés qu'une fois.
+     * Implements the “flash message” pattern: reads a value once
+     * and then removes it from the session. Perfect for error
+     * or success messages that should only be displayed once.
      *
-     * Exemple d'usage typique :
+     * Typical usage example:
      * ```php
-     * // Dans le contrôleur (après validation)
-     * Flash::set('errors', ['Email invalide']);
-     * Http::redirect('/site/home');
+     * // In the controller (after validation)
+     * Flash::set(‘errors’, [‘Invalid email’]);
+     * Http::redirect(‘/site/home’);
      *
-     * // Dans la vue
-     * $errors = Flash::consume('errors', []);
-     * // La variable $errors contient le tableau, et elle est supprimée de la session
+     * // In the view
+     * $errors = Flash::consume(‘errors’, []);
+     * // The $errors variable contains the array, and it is removed from the session
      * ```
      *
-     * @param string $key Clé d'identification de la donnée
-     * @param mixed $default Valeur retournée si la clé n'existe pas (défaut: null)
-     * @return mixed La valeur trouvée ou la valeur par défaut
+     * @param string $key Data identification key
+     * @param mixed $default Value returned if the key does not exist (default: null)
+     * @return mixed The found value or the default value
      */
     public static function consume(string $key, mixed $default = null): mixed
     {
@@ -91,22 +91,22 @@ final class Flash
     }
 
     /**
-     * Récupère et supprime plusieurs valeurs en une seule fois
+     * Retrieves and removes multiple values at once
      *
-     * Variante de consume() qui permet de récupérer plusieurs clés
-     * simultanément et de les supprimer de la session.
+     * A variant of `consume()` that allows you to retrieve multiple keys
+     * simultaneously and remove them from the session.
      *
-     * Retourne un tableau associatif contenant les valeurs récupérées,
-     * avec null pour les clés inexistantes.
+     * Returns an associative array containing the retrieved values,
+     * with `null` for keys that do not exist.
      *
-     * Exemple d'usage :
+     * Example usage:
      * ```php
-     * $data = Flash::consumeMany(['errors', 'success', 'old']);
-     * // $data = ['errors' => [...], 'success' => null, 'old' => [...]]
+     * $data = Flash::consumeMany([‘errors’, ‘success’, ‘old’]);
+     * // $data = [‘errors’ => [...], ‘success’ => null, ‘old’ => [...]]
      * ```
      *
-     * @param list<string> $keys Tableau des clés à récupérer et supprimer
-     * @return array<string, mixed> Tableau associatif clé => valeur
+     * @param list<string> $keys Array of keys to retrieve and delete
+     * @return array<string, mixed> Associative array key => value
      */
     public static function consumeMany(array $keys): array
     {
@@ -118,23 +118,23 @@ final class Flash
     }
 
     /**
-     * Ajoute une ou plusieurs valeurs à un tableau existant en session
+     * Adds one or more values to an existing array in the session
      *
-     * Si la clé n'existe pas, crée un nouveau tableau.
-     * Si la clé existe et contient un tableau, fusionne les valeurs.
-     * Si la clé existe mais n'est pas un tableau, la convertit en tableau.
+     * If the key does not exist, creates a new array.
+     * If the key exists and contains an array, merges the values.
+     * If the key exists but is not an array, converts it to an array.
      *
-     * Utile pour accumuler plusieurs erreurs ou messages successifs.
+     * Useful for accumulating multiple errors or successive messages.
      *
-     * Exemple d'usage :
+     * Example usage:
      * ```php
-     * Flash::push('errors', 'Email invalide');
-     * Flash::push('errors', 'Mot de passe trop court');
-     * // $_SESSION['errors'] = ['Email invalide', 'Mot de passe trop court']
+     * Flash::push(‘errors’, ‘Invalid email’);
+     * Flash::push(‘errors’, ‘Password too short’);
+     * // $_SESSION[‘errors’] = [‘Invalid email’, ‘Password too short’]
      * ```
      *
-     * @param string $key Clé d'identification du tableau
-     * @param mixed $value Valeur(s) à ajouter (peut être un tableau ou une valeur simple)
+     * @param string $key Array key
+     * @param mixed $value Value(s) to add (can be an array or a single value)
      * @return void
      */
     public static function push(string $key, mixed $value): void

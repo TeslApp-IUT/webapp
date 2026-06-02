@@ -3,23 +3,22 @@
 declare(strict_types=1);
 
 /**
- * Fonctions utilitaires globales de Tesla App.
+ * Global utility functions for Tesla App.
  *
- * Chargées via l'autoload Composer (clé "files"), donc disponibles partout
- * sans `use`. À réserver aux helpers transverses très courts (échappement, …) ;
- * toute logique structurée passe par une classe PSR-4 de Teslapp\Utils.
+ * Loaded via Composer autoload (key “files”), so available everywhere
+ * without `use`. Intended only for very short cross-functional helpers (escape sequences, etc.);
+ * all structured logic must go through a PSR-4 class in Teslapp\Utils.
  */
-
 if (!function_exists('e')) {
     /**
-     * Échappe une chaîne pour une insertion sûre dans du HTML (anti-XSS).
+     * Escapes a string for safe insertion into HTML (anti-XSS).
      *
-     * Flags : ENT_QUOTES (échappe " et ' — sûr dans les attributs),
-     * ENT_SUBSTITUTE (UTF-8 invalide → U+FFFD au lieu d'une chaîne vide),
-     * ENT_HTML5 (jeu d'entités HTML5).
+     * Flags: ENT_QUOTES (escapes " and ' — safe in attributes),
+     * ENT_SUBSTITUTE (invalid UTF-8 → U+FFFD instead of an empty string),
+     * ENT_HTML5 (HTML5 entity set).
      *
-     * @param string|null $value Valeur à échapper (null traité comme '')
-     * @return string La valeur échappée
+     * @param string|null $value Value to escape (null treated as ‘’)
+     * @return string The escaped value
      */
     function e(?string $value): string
     {

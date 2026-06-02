@@ -1,16 +1,16 @@
 <?php
 /**
- * Layout principal — squelette HTML factorisé (R4.01 chap 1 §5.4).
+ * Main layout — factored HTML skeleton (R4.01 chap 1 §5.4).
  *
- * Une vue remplit un tampon de sortie (ob_start) puis expose les variables
- * suivantes avant de faire `require __DIR__ . '/../layout.php';` :
- *   $title       string    titre de la page
- *   $content     string    corps de la page (HTML déjà rendu)
- *   $description string    meta description (optionnel)
- *   $extraCss    string[]  feuilles CSS supplémentaires, sans extension (optionnel)
- *   $extraJs     string[]  scripts supplémentaires, sans extension (optionnel)
- *   $bodyClass   string    classe(s) du <body> (optionnel)
- *   $headExtra   string    fragment HTML injecté en fin de <head>, ex. JSON-LD (optionnel)
+ * A view fills an output buffer (ob_start) then exposes the following
+ * variables before calling `require __DIR__ . '/../layout.php';` :
+ *   $title       string    page title
+ *   $content     string    page body (already rendered HTML)
+ *   $description string    meta description (optional)
+ *   $extraCss    string[]  additional CSS files, without extension (optional)
+ *   $extraJs     string[]  additional scripts, without extension (optional)
+ *   $bodyClass   string    <body> class(es) (optional)
+ *   $headExtra   string    HTML fragment injected at the end of <head>, e.g. JSON-LD (optional)
  */
 ?>
 <!DOCTYPE html>

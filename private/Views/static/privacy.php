@@ -6,19 +6,19 @@ ob_start();
 ?>
 <section class="legal-section">
     <div class="legal-container">
-        <!-- Lien de retour -->
+        <!-- Back Link -->
         <a href="/site/home" class="back-link">
             <img src="/_assets/images/fleche-gauche.svg" alt="" aria-hidden="true">
             Retour à l'accueil
         </a>
 
-        <!-- En-tête de la page -->
+        <!-- Page header -->
         <div class="legal-header">
             <h1 class="legal-title">Politique de Confidentialité</h1>
             <p class="legal-subtitle">Dernière mise à jour : <span>01/06/2026</span></p>
         </div>
 
-        <!-- Contenu de la politique -->
+        <!-- Legal Content -->
         <div class="legal-content">
             <p class="legal-paragraph">
                 Le but de cette politique de confidentialité est d'informer les utilisateurs de notre site des données personnelles que nous recueillons ainsi que des informations suivantes, le cas échéant :

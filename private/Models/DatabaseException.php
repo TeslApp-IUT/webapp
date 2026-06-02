@@ -7,6 +7,6 @@ namespace Teslapp\Models;
 use RuntimeException;
 
 /**
- * Exception levée lorsqu'une erreur critique survient avec la base de données.
+ * Exception thrown when a critical error occurs with the database.
  */
 class DatabaseException extends RuntimeException {}

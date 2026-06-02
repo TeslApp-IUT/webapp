@@ -5,9 +5,9 @@ $extraJs = ['script'];
 
 ob_start();
 ?>
-<!-- Section Hero (bandeau principal) -->
+<!-- Hero Section (main banner) -->
 <section class="hero" aria-labelledby="hero-title">
-    <!-- Image de fond responsive -->
+    <!-- Responsive background image -->
     <picture>
         <source srcset="/_assets/images/banniere_light.avif" type="image/avif">
         <source srcset="/_assets/images/banniere_light.webp" type="image/webp">
@@ -15,7 +15,7 @@ ob_start();
     </picture>
     <div class="hero-overlay" aria-hidden="true"></div>
 
-    <!-- Contenu principal du hero -->
+    <!-- Main content of the hero -->
     <div class="container">
         <h1 id="hero-title" class="hero-title">
             Votre Tesla, <span class="text-highlight">partout avec vous</span>
@@ -23,14 +23,14 @@ ob_start();
         <p class="hero-description">
             Contrôlez votre véhicule Tesla à distance : climatisation, recharge, verrouillage, localisation et historique de trajets. Une interface intuitive et sécurisée connectée à l'API Fleet.
         </p>
-        <!-- Action : connexion Tesla -->
+        <!-- Action: Tesla login -->
         <div class="hero-actions">
             <a href="/auth/tesla/login" class="btn-primary">Se connecter avec Tesla</a>
         </div>
     </div>
 </section>
 
-<!-- Section des fonctionnalités -->
+<!-- Features section -->
 <section class="features" aria-labelledby="features-title">
     <div class="container">
         <div class="section-header">
@@ -104,7 +104,7 @@ ob_start();
     </div>
 </section>
 
-<!-- Section FAQ -->
+<!-- FAQ Section -->
 <section class="faq" aria-labelledby="faq-title">
     <div class="container-narrow">
         <div class="section-header">
@@ -156,7 +156,7 @@ ob_start();
     </div>
 </section>
 
-<!-- Section CTA (Call to Action) -->
+<!-- CTA (Call-to-Action) Section -->
 <section class="cta" aria-labelledby="cta-title">
     <div class="container">
         <h2 id="cta-title" class="section-title">Prenez le contrôle de votre Tesla</h2>

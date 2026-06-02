@@ -4,42 +4,44 @@ declare(strict_types=1);
 
 namespace Teslapp\Models;
 
+use PDO;
+
 /**
- * Connexion PostgreSQL partagée (PDO), façon singleton.
+ * Shared PostgreSQL connection (PDO), singleton.
  *
- * Une seule instance PDO est créée par cycle de requête puis réutilisée par
- * tous les Repositories — ce qui corrige l'anti-pattern « une connexion par
- * objet ». Les paramètres proviennent des constantes définies dans
- * private/config/config.php (lues depuis l'environnement, jamais en dur).
+ * A single PDO instance is created per request cycle, then reused by
+ * all repositories — fixing "one connection per object" antipattern.
+ * Settings are from constants defined in private/config/config.php
+ * (read from environment, never hard-coded)
  *
  * @package Teslapp\Models
  */
 final class Database
 {
     /**
-     * Instance PDO partagée pour tout le cycle de requête.
+     * Shared PDO instance for the entire request cycle.
      *
-     * @var \PDO|null
+     * @var PDO|null
      */
-    private static ?\PDO $instance = null;
+    private static ?PDO $instance = null;
 
     /**
-     * Classe utilitaire à état statique : pas d'instanciation.
+     * Util static class: no instantiation.
      */
     private function __construct() {}
 
     /**
-     * Retourne l'instance PDO partagée, en la créant à la première demande.
+     * Returns the shared PDO instance, effectively creating it on first call
      *
-     * Options : exceptions sur erreur SQL, fetch associatif, requêtes préparées
-     * natives (pas d'émulation) et préservation des types int/bool natifs. Le DSN
-     * inclut `sslmode` (DB_SSLMODE) — « require » en production Feyli.
+     * Options: exceptions on SQL errors, associative fetch, native prepared requests
+     * (no emulation) and presentation of native int/bool types. DSN includes
+     * `sslmode` (DB_SSLMODE) — « require » in production.
      *
-     * @return \PDO Instance partagée connectée à la base de données
+     * @return PDO Shared instance connected to the database
      *
-     * @throws DatabaseException Si la connexion à la base de données échoue
+     * @throws DatabaseException If connection fails
      */
-    public static function pdo(): \PDO
+    public static function pdo(): PDO
     {
         if (self::$instance === null) {
             $dsn = sprintf(
@@ -51,17 +53,17 @@ final class Database
             );
 
             try {
-                self::$instance = new \PDO($dsn, DB_USER, DB_PASS, [
-                    \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-                    \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
-                    \PDO::ATTR_EMULATE_PREPARES => false,
-                    \PDO::ATTR_STRINGIFY_FETCHES => false,
+                self::$instance = new PDO($dsn, DB_USER, DB_PASS, [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                    PDO::ATTR_STRINGIFY_FETCHES => false,
                 ]);
             } catch (\PDOException $e) {
                 // On journalise le détail technique mais on n'expose jamais
                 // l'erreur SQL brute à l'utilisateur (cf. erreurs-exceptions.md).
                 error_log('DB connection error: ' . $e->getMessage());
-                throw new DatabaseException('Erreur de connexion à la base de données.');
+                throw new DatabaseException('Error connecting to the database.');
             }
         }
 
@@ -69,9 +71,9 @@ final class Database
     }
 
     /**
-     * Réinitialise l'instance partagée.
+     * Resets shared instance.
      *
-     * Utile pour isoler les tests d'intégration entre eux (cf. bdd-pdo.md §10).
+     * Useful to isolate integration tests (cf. bdd-pdo.md §10).
      *
      * @return void
      */

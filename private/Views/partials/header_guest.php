@@ -1,32 +1,32 @@
 <!--
-    Partial : Header invité
+    Partial: Guest Header
 
-    En-tête affiché aux visiteurs non connectés :
-    - Logo TeslApp
-    - Navigation principale
-    - Connexion via « Login with Tesla »
-    - Menu mobile responsive
+    Header displayed to visitors who are not logged in:
+    - TeslApp logo
+    - Main navigation
+    - Log in via “Login with Tesla”
+    - Responsive mobile menu
 -->
 <header class="header">
     <div class="container">
-        <!-- Logo TeslApp -->
+        <!-- TeslApp Logo -->
         <a href="/site/home" class="logo">
             <img src="/_assets/images/Logo.svg" alt="TeslApp">
         </a>
 
-        <!-- Navigation principale -->
+        <!-- Main navigation -->
         <nav class="nav" aria-label="navigation principal"->
             <a href="/site/home" class="nav-link">Accueil</a>
             <a href="/site/sitemap" class="nav-link">Plan du site</a>
             <a href="/site/legal" class="nav-link">Mentions légales</a>
         </nav>
 
-        <!-- Action : connexion Tesla -->
+        <!-- Action: Tesla connection -->
         <div class="header-actions">
             <a href="/auth/tesla/login" class="btn-primary">Se connecter avec Tesla</a>
         </div>
 
-        <!-- Bouton du menu mobile -->
+        <!-- Mobile Menu Button -->
         <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobileMenu">
             <span class="hamburger">
                 <span></span>
@@ -37,7 +37,7 @@
     </div>
 </header>
 
-<!-- Menu mobile -->
+<!-- Mobile menu -->
 <div class="mobile-menu" id="mobileMenu">
     <div class="mobile-menu-header">
         <a href="/site/home" class="logo">

@@ -1,12 +1,12 @@
 <!--
-    Partial : Footer
+    Partial: Footer
 
-    Pied de page : logo + description, équipe, navigation, contact, copyright.
+    Footer: logo + description, team, navigation, contact, copyright.
 -->
 <footer class="footer">
     <div class="container">
         <div class="footer-content">
-            <!-- Colonne : Logo et description -->
+            <!-- Column: Logo and description -->
             <div class="footer-col">
                 <a href="/site/home" class="logo">
                     <img src="/_assets/images/Logo.svg" alt="TeslApp">
@@ -29,7 +29,7 @@
                 </ul>
             </div>
 
-            <!-- Colonne : Navigation -->
+            <!-- Column: Navigation -->
             <div class="footer-col">
                 <h3 class="footer-heading">Navigation</h3>
                 <ul class="footer-list">
@@ -40,7 +40,7 @@
                 </ul>
             </div>
 
-            <!-- Colonne : Contact -->
+            <!-- Column: Contact -->
             <div class="footer-col">
                 <h3 class="footer-heading">Contact</h3>
                 <ul class="footer-list contact">
@@ -56,7 +56,7 @@
             </div>
         </div>
 
-        <!-- Barre de copyright -->
+        <!-- Copyright bar -->
         <div class="footer-bottom">
             <p>© 2026 TeslApp. Tous droits réservés. Non affilié à Tesla, Inc.</p>
         </div>

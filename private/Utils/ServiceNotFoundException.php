@@ -7,6 +7,6 @@ namespace Teslapp\Utils;
 use RuntimeException;
 
 /**
- * Exception levée lorsqu'un service demandé n'existe pas dans le conteneur.
+ * Exception thrown when a requested service does not exist in the container.
  */
 class ServiceNotFoundException extends RuntimeException {}

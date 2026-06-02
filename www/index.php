@@ -1,17 +1,17 @@
 <?php
-// www/index.php — Front Controller TeslApp
+// www/index.php — TeslApp Front Controller
 declare(strict_types=1);
 
 use Teslapp\Utils\Csrf;
 use Teslapp\Utils\Flash;
 
 /**
- * Chargements : configuration globale, autoload Composer (PSR-4),
- * puis table des routes.
+ * Loading: global configuration, Composer autoload (PSR-4),
+ * followed by the routes table.
  */
 require_once __DIR__ . '/../private/config/config.php';
 
-// Autoload Composer (PSR-4) — requis. Lancer `composer install` si absent.
+// Composer autoload (PSR-4) — required. Run `composer install` if missing.
 $autoload = BASE_PATH . '/vendor/autoload.php';
 if (!is_file($autoload)) {
     http_response_code(500);
@@ -21,14 +21,14 @@ require_once $autoload;
 
 $routes = require_once __DIR__ . '/../private/config/routes.php';
 
-// Conteneur DI maison : résout les controllers et leurs dépendances (cf. private/config/container.php)
+// Custom DI container: resolves controllers and their dependencies (see private/config/container.php)
 $container = require_once __DIR__ . '/../private/config/container.php';
 
 session_name('TESLAPP_SESSION');
 
-// Paramètres du cookie de session. SameSite=Lax (et non Strict) pour que le cookie
-// soit bien renvoyé au retour du callback OAuth Tesla (navigation top-level cross-site
-// depuis auth.tesla.com) ; la protection CSRF reste assurée par le token synchronizer.
+// Session cookie settings. SameSite=Lax (not Strict) so that the cookie
+// is properly sent back when the Tesla OAuth callback returns (top-level cross-site navigation
+// from auth.tesla.com); CSRF protection is still ensured by the synchronizer token.
 $sessionCookieParams = [
     'cookie_secure' => true,
     'cookie_httponly' => true,
@@ -39,7 +39,7 @@ $sessionCookieParams = [
 ];
 session_start($sessionCookieParams);
 
-// ==================== POLITIQUE D'INACTIVITÉ & ROTATION ====================
+// ==================== INACTIVITY & ROTATION POLICY ====================
 $now = time();
 $idleTimeout = 1800; // 30 min
 
@@ -62,11 +62,11 @@ if (!isset($_SESSION['CREATED'])) {
 
 Csrf::ensureToken();
 
-/** ==================== Résolution de la route ====================
- * La route est dérivée du CHEMIN de la requête (front controller — cf. cours MVC §5.5).
- * En prod, le .htaccess réécrit tout vers index.php en préservant REQUEST_URI ; en dev
- * (php -S), les chemins inconnus arrivent aussi à index.php. La query string ?route=
- * reste acceptée en repli explicite. Route par défaut : site/home.
+/** ==================== Route Resolution ====================
+ * The route is derived from the request's PATH (front controller — see MVC course §5.5).
+ * In production, the .htaccess file rewrites everything to index.php while preserving REQUEST_URI; in development
+ * (php -S), unknown paths also go to index.php. The query string ?route=
+ * remains accepted as an explicit fallback. Default route: site/home.
  */
 $route = filter_input(INPUT_GET, 'route', FILTER_UNSAFE_RAW);
 if (!is_string($route) || $route === '') {
@@ -84,20 +84,20 @@ if (!isset($routes[$route])) {
     try {
         $container->get($errClass)->{$errMethod}();
     } catch (Throwable $e) {
-        error_log('Échec du rendu de la page 404 : ' . $e->getMessage());
-        echo '404 — Page introuvable';
+        error_log('Page 404 rendering failed : ' . $e->getMessage());
+        echo '404 — Page Not Found';
     }
     exit();
 }
 
 [$class, $method] = $routes[$route];
 
-/** ==================== Instanciation & exécution ==================== */
+/** ==================== Instantiation & Execution ==================== */
 try {
-    // Vérification du contrôleur (le conteneur est la source de vérité du câblage)
+    // Controller verification (the container is the single source of truth for the wiring)
     if (!$container->has($class)) {
         http_response_code(500);
-        echo '500 — Contrôleur non enregistré dans le conteneur : ' .
+        echo '500 — Controller not registered in the container : ' .
             htmlspecialchars($class, ENT_QUOTES, 'UTF-8');
         exit();
     }
@@ -106,20 +106,20 @@ try {
 
     if (!is_callable([$controller, $method])) {
         http_response_code(500);
-        echo '500 — Méthode introuvable : ' .
+        echo '500 — Method not found : ' .
             htmlspecialchars($class . '::' . $method, ENT_QUOTES, 'UTF-8');
         exit();
     }
 
     $controller->{$method}();
 } catch (Throwable $e) {
-    // Réponse HTTP standard
+    // Standard HTTP response
     http_response_code(500);
-    echo '500 — Erreur interne';
+    echo '500 — Internal error';
 
-    // Journalisation complète
+    // Full logging
     $logMessage = sprintf(
-        "[%s] Exception non interceptée\nType: %s\nMessage: %s\nFichier: %s:%d\nRoute: %s\nClasse: %s\nMéthode: %s\nTrace:\n%s\n",
+        "[%s] Unhandled exception\nType: %s\nMessage: %s\nFile: %s:%d\nRoute: %s\nClass: %s\nMethod: %s\nTrace:\n%s\n",
         date('Y-m-d H:i:s'),
         get_class($e),
         $e->getMessage(),

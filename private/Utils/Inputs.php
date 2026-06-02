@@ -5,72 +5,74 @@ declare(strict_types=1);
 namespace Teslapp\Utils;
 
 /**
- * Classe utilitaire de validation et sanitization des entrées utilisateur
+ * Utility class for validating and sanitizing user inputs
  *
- * Fournit un ensemble de méthodes pour valider et nettoyer les données
- * entrantes (formulaires, API, etc.). Chaque type de donnée (email, token, etc.)
- * dispose de méthodes de sanitization et de validation dédiées.
+ * Provides a set of methods to validate and clean incoming data
+ * (forms, API, etc.). Each data type (email, token, etc.)
+ * has dedicated sanitization and validation methods.
  *
- * Les expressions régulières sont centralisées en constantes pour assurer la cohérence
- * de la validation à travers l'application.
+ * Regular expressions are centralized as constants to ensure consistent
+ * validation throughout the application.
  *
- * Pattern d'utilisation :
- * 1. Sanitize : nettoie et normalise la donnée (trim, lowercase, collapse spaces)
- * 2. Validate : vérifie la conformité et retourne un message d'erreur ou null
+ * Usage pattern:
+ * 1. Sanitize: cleans and normalizes the data (trim, lowercase, collapse spaces)
+ * 2. Validate: checks conformity and returns an error message or null
  *
  * @package Teslapp\Utils
  */
 final class Inputs
 {
     /* ===============================
-     *  REGEX centrales
+     *  Central regexes
      * =============================== */
 
     /**
-     * Expression régulière pour les adresses e-mail
-     * Format standard : local@domaine.tld
+     * Regular expression for email addresses
+     * Standard format: local@domain.tld
      *
      * @var string
      */
     public const RE_EMAIL = '/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/';
 
     /* ===============================
-     *  Helpers génériques
+     *  Generic helpers
      * =============================== */
+
     /**
-     * Compresse les espaces multiples en un seul espace
+     * Collapses multiple whitespace characters into a single space
      *
-     * Remplace toute séquence d'espaces blancs (espaces, tabulations, retours à la ligne)
-     * par un simple espace, puis supprime les espaces en début et fin de chaîne.
+     * Replaces any sequence of whitespace (spaces, tabs, newlines)
+     * with a single space, then trims leading and trailing whitespace.
      *
-     * @param string $s La chaîne à traiter
-     * @return string La chaîne avec espaces normalisés
+     * @param string $s The string to process
+     * @return string The string with normalized spaces
      */
     public static function collapseSpaces(string $s): string
     {
-        // Remplace toute séquence d'espaces blancs par un seul espace
+        // Replace any whitespace sequence with a single space
         $s = preg_replace('/\s+/u', ' ', $s);
         return trim($s);
     }
 
     /**
-     * Nettoie et normalise une chaîne de caractères
+     * Cleans and normalizes a string
      *
-     * Méthode générique de sanitization appliquant plusieurs transformations :
-     * - trim() : suppression des espaces en début et fin
-     * - collapseSpaces() : normalisation des espaces multiples (optionnel)
-     * - mb_strtolower() : conversion en minuscules UTF-8 (optionnel)
+     * Generic sanitization method applying several transformations:
+     * - trim(): removes leading and trailing whitespace
+     * - collapseSpaces(): normalizes multiple spaces (optional)
+     * - mb_strtolower(): converts to UTF-8 lowercase (optional)
      *
-     * @param string $s La chaîne à nettoyer
-     * @param bool $lower Convertir en minuscules (défaut: false)
-     * @param bool $collapseSpaces Compresser les espaces multiples (défaut: true)
-     * @return string La chaîne nettoyée
+     * @param string $s The string to clean
+     * @param bool $lower Convert to lowercase (default: false)
+     * @param bool $collapseSpaces Collapse multiple spaces (default: true)
+     * @return string The cleaned string
      */
     public static function sanitizeString(
         string $s,
-        bool $lower = false,
-        bool $collapseSpaces = true,
-    ): string {
+        bool   $lower = false,
+        bool   $collapseSpaces = true,
+    ): string
+    {
         $s = trim($s);
         if ($collapseSpaces) {
             $s = self::collapseSpaces($s);
@@ -82,29 +84,30 @@ final class Inputs
     }
 
     /**
-     * Valide la longueur d'une chaîne de caractères
+     * Validates the length of a string
      *
-     * Vérifie que la longueur de la chaîne (en nombre de caractères UTF-8) respecte
-     * les limites min/max définies. Retourne un message d'erreur personnalisé si invalide.
+     * Checks that the string length (in UTF-8 characters) respects
+     * the defined min/max bounds. Returns a custom error message if invalid.
      *
-     * @param string $s La chaîne à valider
-     * @param int|null $min Longueur minimale requise (null = pas de minimum)
-     * @param int|null $max Longueur maximale autorisée (null = pas de maximum)
-     * @param string $label Label utilisé dans le message d'erreur
-     * @return string|null Message d'erreur ou null si valide
+     * @param string $s The string to validate
+     * @param int|null $min Minimum required length (null = no minimum)
+     * @param int|null $max Maximum allowed length (null = no maximum)
+     * @param string $label Label used in the error message
+     * @return string|null Error message or null if valid
      */
     public static function validateLength(
         string $s,
-        ?int $min = null,
-        ?int $max = null,
-        string $label = 'La valeur',
-    ): ?string {
+        ?int   $min = null,
+        ?int   $max = null,
+        string $label = 'The value',
+    ): ?string
+    {
         $len = mb_strlen($s, 'UTF-8');
         if ($min !== null && $len < $min) {
-            return "$label doit faire au moins $min caractères.";
+            return "$label must be at least $min characters.";
         }
         if ($max !== null && $len > $max) {
-            return "$label ne doit pas dépasser $max caractères.";
+            return "$label must not exceed $max characters.";
         }
         return null;
     }
@@ -114,12 +117,12 @@ final class Inputs
      * =============================== */
 
     /**
-     * Nettoie une adresse e-mail
+     * Sanitizes an email address
      *
-     * Applique : trim, conversion en minuscules, compression des espaces multiples.
+     * Applies: trim, lowercase conversion, multiple space collapsing.
      *
-     * @param string $s L'adresse e-mail à nettoyer
-     * @return string L'adresse e-mail nettoyée
+     * @param string $s The email address to clean
+     * @return string The cleaned email address
      */
     public static function sanitizeEmail(string $s): string
     {
@@ -127,154 +130,154 @@ final class Inputs
     }
 
     /**
-     * Valide une adresse e-mail
+     * Validates an email address
      *
-     * Vérifie que l'email :
-     * - N'est pas vide
-     * - Ne dépasse pas la longueur maximale (RFC 5321 : 254 caractères)
-     * - Respecte le format RE_EMAIL (local@domaine.tld)
+     * Checks that the email:
+     * - Is not empty
+     * - Does not exceed the maximum length (RFC 5321: 254 characters)
+     * - Matches the RE_EMAIL format (local@domain.tld)
      *
-     * @param string $s L'adresse e-mail à valider
-     * @param int $max Longueur maximale autorisée (défaut: 254)
-     * @return string|null Message d'erreur ou null si valide
+     * @param string $s The email address to validate
+     * @param int $max Maximum allowed length (default: 254)
+     * @return string|null Error message or null if valid
      */
     public static function validateEmail(string $s, int $max = 254): ?string
     {
         if ($s === '') {
-            return "L'email est requis.";
+            return 'Email is required.';
         }
-        if ($msg = self::validateLength($s, min: null, max: $max, label: "L'email")) {
+        if ($msg = self::validateLength($s, min: null, max: $max, label: 'Email')) {
             return $msg;
         }
         if (!preg_match(self::RE_EMAIL, $s)) {
-            return "Format d'email invalide.";
+            return 'Invalid email format.';
         }
         return null;
     }
 
     /* ===============================
-     *  Identifiant entier (> 0) — nullable
+     *  Integer identifier (> 0) — nullable
      * =============================== */
 
     /**
-     * Nettoie et convertit un ID en entier positif
+     * Sanitizes and converts an ID to a positive integer
      *
-     * Convertit une chaîne en entier si elle représente un nombre positif valide.
-     * Retourne null si la chaîne est vide, non numérique, ou si l'ID est <= 0.
+     * Converts a string to an integer if it represents a valid positive number.
+     * Returns null if the string is empty, non-numeric, or if the ID is <= 0.
      *
-     * @param string|null $s La chaîne représentant l'ID
-     * @return int|null L'ID en tant qu'entier positif ou null
+     * @param string|null $s The string representing the ID
+     * @return int|null The ID as a positive integer or null
      */
     public static function sanitizeIntId(?string $s): ?int
     {
-        $s = trim((string) $s);
+        $s = trim((string)$s);
         if ($s === '') {
             return null;
         }
         if (!ctype_digit($s)) {
             return null;
         }
-        $i = (int) $s;
+        $i = (int)$s;
         return $i > 0 ? $i : null;
     }
 
     /**
-     * Valide un identifiant entier
+     * Validates an integer identifier
      *
-     * Vérifie qu'un ID est soit null (si nullable accepté) soit un entier strictement positif.
+     * Checks that an ID is either null (if nullable is accepted) or a strictly positive integer.
      *
-     * @param int|null $id L'identifiant à valider
-     * @param string $label Label pour le message d'erreur (défaut: 'Identifiant')
-     * @return string|null Message d'erreur ou null si valide
+     * @param int|null $id The identifier to validate
+     * @param string $label Label for the error message (default: 'Identifier')
+     * @return string|null Error message or null if valid
      */
-    public static function validateIntId(?int $id, string $label = 'Identifiant'): ?string
+    public static function validateIntId(?int $id, string $label = 'Identifier'): ?string
     {
         if ($id === null) {
             return null;
         } // nullable OK
         if ($id <= 0) {
-            return "$label invalide.";
+            return "$label is invalid.";
         }
         return null;
     }
 
     /* ===============================
-     *  Token base64url (OAuth state, CSRF, etc.)
+     *  Base64url token (OAuth state, CSRF, etc.)
      * =============================== */
 
     /**
-     * Nettoie un token base64url
+     * Sanitizes a base64url token
      *
-     * Supprime les espaces et le padding '=' éventuel.
-     * Les tokens base64url n'utilisent pas de padding pour être URL-safe.
+     * Removes whitespace and any '=' padding.
+     * Base64url tokens do not use padding to remain URL-safe.
      *
-     * @param string $s Le token à nettoyer
-     * @return string Le token nettoyé
+     * @param string $s The token to clean
+     * @return string The cleaned token
      */
     public static function sanitizeBase64UrlToken(string $s): string
     {
-        // trim + suppression d'espaces invisibles
+        // trim + removal of invisible whitespace
         $s = trim($s);
-        // on retire les éventuels '=' de padding s'ils arrivent
+        // strip any '=' padding if present
         return rtrim($s, '=');
     }
 
     /**
-     * Valide un token au format base64url
+     * Validates a base64url token
      *
-     * Vérifie qu'un token :
-     * - N'est pas vide
-     * - Ne contient que des caractères base64url (A-Z, a-z, 0-9, -, _)
-     * - Respecte les contraintes de longueur min/max
+     * Checks that a token:
+     * - Is not empty
+     * - Contains only base64url characters (A-Z, a-z, 0-9, -, _)
+     * - Respects the min/max length constraints
      *
-     * Par défaut, un token de 32 octets fait ~43 caractères en base64url sans padding.
+     * By default, a 32-byte token is ~43 characters in base64url without padding.
      *
-     * @param string $s Le token à valider
-     * @param int $min Longueur minimale (défaut: 24)
-     * @param int $max Longueur maximale (défaut: 128)
-     * @param string $label Label pour le message d'erreur (défaut: 'Le token')
-     * @return string|null Message d'erreur ou null si valide
+     * @param string $s The token to validate
+     * @param int $min Minimum length (default: 24)
+     * @param int $max Maximum length (default: 128)
+     * @param string $label Label for the error message (default: 'The token')
+     * @return string|null Error message or null if valid
      */
     public static function validateBase64UrlToken(
         string $s,
-        int $min = 24,
-        int $max = 128,
-        string $label = 'Le token',
-    ): ?string {
-        $error = null;
-
+        int    $min = 24,
+        int    $max = 128,
+        string $label = 'The token',
+    ): ?string
+    {
         if ($s === '') {
-            $error = "$label est requis.";
+            return "$label is required.";
         }
         if (!preg_match('/^[A-Za-z0-9\-_]+$/', $s)) {
-            $error = "$label a un format invalide.";
+            return "$label has an invalid format.";
         }
         $len = strlen($s);
         if ($len < $min || $len > $max) {
-            $error = "$label a une longueur invalide.";
+            return "$label has an invalid length.";
         }
-        return $error;
+        return null;
     }
 
     /* ===============================
-     *  Outils ponctuels
+     *  One-off utilities
      * =============================== */
 
     /**
-     * Valide une chaîne contre une expression régulière arbitraire.
+     * Validates a string against an arbitrary regular expression.
      *
-     * @param string $s     La chaîne à valider
-     * @param string $regex Le motif PCRE à appliquer
-     * @param string $label Label pour le message d'erreur (défaut: 'La valeur')
-     * @return string|null Message d'erreur ou null si valide
+     * @param string $s The string to validate
+     * @param string $regex The PCRE pattern to apply
+     * @param string $label Label for the error message (default: 'The value')
+     * @return string|null Error message or null if valid
      */
     public static function validateRegex(
         string $s,
         string $regex,
-        string $label = 'La valeur',
-    ): ?string {
+        string $label = 'The value',
+    ): ?string
+    {
         if (!preg_match($regex, $s)) {
-            return "$label a un format invalide.";
+            return "$label has an invalid format.";
         }
         return null;
     }

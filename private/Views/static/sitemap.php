@@ -6,23 +6,23 @@ ob_start();
 ?>
 <section class="sitemap-section">
     <div class="sitemap-container">
-        <!-- Lien de retour -->
+        <!-- Back link  -->
         <a href="/site/home" class="back-link">
             <img src="/_assets/images/fleche-gauche.svg" alt="" aria-hidden="true">
             Retour à l'accueil
         </a>
 
-        <!-- En-tête du plan du site -->
+        <!-- Site Map Header -->
         <div class="sitemap-header">
             <h1 class="sitemap-title">Plan du site</h1>
             <p class="sitemap-subtitle">Toutes les pages de TeslApp</p>
         </div>
 
-        <!-- Carte listant les pages -->
+        <!-- Site Map Card -->
         <div class="sitemap-card">
             <h2 class="sitemap-card-title">Pages disponibles</h2>
 
-            <!-- Liste des pages publiques réellement accessibles -->
+            <!-- List of publicly accessible pages -->
             <div class="sitemap-list">
                 <a class="sitemap-item" href="/site/home">
                     <span class="sitemap-page-name">Accueil</span>
