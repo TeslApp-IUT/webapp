@@ -22,6 +22,8 @@ final class TokenCipher
     }
 
     /**
+     * Encrypts the plaintext and returns the ciphertext and nonce.
+     * @param string $plaintext the plaintext to encrypt
      * @return array{ciphertext: string, nonce: string} both base64-encoded
      */
     public function encrypt(string $plaintext): array
@@ -36,6 +38,10 @@ final class TokenCipher
     }
 
     /**
+     * Decrypts the ciphertext with the nonce and returns the plaintext.
+     * @param string $ciphertextB64 the base64-encoded ciphertext
+     * @param string $nonceB64 the base64-encoded nonce
+     * @return string the plaintext
      * @throws \RuntimeException if the key is wrong or the data has been tampered with
      */
     public function decrypt(string $ciphertextB64, string $nonceB64): string
