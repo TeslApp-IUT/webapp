@@ -10,3 +10,10 @@ node_modules
 
 # Ignore environment files:
 .env
+
+# Templates de vues (HTML + PHP mêlés) : @prettier/plugin-php n'est pas idempotent
+# dessus (boucle de reformatage → CI rouge). Formatage manuel pour ces fichiers.
+private/Views/
+
+# Ignore Composer dependencies
+vendor
