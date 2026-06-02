@@ -30,10 +30,8 @@ function testTelemetryDataKeys(array $data): void
         'hvac_ac_enabled',
     ];
 
-    foreach ($expectedKeys as $key)
-    {
-        if (!array_key_exists($key, $data))
-        {
+    foreach ($expectedKeys as $key) {
+        if (!array_key_exists($key, $data)) {
             echo "Missing key: {$key}\n";
             return;
         }
@@ -45,60 +43,44 @@ function testTelemetryDataKeys(array $data): void
 function testTelemetryDataTypes(array $data): void
 {
     /* Battery */
-    if (!is_int($data['battery_level']) && !is_float($data['battery_level']))
-    {
+    if (!is_int($data['battery_level']) && !is_float($data['battery_level'])) {
         echo "battery_level must be a number\n";
-    }
-    else
-    {
+    } else {
         echo "battery_level is a number\n";
     }
 
-    if (!is_bool($data['charge_enable_request']))
-    {
+    if (!is_bool($data['charge_enable_request'])) {
         echo "charge_enable_request must be a boolean\n";
-    }
-    else
-    {
+    } else {
         echo "charge_enable_request is a boolean\n";
     }
 
-    if ($data['scheduled_charging_start_time'] !== null &&
+    if (
+        $data['scheduled_charging_start_time'] !== null &&
         !is_int($data['scheduled_charging_start_time']) &&
-        !DateTime::createFromFormat('Y-m-d H:i:s', $data['scheduled_charging_start_time']))
-    {
+        !DateTime::createFromFormat('Y-m-d H:i:s', $data['scheduled_charging_start_time'])
+    ) {
         echo "scheduled_charging_start_time must be a valid date\n";
-    }
-    else
-    {
+    } else {
         echo "scheduled_charging_start_time is valid\n";
     }
 
     /* Clim */
-    if (!is_int($data['inside_temp']) && !is_float($data['inside_temp']))
-    {
+    if (!is_int($data['inside_temp']) && !is_float($data['inside_temp'])) {
         echo "inside_temp must be a real (temperature)\n";
-    }
-    else
-    {
+    } else {
         echo "inside_temp is a real (temperature)\n";
     }
 
-    if (!is_int($data['climate_keeper_mode']))
-    {
+    if (!is_int($data['climate_keeper_mode'])) {
         echo "climate_keeper_mode must be an integer\n";
-    }
-    else
-    {
+    } else {
         echo "climate_keeper_mode is an integer\n";
     }
 
-    if (!is_bool($data['hvac_ac_enabled']))
-    {
+    if (!is_bool($data['hvac_ac_enabled'])) {
         echo "hvac_ac_enabled must be a boolean\n";
-    }
-    else
-    {
+    } else {
         echo "hvac_ac_enabled is a boolean\n";
     }
 }
