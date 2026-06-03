@@ -1,7 +1,8 @@
 # Development environment override — runs on Kárkharos, external network
 name: teslapp
 services:
-  webapp-dev:
+  webapp:
+    container_name: app-dev
     restart: unless-stopped
     ports:
       - '50079:80'

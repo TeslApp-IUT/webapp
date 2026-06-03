@@ -1,7 +1,8 @@
 # Local development override — uses host network bridge, hot reload
 name: teslapp
 services:
-  webapp-local:
+  webapp:
+    container_name: app-local
     ports:
       - '50079:80'
     networks:
