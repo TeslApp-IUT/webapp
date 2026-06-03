@@ -1,5 +1,5 @@
 # Local development override — uses host network bridge, hot reload
-name: teslapp
+name: teslapp-local
 services:
   webapp:
     ports:

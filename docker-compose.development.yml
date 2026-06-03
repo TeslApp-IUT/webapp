@@ -1,5 +1,5 @@
 # Development environment override — runs on Kárkharos, external network
-name: teslapp
+name: teslapp-dev
 services:
   webapp:
     restart: unless-stopped
