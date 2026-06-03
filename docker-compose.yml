@@ -6,6 +6,8 @@ services:
       - '50025:80'
     env_file: .env
     restart: unless-stopped
+    volumes:
+      - ./docker/nginx.dev.conf:/etc/nginx/nginx.conf:ro
     networks:
       shared:
         ipv4_address: 172.22.0.6
@@ -21,7 +23,7 @@ services:
           target: /var/www/html
           ignore:
             - _assets/
-        - action: sync+restart
+        - action: sync
           path: ./private
           target: /var/www/private
         # Image rebuild only when dependencies or server config change.
