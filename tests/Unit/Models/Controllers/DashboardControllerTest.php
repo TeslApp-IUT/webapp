@@ -1,3 +1,5 @@
+<!--Test script: php tests/Controllers/DashboardControllerTest.php-->
+
 <?php
 require_once __DIR__ . '/../private/Controllers/DashboardController.php';
 
