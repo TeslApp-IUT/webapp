@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Start Development" type="ShConfigurationType">
-    <option name="SCRIPT_TEXT" value="npx concurrently -n &quot;docker,tailwind,browsersync&quot; -c &quot;blue,green,magenta&quot; &quot;docker compose watch&quot; &quot;npm run dev&quot; &quot;npm run reload&quot;" />
+  <configuration default="false" name="Start Development (bun)" type="ShConfigurationType">
+    <option name="SCRIPT_TEXT" value="bunx concurrently -n &quot;docker,tailwind,browsersync&quot; -c &quot;blue,green,magenta&quot; &quot;docker compose watch&quot; &quot;bun run dev&quot; &quot;bun run reload&quot;" />
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
     <option name="SCRIPT_PATH" value="npx concurrently -n &quot;docker,tailwind,browsersync&quot; -c &quot;blue,green,magenta&quot; &quot;docker compose watch&quot; &quot;npm run dev&quot; &quot;npm run reload&quot;" />
     <option name="SCRIPT_OPTIONS" value="" />
