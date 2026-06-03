@@ -1,10 +1,10 @@
-name: Deploy to Prod (Kárkharos)
+name: Deploy to Dev (Kárkharos)
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "development" ]
 
 jobs:
-  deploy-prod:
+  deploy-dev:
     runs-on: self-hosted
     defaults:
       run:
@@ -14,9 +14,9 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Write .env
-        run: echo '${{ secrets.WEBAPP_ENV }}' > $GITHUB_WORKSPACE/.env
+        run: echo '${{ secrets.WEBAPP_ENV_DEV }}' > $GITHUB_WORKSPACE/.env
 
-      - name: Deploy to prod
+      - name: Deploy to dev
         run: |
           cd $GITHUB_WORKSPACE
           export $(cat .env | xargs)

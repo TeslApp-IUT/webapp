@@ -1,0 +1,14 @@
+# Development environment override — runs on Kárkharos, external network
+name: teslapp
+services:
+  webapp:
+    restart: unless-stopped
+    ports:
+      - "50079:80"
+    networks:
+      shared:
+        ipv4_address: 172.22.0.11
+
+networks:
+  shared:
+    external: true

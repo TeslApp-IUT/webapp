@@ -7,17 +7,15 @@ services:
     env_file: .env
     restart: unless-stopped
     volumes:
-      - ./docker/nginx.dev.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx.${ENVIRONMENT:-local}.conf:/etc/nginx/nginx.conf:ro
     networks:
       shared:
-        ipv4_address: 172.22.0.6
+        ipv4_address: 172.22.0.10
     develop:
       watch:
-        # Static assets: synced instantly, nginx serves them directly (no PHP/opcache).
         - action: sync
           path: ./www/_assets
           target: /var/www/html/_assets
-        # PHP source: sync + restart to flush opcache immediately.
         - action: sync+restart
           path: ./www
           target: /var/www/html
@@ -26,7 +24,6 @@ services:
         - action: sync
           path: ./private
           target: /var/www/private
-        # Image rebuild only when dependencies or server config change.
         - action: rebuild
           path: composer.json
         - action: rebuild
@@ -39,4 +36,7 @@ services:
 networks:
   shared:
     name: teslapp_shared
-    external: true
+    external: false
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
