@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Write .env
-        run: echo '${{ secrets.WEBAPP_ENV_PROD }}' > $GITHUB_WORKSPACE/.env
+        run: echo '${{ secrets.WEBAPP_ENV_PRODUCTION }}' > $GITHUB_WORKSPACE/.env
 
       - name: Deploy to prod
         run: |
