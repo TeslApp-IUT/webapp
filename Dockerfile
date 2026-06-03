@@ -12,7 +12,20 @@ RUN --mount=type=bind,source=composer.json,target=composer.json \
     composer install --no-dev --no-interaction
 
 ################################################################################
-# Stage 2: Final runtime image (nginx + PHP-FPM on Alpine)
+# Stage 2: Tailwind CSS build
+FROM oven/bun:alpine AS css
+
+WORKDIR /build
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
+# Source CSS + PHP templates needed for class scanning
+COPY assets/css/app.css assets/css/app.css
+COPY private/Views private/Views
+COPY www/index.php www/index.php
+RUN bun run build
+
+################################################################################
+# Stage 3: Final runtime image (nginx + PHP-FPM on Alpine)
 FROM php:8.2-fpm-alpine AS final
 
 # Install nginx and supervisor; compile pdo_pgsql against postgresql-dev then
@@ -34,6 +47,8 @@ COPY docker/supervisord.conf /etc/supervisord.conf
 COPY --from=deps /app/vendor /var/www/vendor
 COPY ./private /var/www/private
 COPY ./www /var/www/html
+# Overwrite with the minified compiled CSS from the build stage
+COPY --from=css /build/www/_assets/css/styles.css /var/www/html/_assets/css/styles.css
 
 EXPOSE 80
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
