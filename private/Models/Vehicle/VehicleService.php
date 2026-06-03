@@ -18,8 +18,7 @@ final class VehicleService
         private readonly AccessTokenProviderInterface $tokenProvider,
         private readonly VehicleRepositoryInterface $vehicleRepository,
         private readonly TeslaModelRepositoryInterface $modelRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * Reconciles the user's vehicles with the Tesla API: a VIN present in the API
@@ -32,23 +31,25 @@ final class VehicleService
         $apiVehicles = $this->teslaApi->listVehicles($token);
         $dbVehicles = $this->vehicleRepository->findByUser($userId);
 
-        $dbVins = array_map(static fn (Vehicle $v): string => $v->vin->value, $dbVehicles);
-        $apiVins = array_map(static fn (Vehicle $v): string => $v->vin->value, $apiVehicles);
+        $dbVins = array_map(static fn(Vehicle $v): string => $v->vin->value, $dbVehicles);
+        $apiVins = array_map(static fn(Vehicle $v): string => $v->vin->value, $apiVehicles);
 
         $newVehicles = array_filter(
             $apiVehicles,
-            static fn (Vehicle $v): bool => !in_array($v->vin->value, $dbVins, true),
+            static fn(Vehicle $v): bool => !in_array($v->vin->value, $dbVins, true),
         );
 
         if ($newVehicles !== []) {
             $modelIdsByName = $this->modelIdsByName();
             foreach ($newVehicles as $apiVehicle) {
-                $this->vehicleRepository->save(new Vehicle(
-                    vin: $apiVehicle->vin,
-                    userId: $userId,
-                    name: $apiVehicle->name,
-                    modelId: $this->resolveModelId($apiVehicle->vin, $modelIdsByName),
-                ));
+                $this->vehicleRepository->save(
+                    new Vehicle(
+                        vin: $apiVehicle->vin,
+                        userId: $userId,
+                        name: $apiVehicle->name,
+                        modelId: $this->resolveModelId($apiVehicle->vin, $modelIdsByName),
+                    ),
+                );
             }
         }
 
@@ -86,10 +87,14 @@ final class VehicleService
             'S' => 'Model S',
             'X' => 'Model X',
             'C' => 'Cybertruck',
-            default => throw new \InvalidArgumentException("Unknown Tesla model for VIN {$vin->value}"),
+            default => throw new \InvalidArgumentException(
+                "Unknown Tesla model for VIN {$vin->value}",
+            ),
         };
 
-        return $modelIdsByName[$name]
-            ?? throw new \RuntimeException("Model '{$name}' is missing from vehicle_models (database seed?)");
+        return $modelIdsByName[$name] ??
+            throw new \RuntimeException(
+                "Model '{$name}' is missing from vehicle_models (database seed?)",
+            );
     }
 }

@@ -25,18 +25,25 @@ final class VehicleServiceTest extends TestCase
     {
         $api = $this->createMock(VehicleStateClient::class);
         $api->method('listVehicles')->willReturn([
-            Vehicle::fromTeslaResponse(['vin' => '5YJ3E1EA7KF000316', 'display_name' => 'Ma Model 3']),
+            Vehicle::fromTeslaResponse([
+                'vin' => '5YJ3E1EA7KF000316',
+                'display_name' => 'Ma Model 3',
+            ]),
         ]);
 
         $vehicleRepo = $this->createMock(VehicleRepositoryInterface::class);
         $vehicleRepo->method('findByUser')->willReturn([]); // database empty
-        $vehicleRepo->expects($this->once())
+        $vehicleRepo
+            ->expects($this->once())
             ->method('save')
-            ->with($this->callback(static fn (Vehicle $v): bool =>
-                $v->vin->value === '5YJ3E1EA7KF000316'
-                && $v->userId === 'user-1'
-                && $v->modelId === 'model-3-id'
-                && $v->name === 'Ma Model 3'));
+            ->with(
+                $this->callback(
+                    static fn(Vehicle $v): bool => $v->vin->value === '5YJ3E1EA7KF000316' &&
+                        $v->userId === 'user-1' &&
+                        $v->modelId === 'model-3-id' &&
+                        $v->name === 'Ma Model 3',
+                ),
+            );
         $vehicleRepo->expects($this->never())->method('deleteByVin');
 
         $modelRepo = $this->createMock(TeslaModelRepositoryInterface::class);
@@ -54,9 +61,12 @@ final class VehicleServiceTest extends TestCase
         $existing = new Vehicle(new Vin('5YJ3E1EA7KF000316'), 'user-1', 'Ma Model 3', 'model-3-id');
         $vehicleRepo = $this->createMock(VehicleRepositoryInterface::class);
         $vehicleRepo->method('findByUser')->willReturn([$existing]);
-        $vehicleRepo->expects($this->once())
+        $vehicleRepo
+            ->expects($this->once())
             ->method('deleteByVin')
-            ->with($this->callback(static fn (Vin $vin): bool => $vin->value === '5YJ3E1EA7KF000316'));
+            ->with(
+                $this->callback(static fn(Vin $vin): bool => $vin->value === '5YJ3E1EA7KF000316'),
+            );
         $vehicleRepo->expects($this->never())->method('save');
 
         $modelRepo = $this->createMock(TeslaModelRepositoryInterface::class);
@@ -67,7 +77,9 @@ final class VehicleServiceTest extends TestCase
     #[Test]
     public function listForUserReturnsTheUsersVehicles(): void
     {
-        $vehicles = [new Vehicle(new Vin('5YJ3E1EA7KF000316'), 'user-1', 'Ma Model 3', 'model-3-id')];
+        $vehicles = [
+            new Vehicle(new Vin('5YJ3E1EA7KF000316'), 'user-1', 'Ma Model 3', 'model-3-id'),
+        ];
 
         $vehicleRepo = $this->createMock(VehicleRepositoryInterface::class);
         $vehicleRepo->method('findByUser')->with('user-1')->willReturn($vehicles);

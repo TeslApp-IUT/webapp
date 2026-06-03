@@ -11,19 +11,14 @@ use PDO;
  */
 final class TeslaModelRepository implements TeslaModelRepositoryInterface
 {
-    public function __construct(private readonly PDO $pdo)
-    {
-    }
+    public function __construct(private readonly PDO $pdo) {}
 
     /** @return TeslaModel[] */
     public function findAll(): array
     {
         $rows = $this->pdo->query('SELECT id, name FROM vehicle_models ORDER BY name')->fetchAll();
 
-        return array_map(
-            static fn (array $row): TeslaModel => TeslaModel::fromRow($row),
-            $rows,
-        );
+        return array_map(static fn(array $row): TeslaModel => TeslaModel::fromRow($row), $rows);
     }
 
     public function findById(string $id): ?TeslaModel
