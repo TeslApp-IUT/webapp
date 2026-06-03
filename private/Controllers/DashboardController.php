@@ -1,4 +1,5 @@
 <?php
+namespace Teslapp\Controllers;
 
 /**
  * Controller responsible for displaying the vehicle dashboard
