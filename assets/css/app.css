@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Scan PHP templates for Tailwind utility classes */
 @source "../../private/Views/**/*.php";
