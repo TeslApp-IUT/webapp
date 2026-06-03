@@ -66,8 +66,12 @@ psalm.cache/
 
 
 # ──────────────────────────────────────────────────────────
-# 4. Node.js (Prettier — devDependencies seulement)
+# 4. Node.js / Frontend build
 # ──────────────────────────────────────────────────────────
+
+# Tailwind compiled output — built from assets/css/app.css
+# Generate locally with `bun dev`, or via `docker build` for production.
+/www/_assets/css/styles.css
 
 node_modules/
 npm-debug.log*

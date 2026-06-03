@@ -51,5 +51,6 @@
     <?php foreach (($extraJs ?? []) as $js): ?>
         <script src="/_assets/js/<?= e($js) ?>.js" defer></script>
     <?php endforeach; ?>
+
 </body>
 </html>

@@ -1,289 +1,120 @@
-/*! tailwindcss v4.3.0 | MIT License | https://tailwindcss.com */
-@layer theme, base, components, utilities;
-@layer theme {
-  :root, :host {
-    --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-      "Courier New", monospace;
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-    --default-font-family: var(--font-sans);
-    --default-mono-font-family: var(--font-mono);
-  }
-}
-@layer base {
-  *, ::after, ::before, ::backdrop, ::file-selector-button {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    border: 0 solid;
-  }
-  html, :host {
-    line-height: 1.5;
-    -webkit-text-size-adjust: 100%;
-    tab-size: 4;
-    font-family: var(--default-font-family, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
-    font-feature-settings: var(--default-font-feature-settings, normal);
-    font-variation-settings: var(--default-font-variation-settings, normal);
-    -webkit-tap-highlight-color: transparent;
-  }
-  hr {
-    height: 0;
-    color: inherit;
-    border-top-width: 1px;
-  }
-  abbr:where([title]) {
-    -webkit-text-decoration: underline dotted;
-    text-decoration: underline dotted;
-  }
-  h1, h2, h3, h4, h5, h6 {
-    font-size: inherit;
-    font-weight: inherit;
-  }
-  a {
-    color: inherit;
-    -webkit-text-decoration: inherit;
-    text-decoration: inherit;
-  }
-  b, strong {
-    font-weight: bolder;
-  }
-  code, kbd, samp, pre {
-    font-family: var(--default-mono-font-family, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
-    font-feature-settings: var(--default-mono-font-feature-settings, normal);
-    font-variation-settings: var(--default-mono-font-variation-settings, normal);
-    font-size: 1em;
-  }
-  small {
-    font-size: 80%;
-  }
-  sub, sup {
-    font-size: 75%;
-    line-height: 0;
-    position: relative;
-    vertical-align: baseline;
-  }
-  sub {
-    bottom: -0.25em;
-  }
-  sup {
-    top: -0.5em;
-  }
-  table {
-    text-indent: 0;
-    border-color: inherit;
-    border-collapse: collapse;
-  }
-  :-moz-focusring {
-    outline: auto;
-  }
-  progress {
-    vertical-align: baseline;
-  }
-  summary {
-    display: list-item;
-  }
-  ol, ul, menu {
-    list-style: none;
-  }
-  img, svg, video, canvas, audio, iframe, embed, object {
-    display: block;
-    vertical-align: middle;
-  }
-  img, video {
-    max-width: 100%;
-    height: auto;
-  }
-  button, input, select, optgroup, textarea, ::file-selector-button {
-    font: inherit;
-    font-feature-settings: inherit;
-    font-variation-settings: inherit;
-    letter-spacing: inherit;
-    color: inherit;
-    border-radius: 0;
-    background-color: transparent;
-    opacity: 1;
-  }
-  :where(select:is([multiple], [size])) optgroup {
-    font-weight: bolder;
-  }
-  :where(select:is([multiple], [size])) optgroup option {
-    padding-inline-start: 20px;
-  }
-  ::file-selector-button {
-    margin-inline-end: 4px;
-  }
-  ::placeholder {
-    opacity: 1;
-  }
-  @supports (not (-webkit-appearance: -apple-pay-button))  or (contain-intrinsic-size: 1px) {
-    ::placeholder {
-      color: currentcolor;
-      @supports (color: color-mix(in lab, red, red)) {
-        color: color-mix(in oklab, currentcolor 50%, transparent);
-      }
-    }
-  }
-  textarea {
-    resize: vertical;
-  }
-  ::-webkit-search-decoration {
-    -webkit-appearance: none;
-  }
-  ::-webkit-date-and-time-value {
-    min-height: 1lh;
-    text-align: inherit;
-  }
-  ::-webkit-datetime-edit {
-    display: inline-flex;
-  }
-  ::-webkit-datetime-edit-fields-wrapper {
-    padding: 0;
-  }
-  ::-webkit-datetime-edit, ::-webkit-datetime-edit-year-field, ::-webkit-datetime-edit-month-field, ::-webkit-datetime-edit-day-field, ::-webkit-datetime-edit-hour-field, ::-webkit-datetime-edit-minute-field, ::-webkit-datetime-edit-second-field, ::-webkit-datetime-edit-millisecond-field, ::-webkit-datetime-edit-meridiem-field {
-    padding-block: 0;
-  }
-  ::-webkit-calendar-picker-indicator {
-    line-height: 1;
-  }
-  :-moz-ui-invalid {
-    box-shadow: none;
-  }
-  button, input:where([type="button"], [type="reset"], [type="submit"]), ::file-selector-button {
-    appearance: button;
-  }
-  ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
-    height: auto;
-  }
-  [hidden]:where(:not([hidden="until-found"])) {
-    display: none !important;
-  }
-}
-@layer utilities {
-  .collapse {
-    visibility: collapse;
-  }
-  .invisible {
-    visibility: hidden;
-  }
-  .visible {
-    visibility: visible;
-  }
-  .absolute {
-    position: absolute;
-  }
-  .relative {
-    position: relative;
-  }
-  .static {
-    position: static;
-  }
-  .isolate {
-    isolation: isolate;
-  }
-  .container {
-    width: 100%;
-    @media (width >= 40rem) {
-      max-width: 40rem;
-    }
-    @media (width >= 48rem) {
-      max-width: 48rem;
-    }
-    @media (width >= 64rem) {
-      max-width: 64rem;
-    }
-    @media (width >= 80rem) {
-      max-width: 80rem;
-    }
-    @media (width >= 96rem) {
-      max-width: 96rem;
-    }
-  }
-  .hidden {
-    display: none;
-  }
-  .inline {
-    display: inline;
-  }
-  .size-full {
-    width: 100%;
-    height: 100%;
-  }
-  .lowercase {
-    text-transform: lowercase;
-  }
-  .\[program\:nginx\] {
-    program: nginx;
-  }
-  .\[program\:php-fpm\] {
-    program: php-fpm;
-  }
-}
+@import 'tailwindcss';
+
+/* Scan PHP templates for Tailwind utility classes */
+@source "../../private/Views/**/*.php";
+@source "../../www/**/*.php";
+
+/* ===================================================================================================
+   TeslApp - STYLESHEET
+   Description: Application web de contrôle de véhicules Tesla (thème sombre)
+   =================================================================================================== */
+
+/* ===================================================================================================
+   1. CSS VARIABLES & CONFIGURATION
+   =================================================================================================== */
+
 :root {
+  /* Primary Colors - Tesla Red */
   --color-primary: #e82127;
   --color-primary-hover: #ff3b3f;
+
+  /* Status Colors */
   --color-error: #ef4444;
   --color-success: #22c55e;
   --color-warning: #f59e0b;
+
+  /* Text Colors - Dark Theme */
   --color-text: #f5f5f5;
   --color-text-secondary: #a3a3a3;
   --color-text-muted: #737373;
   --color-placeholder: #6b6b6b;
+
+  /* Background Colors - Dark Theme (Tesla Style) */
   --color-bg: #0a0a0a;
   --color-bg-secondary: #141414;
   --color-bg-tertiary: #0f0f0f;
   --color-bg-card: #1a1a1a;
   --color-bg-hover: #ffffff0d;
+
+  /* Border & Shadow Colors */
   --color-border: #2a2a2a;
   --color-border-hover: #3a3a3a;
   --color-shadow: #00000066;
   --color-overlay: #0000004d;
+
+  /* Form Specific Colors */
   --color-input-bg: #1a1a1a;
   --color-input-border: #2a2a2a;
+
+  /* FAQ Specific Colors */
   --color-faq-bg: #111111;
+
+  /* Shadow Presets */
   --shadow-sm: 0 1px 3px var(--color-shadow);
   --shadow-md: 0 2px 16px #00000033;
   --shadow-lg: 0 10px 30px #00000066;
   --shadow-xl: 0 12px 32px #00000080;
   --shadow-card: 0 8px 24px var(--color-shadow);
 }
-*, *::before, *::after {
+
+/* ===================================================================================================
+   2. RESET & BASE STYLES
+   =================================================================================================== */
+
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.5;
   color: var(--color-text);
   background-color: var(--color-bg);
 }
+
 a {
   color: inherit;
   text-decoration: none;
 }
+
 button {
   font-family: inherit;
   border: none;
   background: none;
   cursor: pointer;
 }
+
 img {
   display: block;
   max-width: 100%;
   height: auto;
 }
+
+/* ===================================================================================================
+   3. LAYOUT SYSTEM
+   =================================================================================================== */
+
 .container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 32px;
 }
+
 .container-narrow {
   max-width: 768px;
   margin: 0 auto;
   padding: 0 32px;
 }
+
+/* ===================================================================================================
+   4. GLOBAL COMPONENTS - BUTTONS
+   =================================================================================================== */
+
+/* ----- Primary Button ----- */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -295,9 +126,15 @@ img {
   background-color: var(--color-primary);
   border-radius: 8px;
 }
+
 .btn-primary:hover {
   background-color: var(--color-primary-hover);
 }
+
+/* ===================================================================================================
+   5. HELPERS (accessibility & navigation)
+   =================================================================================================== */
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -309,6 +146,7 @@ img {
   white-space: nowrap;
   border-width: 0;
 }
+
 .back-link {
   display: inline-flex;
   align-items: center;
@@ -318,15 +156,19 @@ img {
   font-weight: 400;
   color: var(--color-text-secondary);
 }
+
 .back-link:hover {
   color: var(--color-text);
 }
+
+/* ----- Skip link (WCAG 2.4.1) ----- */
 .skip-link {
   position: absolute;
   top: 0;
   left: -9999px;
   z-index: 1100;
 }
+
 .skip-link:focus {
   left: 0;
   padding: 12px 16px;
@@ -334,21 +176,49 @@ img {
   background-color: var(--color-primary);
   border-radius: 0 0 8px 0;
 }
-a:focus, button:focus, input:focus, select:focus, textarea:focus {
+
+/* ===================================================================================================
+   6. FOCUS STYLES - ACCESSIBILITY
+   =================================================================================================== */
+
+/* Default focus for all interactive elements */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
-a:focus:not(:focus-visible), button:focus:not(:focus-visible), input:focus:not(:focus-visible), select:focus:not(:focus-visible), textarea:focus:not(:focus-visible) {
+
+/* Remove outline for mouse users only */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible) {
   outline: none;
 }
-a:focus-visible, button:focus-visible, select:focus-visible, textarea:focus-visible {
+
+/* Enhanced focus for keyboard users */
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
   outline: 3px solid var(--color-primary);
   outline-offset: 3px;
   box-shadow: 0 0 0 6px #e8212733;
 }
+
+/* Input focus-visible stays as is (already has border focus) */
 input:focus-visible {
   outline: none;
 }
+
+/* ===================================================================================================
+   7. HEADER & NAVIGATION
+   =================================================================================================== */
+
 .header {
   position: sticky;
   top: 0;
@@ -356,42 +226,58 @@ input:focus-visible {
   background-color: var(--color-bg);
   border-bottom: 0.667px solid var(--color-border);
 }
+
 .header .container {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 64px;
 }
+
+/* ----- Logo ----- */
 .logo {
   display: flex;
   align-items: center;
 }
+
 .logo img {
   width: auto;
   height: 26px;
 }
+
+/* ----- Navigation ----- */
 .nav {
   display: flex;
   align-items: center;
   gap: 32px;
 }
+
 .nav-link {
   font-size: 16px;
   font-weight: 400;
   color: var(--color-text-secondary);
 }
+
 .nav-link:hover {
   color: var(--color-text);
 }
+
 .nav-link.active {
   font-weight: 600;
   color: var(--color-primary);
 }
+
+/* ----- Header Actions ----- */
 .header-actions {
   display: flex;
   align-items: center;
   gap: 16px;
 }
+
+/* ===================================================================================================
+   8. HERO SECTION
+   =================================================================================================== */
+
 .hero {
   position: relative;
   display: flex;
@@ -402,6 +288,8 @@ input:focus-visible {
   overflow: hidden;
   text-align: center;
 }
+
+/* ----- Hero Background Images ----- */
 .hero-bg {
   position: absolute;
   inset: 0;
@@ -412,16 +300,20 @@ input:focus-visible {
   object-position: center;
   transition: opacity 0.3s ease-in-out;
 }
+
 .hero-overlay {
   position: absolute;
   inset: 0;
   z-index: 1;
   background-color: var(--color-overlay);
 }
+
 .hero .container {
   position: relative;
   z-index: 2;
 }
+
+/* ----- Hero Content ----- */
 .hero-title {
   margin-bottom: 24px;
   font-size: 60px;
@@ -430,9 +322,11 @@ input:focus-visible {
   letter-spacing: -1.5px;
   color: #f5f5f5;
 }
+
 .text-highlight {
   color: #e82127;
 }
+
 .hero-description {
   max-width: 900px;
   margin: 0 auto 32px;
@@ -440,25 +334,37 @@ input:focus-visible {
   font-weight: 600;
   line-height: 28px;
   color: #ffffff;
-  text-shadow: 0px 0px 4px #000000, 0px 2px 12px #000000cc;
+  text-shadow:
+    0px 0px 4px #000000,
+    0px 2px 12px #000000cc;
 }
+
 .hero-actions {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 16px;
 }
+
 .hero-actions .btn-primary {
   height: 40px;
 }
+
+/* ===================================================================================================
+   9. FEATURES SECTION
+   =================================================================================================== */
+
 .features {
   padding: 64px 0;
   background-color: var(--color-bg-tertiary);
 }
+
+/* ----- Section Header (Global) ----- */
 .section-header {
   margin-bottom: 48px;
   text-align: center;
 }
+
 .section-title {
   margin-bottom: 16px;
   font-size: 36px;
@@ -466,16 +372,20 @@ input:focus-visible {
   line-height: 40px;
   color: var(--color-text);
 }
+
 .section-description {
   font-size: 20px;
   line-height: 28px;
   color: var(--color-text-secondary);
 }
+
+/* ----- Features Grid ----- */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
+
 .feature-card {
   padding: 24px;
   background-color: var(--color-bg-card);
@@ -483,9 +393,12 @@ input:focus-visible {
   border-radius: 14px;
   text-align: center;
 }
+
 .feature-card:hover {
   box-shadow: var(--shadow-card);
 }
+
+/* ----- Feature Icons ----- */
 .feature-icon {
   display: flex;
   align-items: center;
@@ -495,13 +408,17 @@ input:focus-visible {
   margin: 0 auto 24px;
   border-radius: 50%;
 }
+
 .feature-icon img {
   width: 24px;
   height: 24px;
 }
+
 .feature-icon-red {
   background-color: #e8212733;
 }
+
+/* ----- Feature Content ----- */
 .feature-title {
   margin-bottom: 12px;
   font-size: 18px;
@@ -509,25 +426,36 @@ input:focus-visible {
   line-height: 28px;
   color: var(--color-text);
 }
+
 .feature-description {
   font-size: 14px;
   line-height: 22.75px;
   color: var(--color-text-secondary);
 }
+
+/* ===================================================================================================
+   10. FAQ SECTION
+   =================================================================================================== */
+
 .faq {
   padding: 80px 0;
   background-color: var(--color-faq-bg);
 }
+
 .faq-list {
   display: flex;
   flex-direction: column;
 }
+
+/* ----- FAQ Item ----- */
 .faq-item {
   border-bottom: 1px solid var(--color-border);
 }
+
 .faq-item:first-child {
   border-top: 1px solid var(--color-border);
 }
+
 .faq-question {
   display: flex;
   align-items: center;
@@ -541,116 +469,153 @@ input:focus-visible {
   text-align: left;
   cursor: pointer;
 }
+
 .faq-question span {
   flex: 1;
   padding-right: 16px;
 }
+
 .faq-question:hover {
   color: var(--color-primary);
 }
+
 .faq-icon {
   flex-shrink: 0;
   width: 16px;
   height: 16px;
 }
+
 .faq-item.active .faq-icon {
   transform: rotate(180deg);
 }
+
+/* ----- FAQ Answer ----- */
 .faq-answer {
   max-height: 0;
   padding: 0;
   overflow: hidden;
   opacity: 0;
 }
+
 .faq-item.active .faq-answer {
   max-height: 600px;
   padding: 0 0 20px 0;
   opacity: 1;
 }
+
 .faq-answer p {
   margin: 0 0 12px 0;
   font-size: 14px;
   line-height: 22px;
   color: var(--color-text-secondary);
 }
+
 .faq-answer p:last-child {
   margin-bottom: 0;
 }
+
+/* ===================================================================================================
+   11. CTA SECTION
+   =================================================================================================== */
+
 .cta {
   padding: 64px 0;
   text-align: center;
 }
+
 .cta-actions {
   display: flex;
   justify-content: center;
   gap: 16px;
   margin-top: 32px;
 }
+
 .cta-actions .btn-primary {
   height: 40px;
 }
+
+/* ===================================================================================================
+   12. FOOTER
+   =================================================================================================== */
+
 .footer {
   padding: 48px 0 0;
   background-color: var(--color-bg-card);
   border-top: 0.667px solid var(--color-border);
 }
+
 .footer-content {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 32px;
   margin-bottom: 48px;
 }
+
 .footer-col {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
+
 .footer-description {
   font-size: 14px;
   line-height: 20px;
   color: var(--color-text-secondary);
 }
+
 .footer-heading {
   font-size: 16px;
   font-weight: 600;
   line-height: 24px;
   color: var(--color-text);
 }
+
 .footer-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
   list-style: none;
 }
+
 .footer-list li {
   font-size: 14px;
   line-height: 20px;
   color: var(--color-text-secondary);
 }
+
 .footer-list a:hover {
   color: var(--color-text);
 }
+
 .footer-list.contact li {
   display: flex;
   align-items: flex-start;
   gap: 8px;
 }
+
 .footer-list.contact img {
   flex-shrink: 0;
   width: 16px;
   height: 16px;
   margin-top: 2px;
 }
+
 .footer-bottom {
   padding: 24px 0;
   text-align: center;
   border-top: 0.667px solid var(--color-border);
 }
+
 .footer-bottom p {
   font-size: 14px;
   line-height: 20px;
   color: var(--color-text-secondary);
 }
+
+/* ===================================================================================================
+   13. MOBILE MENU
+   =================================================================================================== */
+
 .mobile-menu-toggle {
   display: none;
   align-items: center;
@@ -659,9 +624,11 @@ input:focus-visible {
   height: 40px;
   border-radius: 8px;
 }
+
 .mobile-menu-toggle:hover {
   background-color: var(--color-bg-hover);
 }
+
 .hamburger {
   display: flex;
   flex-direction: column;
@@ -669,6 +636,7 @@ input:focus-visible {
   width: 20px;
   height: 14px;
 }
+
 .hamburger span {
   display: block;
   width: 100%;
@@ -676,6 +644,8 @@ input:focus-visible {
   background-color: var(--color-text);
   border-radius: 2px;
 }
+
+/* ----- Mobile Menu Overlay ----- */
 .mobile-menu {
   position: fixed;
   top: 0;
@@ -689,9 +659,12 @@ input:focus-visible {
   overflow-y: auto;
   background-color: var(--color-bg);
 }
+
 .mobile-menu.active {
   display: flex;
 }
+
+/* ----- Mobile Menu Header ----- */
 .mobile-menu-header {
   display: flex;
   align-items: center;
@@ -700,9 +673,11 @@ input:focus-visible {
   margin-bottom: 24px;
   padding: 0 16px;
 }
+
 .mobile-menu-header .logo {
   margin-left: 0;
 }
+
 .mobile-menu-close {
   display: flex;
   align-items: center;
@@ -712,18 +687,23 @@ input:focus-visible {
   margin-right: 0;
   border-radius: 8px;
 }
+
 .mobile-menu-close:hover {
   background-color: var(--color-bg-hover);
 }
+
 .mobile-menu-close img {
   width: 20px;
   height: 20px;
 }
+
+/* ----- Mobile Menu Content ----- */
 .mobile-menu-content {
   display: flex;
   flex-direction: column;
   padding: 0 16px 32px;
 }
+
 .mobile-menu-section-title {
   margin-bottom: 12px;
   padding: 0 16px;
@@ -733,12 +713,14 @@ input:focus-visible {
   text-transform: uppercase;
   color: #737373;
 }
+
 .mobile-menu-nav {
   display: flex;
   flex-direction: column;
   gap: 0;
   margin-bottom: 32px;
 }
+
 .mobile-menu-link {
   display: block;
   padding: 16px;
@@ -747,9 +729,12 @@ input:focus-visible {
   color: var(--color-text);
   border-radius: 8px;
 }
+
 .mobile-menu-link:hover {
   background-color: var(--color-bg-hover);
 }
+
+/* ----- Mobile Menu Actions ----- */
 .mobile-menu-actions {
   display: flex;
   flex-direction: column;
@@ -757,6 +742,7 @@ input:focus-visible {
   margin-top: auto;
   padding: 0;
 }
+
 .mobile-menu-actions .btn-primary {
   width: 100%;
   padding: 14px 16px;
@@ -764,50 +750,71 @@ input:focus-visible {
   text-align: center;
   justify-content: center;
 }
-.sitemap-section, .legal-section {
+
+/* ===================================================================================================
+   17. CONTENT PAGES - SITEMAP, LEGAL, PRIVACY
+   =================================================================================================== */
+
+.sitemap-section,
+.legal-section {
   min-height: calc(100vh - 64px - 200px);
   padding: 48px 0 80px;
   background-color: var(--color-bg-secondary);
 }
+
 .sitemap-container {
   max-width: 768px;
   margin: 0 auto;
   padding: 0 32px;
 }
+
 .legal-container {
   max-width: 880px;
   margin: 0 auto;
   padding: 0 32px;
 }
-.sitemap-header, .legal-header {
+
+/* ----- Page Headers ----- */
+.sitemap-header,
+.legal-header {
   margin: 32px 0 40px;
   text-align: center;
 }
+
 .legal-header {
   margin: 32px 0 48px;
 }
-.sitemap-title, .legal-title {
+
+.sitemap-title,
+.legal-title {
   margin-bottom: 8px;
   font-size: 32px;
   font-weight: 600;
   line-height: 1.2;
   color: var(--color-text);
 }
+
 .legal-title {
   margin-bottom: 12px;
 }
-.sitemap-subtitle, .legal-subtitle {
+
+.sitemap-subtitle,
+.legal-subtitle {
   font-size: 16px;
   font-weight: 400;
   line-height: 1.5;
   color: var(--color-text-secondary);
 }
+
 .legal-subtitle {
   font-size: 14px;
 }
+
 .legal-subtitle span {
   color: var(--color-primary);
 }
+
+/* ----- Sitemap Card ----- */
 .sitemap-card {
   padding: 32px;
   background-color: var(--color-bg);
@@ -815,6 +822,7 @@ input:focus-visible {
   border-radius: 12px;
   box-shadow: var(--shadow-sm);
 }
+
 .sitemap-card-title {
   margin-bottom: 24px;
   font-size: 18px;
@@ -822,11 +830,13 @@ input:focus-visible {
   line-height: 1.4;
   color: var(--color-text);
 }
+
 .sitemap-list {
   display: flex;
   flex-direction: column;
   gap: 0;
 }
+
 .sitemap-item {
   display: flex;
   align-items: center;
@@ -835,23 +845,29 @@ input:focus-visible {
   border-bottom: 1px solid #2a2a2a;
   border-radius: 8px;
 }
+
 .sitemap-item:hover {
   background-color: #ffffff08;
 }
+
 .sitemap-item:last-child {
   border-bottom: none;
 }
+
 .sitemap-page-name {
   font-size: 16px;
   font-weight: 500;
   color: var(--color-text);
 }
+
 .sitemap-page-url {
   font-family: 'Courier New', monospace;
   font-size: 14px;
   font-weight: 400;
   color: #737373;
 }
+
+/* ----- Legal Content ----- */
 .legal-content {
   display: flex;
   flex-direction: column;
@@ -862,50 +878,65 @@ input:focus-visible {
   border-radius: 16px;
   box-shadow: var(--shadow-xl);
 }
+
 .legal-paragraph {
   font-size: 16px;
   line-height: 1.65;
   color: #a3a3a3;
 }
+
 .legal-paragraph a {
   color: var(--color-primary);
 }
+
 .legal-paragraph a:hover {
   text-decoration: underline;
 }
+
 .legal-content ol {
   margin: 0 0 16px 24px;
   font-size: 16px;
   line-height: 1.6;
   color: #a3a3a3;
 }
+
 .legal-content ol ol {
   margin-top: 8px;
 }
+
 .legal-content ol li {
   margin-bottom: 4px;
 }
+
 .legal-section-heading {
   margin-top: 16px;
   font-size: 20px;
   font-weight: 600;
   color: #f5f5f5;
 }
+
 .legal-subheading {
   font-size: 16px;
   font-weight: 600;
   color: #f5f5f5;
 }
+
 .legal-highlight {
   padding: 24px;
   background-color: #1a1a1a;
   border: 1px solid var(--color-input-border);
   border-radius: 12px;
 }
+
 .legal-highlight .legal-paragraph {
   margin: 0;
   color: #d4d4d4;
 }
+
+/* ===================================================================================================
+   18. ERROR 404 PAGE
+   =================================================================================================== */
+
 .error-page {
   position: relative;
   min-height: calc(100vh - 64px - 200px);
@@ -913,9 +944,12 @@ input:focus-visible {
   color: #ffffff;
   background: #160000;
 }
+
 .error-page::before {
   display: none;
 }
+
+/* ----- 404 Content ----- */
 .error-container {
   position: relative;
   z-index: 1;
@@ -923,6 +957,7 @@ input:focus-visible {
   margin: 0 auto;
   padding: 0 32px;
 }
+
 .error-top-link {
   display: inline-flex;
   align-items: center;
@@ -932,10 +967,12 @@ input:focus-visible {
   font-weight: 600;
   color: #fca5a5;
 }
+
 .error-top-link img {
   width: 20px;
   height: 20px;
 }
+
 .error-card {
   display: flex;
   flex-direction: column;
@@ -947,6 +984,7 @@ input:focus-visible {
   border-radius: 24px;
   box-shadow: 0 30px 80px #00000073;
 }
+
 .error-image {
   position: relative;
   width: 100%;
@@ -955,11 +993,13 @@ input:focus-visible {
   border: 3px solid #f871714d;
   border-radius: 20px;
 }
+
 .error-image img {
   display: block;
   width: 100%;
   height: auto;
 }
+
 .error-alert {
   width: 100%;
   padding: 24px;
@@ -971,12 +1011,14 @@ input:focus-visible {
   border: 1px solid #f871714d;
   border-radius: 16px;
 }
+
 .error-alert .alert-title {
   margin-bottom: 8px;
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
 }
+
 .error-meta {
   display: flex;
   justify-content: center;
@@ -985,11 +1027,13 @@ input:focus-visible {
   font-size: 14px;
   color: #ffffffb3;
 }
+
 .error-meta span {
   padding: 6px 12px;
   border: 1px solid #f8717140;
   border-radius: 999px;
 }
+
 .error-hero {
   display: flex;
   align-items: center;
@@ -1000,6 +1044,7 @@ input:focus-visible {
   text-transform: uppercase;
   color: #ffffffcc;
 }
+
 .error-status {
   padding: 8px 18px;
   color: #fca5a5;
@@ -1007,191 +1052,268 @@ input:focus-visible {
   border: 1px solid #f8717180;
   border-radius: 999px;
 }
+
 .error-separator {
   color: #f8717199;
 }
+
+/* ===================================================================================================
+   19. RESPONSIVE DESIGN
+   =================================================================================================== */
+
+/* ----- Tablet & Desktop (max-width: 1024px) ----- */
 @media (max-width: 1024px) {
   .features-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .footer-content {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ----- Mobile & Tablet (max-width: 768px) ----- */
 @media (max-width: 768px) {
+  /* Header */
   .header .container {
     height: 64px;
     padding: 0 16px;
   }
+
   .container {
     padding: 0 16px;
   }
-  .nav, .header-actions {
+
+  .nav,
+  .header-actions {
     display: none;
   }
+
   .mobile-menu-toggle {
     display: flex;
   }
+
+  /* Hero */
   .hero {
     min-height: 600px;
     padding: 120px 0;
   }
+
   .hero-title {
     font-size: 40px;
     line-height: 44px;
   }
+
   .hero-description {
     font-size: 16px;
     line-height: 24px;
   }
-  .hero-actions, .cta-actions {
+
+  .hero-actions,
+  .cta-actions {
     flex-direction: column;
     width: 100%;
   }
-  .hero-actions .btn-primary, .cta-actions .btn-primary {
+
+  .hero-actions .btn-primary,
+  .cta-actions .btn-primary {
     width: 100%;
     justify-content: center;
   }
+
+  /* Features */
   .features-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Footer */
   .footer-content {
     grid-template-columns: 1fr;
   }
+
+  /* FAQ */
   .faq {
     padding: 60px 0;
   }
+
   .faq-question {
     padding: 16px 0;
     font-size: 13px;
   }
+
   .faq-question span {
     padding-right: 12px;
   }
+
   .faq-icon {
     width: 14px;
     height: 14px;
   }
+
   .faq-item.active .faq-answer {
     padding: 0 0 16px 0;
   }
+
   .faq-answer p {
     font-size: 13px;
     line-height: 20px;
   }
+
+  /* Sitemap */
   .sitemap-section {
     padding: 32px 0 60px;
   }
+
   .sitemap-container {
     padding: 0 16px;
   }
+
   .sitemap-header {
     margin: 24px 0 32px;
   }
+
   .sitemap-title {
     font-size: 28px;
   }
+
   .sitemap-subtitle {
     font-size: 14px;
   }
+
   .sitemap-card {
     padding: 24px 20px;
   }
+
   .sitemap-card-title {
     font-size: 16px;
     margin-bottom: 20px;
   }
+
   .sitemap-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
     padding: 12px 16px;
   }
+
   .sitemap-page-name {
     font-size: 15px;
   }
+
   .sitemap-page-url {
     font-size: 13px;
   }
+
+  /* Legal Pages */
   .legal-section {
     padding: 32px 0 64px;
   }
+
   .legal-container {
     padding: 0 16px;
   }
+
   .legal-header {
     margin: 24px 0 32px;
   }
+
   .legal-title {
     font-size: 28px;
   }
+
   .legal-subtitle {
     font-size: 13px;
   }
+
   .legal-content {
     padding: 28px 24px;
     gap: 20px;
   }
+
   .legal-section-heading {
     font-size: 18px;
   }
+
   .legal-paragraph {
     font-size: 15px;
   }
+
+  /* Error 404 */
   .error-page {
     padding: 32px 0 64px;
   }
+
   .error-container {
     padding: 0 16px;
   }
+
   .error-card {
     padding: 32px 24px;
   }
+
   .error-hero {
     flex-direction: column;
     gap: 8px;
   }
 }
+
+/* ----- Small Mobile (max-width: 480px) ----- */
 @media (max-width: 480px) {
-  .container, .container-narrow {
+  .container,
+  .container-narrow {
     padding: 0 16px;
   }
+
   .hero-title {
     font-size: 32px;
     line-height: 36px;
   }
+
   .section-title {
     font-size: 28px;
     line-height: 32px;
   }
+
   .section-description {
     font-size: 16px;
     line-height: 24px;
   }
+
   .faq {
     padding: 48px 0;
   }
+
   .faq-question {
     padding: 14px 0;
   }
+
   .faq-answer p {
     font-size: 12px;
     line-height: 18px;
   }
+
   .cta {
     padding: 48px 0;
   }
+
   .cta .section-title {
     font-size: 26px;
   }
+
   .cta .section-description {
     font-size: 15px;
   }
+
   .back-link {
     font-size: 13px;
     margin-bottom: 20px;
   }
 }
+
+/* ===================================================================================================
+   20. FLASH MESSAGES
+   =================================================================================================== */
+
 .flash {
   padding: 12px 16px;
   margin-bottom: 16px;
@@ -1200,33 +1322,54 @@ input:focus-visible {
   border: 1px solid;
   border-radius: 10px;
 }
+
 .flash ul {
   margin: 0;
   padding-left: 20px;
 }
+
 .flash--error {
   color: #fca5a5;
   background-color: #7f1d1d33;
   border-color: #f8717166;
 }
+
 .flash--success {
   color: #86efac;
   background-color: #14532d33;
   border-color: #22c55e66;
 }
+
 .flash--info {
   color: #bfdbfe;
   background-color: #1e3a8a33;
   border-color: #60a5fa66;
 }
+
+/* ===================================================================================================
+   21. UTILITIES
+   =================================================================================================== */
+
+/* Liste ordonnée à puces alphabétiques minuscules (a, b, c…) — pages légales. */
 .legal-list--alpha {
   list-style-type: lower-alpha;
 }
+
+/* ===================================================================================================
+   22. REDUCED MOTION (WCAG 2.3.3)
+   =================================================================================================== */
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
 }
+
+/* ===================================================================================================
+   END OF STYLESHEET
+   =================================================================================================== */
