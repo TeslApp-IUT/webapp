@@ -41,7 +41,7 @@ class DashboardController
 
         $data = $this->getTelemetryData($vin);
 
-        require_once '../private/Views/dashboard.php';
+        require_once '../private/Views/Vehicle/dashboard.php';
     }
 
     /**
