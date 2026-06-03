@@ -7,6 +7,7 @@ namespace Teslapp\Models\Shared\TeslaApi;
 use JsonException;
 use Teslapp\Models\Shared\Exceptions\TeslaApiException;
 use Teslapp\Models\Shared\ValueObjects\AccessToken;
+use Teslapp\Models\Shared\ValueObjects\VehicleConnectivityStatus;
 use Teslapp\Models\Vehicle\Vehicle;
 
 /**
@@ -41,6 +42,32 @@ final class TeslaApiClient implements VehicleStateClient
         }
 
         return $vehicles;
+    }
+
+    /**
+     * @return array<string, VehicleConnectivityStatus> VIN => live status
+     *
+     * @throws TeslaApiException
+     */
+    public function fetchConnectivity(AccessToken $token): array
+    {
+        $body = $this->get('/api/1/vehicles', $token);
+
+        $response = $body['response'] ?? [];
+        if (!is_array($response)) {
+            return [];
+        }
+
+        $statuses = [];
+        foreach ($response as $row) {
+            if (is_array($row) && isset($row['vin'])) {
+                $statuses[(string) $row['vin']] = VehicleConnectivityStatus::fromApiState(
+                    (string) ($row['state'] ?? 'unknown'),
+                );
+            }
+        }
+
+        return $statuses;
     }
 
     /**

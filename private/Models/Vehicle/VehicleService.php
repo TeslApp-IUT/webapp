@@ -6,6 +6,7 @@ namespace Teslapp\Models\Vehicle;
 
 use Teslapp\Models\Shared\TeslaApi\AccessTokenProviderInterface;
 use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
+use Teslapp\Models\Shared\ValueObjects\VehicleConnectivityStatus;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 
 /**
@@ -66,6 +67,20 @@ final class VehicleService
         return $this->vehicleRepository->findByUser($userId);
     }
 
+    /** @return array<string, VehicleConnectivityStatus> VIN => live status */
+    public function connectivityForUser(string $userId): array
+    {
+        $token = $this->tokenProvider->getValidAccessToken($userId);
+
+        return $this->teslaApi->fetchConnectivity($token);
+    }
+
+    /** Display name of the model line, with a safe fallback. */
+    public function modelNameForVin(Vin $vin): string
+    {
+        return $this->modelLineFromVin($vin) ?? 'Tesla';
+    }
+
     /** @return array<string, string> Model name => model id. */
     private function modelIdsByName(): array
     {
@@ -80,21 +95,25 @@ final class VehicleService
     /** @param array<string, string> $modelIdsByName */
     private function resolveModelId(Vin $vin, array $modelIdsByName): string
     {
-        // The 4th VIN character encodes the Tesla model line.
-        $name = match ($vin->value[3]) {
-            '3' => 'Model 3',
-            'Y' => 'Model Y',
-            'S' => 'Model S',
-            'X' => 'Model X',
-            'C' => 'Cybertruck',
-            default => throw new \InvalidArgumentException(
-                "Unknown Tesla model for VIN {$vin->value}",
-            ),
-        };
+        $name = $this->modelLineFromVin($vin)
+            ?? throw new \InvalidArgumentException("Unknown Tesla model for VIN {$vin->value}");
 
         return $modelIdsByName[$name] ??
             throw new \RuntimeException(
                 "Model '{$name}' is missing from vehicle_models (database seed?)",
             );
+    }
+
+    /** The 4th VIN character encodes the Tesla model line. */
+    private function modelLineFromVin(Vin $vin): ?string
+    {
+        return match ($vin->value[3]) {
+            '3' => 'Model 3',
+            'Y' => 'Model Y',
+            'S' => 'Model S',
+            'X' => 'Model X',
+            'C' => 'Cybertruck',
+            default => null,
+        };
     }
 }
