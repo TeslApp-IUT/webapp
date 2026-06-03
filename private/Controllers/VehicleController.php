@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Teslapp\Controllers;
 
 use Teslapp\Models\Shared\Exceptions\TeslaAppException;
+use Teslapp\Models\Shared\ValueObjects\VehicleConnectivityStatus;
 use Teslapp\Models\Vehicle\Vehicle;
 use Teslapp\Models\Vehicle\VehicleService;
 use Teslapp\Utils\Csrf;
@@ -34,10 +35,38 @@ final class VehicleController
             );
         }
 
-        $vehicles = $this->vehicleService->listForUser(DEV_USER_ID);
+        $statuses = [];
+        try {
+            $statuses = $this->vehicleService->connectivityForUser(DEV_USER_ID);
+        } catch (TeslaAppException $e) {
+            // Live status is optional: show the cards without a dot if it fails.
+            error_log('Connectivity fetch failed: ' . $e->getMessage());
+        }
+
         $selectedVin = $_SESSION['selected_vin'] ?? null;
+        $cards = [];
+        foreach ($this->vehicleService->listForUser(DEV_USER_ID) as $vehicle) {
+            $model = $this->vehicleService->modelNameForVin($vehicle->vin);
+            $cards[] = [
+                'vehicle' => $vehicle,
+                'model' => $model,
+                'image' => $this->modelImage($model),
+                'status' => $statuses[$vehicle->vin->value] ?? VehicleConnectivityStatus::Unknown,
+                'selected' => $vehicle->vin->value === $selectedVin,
+            ];
+        }
+
+        $csrfToken = $_SESSION['csrf_token'] ?? '';
 
         require_once __DIR__ . '/../Views/Vehicle/select.php';
+    }
+
+    /** Web path to the model image, or '' when the file is missing (the view shows a fallback). */
+    private function modelImage(string $modelName): string
+    {
+        $file = '/_assets/images/' . str_replace(' ', '-', strtolower($modelName)) . '.png';
+
+        return is_file(__DIR__ . '/../../www' . $file) ? $file : '';
     }
 
     /**
@@ -63,6 +92,6 @@ final class VehicleController
 
         $_SESSION['selected_vin'] = $vin;
         Flash::set('success', 'Véhicule sélectionné.');
-        Http::redirect('/vehicle/select');
+        Http::redirect('/vehicle/dashboard');
     }
 }
