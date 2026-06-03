@@ -11,4 +11,5 @@ services:
 
 networks:
   shared:
+    name: teslapp_shared
     external: true
