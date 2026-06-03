@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Teslapp\Tests\Unit\Models\Vehicle;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Teslapp\Models\Shared\TeslaApi\AccessTokenProviderInterface;
 use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
 use Teslapp\Models\Shared\ValueObjects\AccessToken;
+use Teslapp\Models\Shared\ValueObjects\VehicleConnectivityStatus;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\TeslaModel;
 use Teslapp\Models\Vehicle\TeslaModelRepositoryInterface;
@@ -91,6 +93,55 @@ final class VehicleServiceTest extends TestCase
         );
 
         self::assertSame($vehicles, $service->listForUser('user-1'));
+    }
+
+    #[Test]
+    public function connectivityForUserReturnsStatusesFromTheApi(): void
+    {
+        $api = $this->createMock(VehicleStateClient::class);
+        $api->expects($this->once())
+            ->method('fetchConnectivity')
+            ->with(new AccessToken('tok')) // the token resolved from the provider
+            ->willReturn([
+                '5YJ3E1EA7KF000316' => VehicleConnectivityStatus::Online,
+            ]);
+
+        $service = $this->makeService(
+            $api,
+            $this->createMock(VehicleRepositoryInterface::class),
+            $this->createMock(TeslaModelRepositoryInterface::class),
+        );
+
+        self::assertSame(
+            ['5YJ3E1EA7KF000316' => VehicleConnectivityStatus::Online],
+            $service->connectivityForUser('user-1'),
+        );
+    }
+
+    #[Test]
+    #[DataProvider('modelNames')]
+    public function modelNameForVinDerivesTheModel(string $vin, string $expected): void
+    {
+        $service = $this->makeService(
+            $this->createMock(VehicleStateClient::class),
+            $this->createMock(VehicleRepositoryInterface::class),
+            $this->createMock(TeslaModelRepositoryInterface::class),
+        );
+
+        self::assertSame($expected, $service->modelNameForVin(new Vin($vin)));
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function modelNames(): array
+    {
+        return [
+            'Model 3' => ['5YJ3E1EA7KF000316', 'Model 3'],
+            'Model Y' => ['5YJYGDEE9MF000002', 'Model Y'],
+            'Model S' => ['5YJSA1E40MF000003', 'Model S'],
+            'Model X' => ['7SAXCBE60PF000004', 'Model X'],
+            'Cybertruck' => ['7G2CEHED0RA000005', 'Cybertruck'],
+            'unknown line falls back to Tesla' => ['5YJ1E1EA7KF000099', 'Tesla'],
+        ];
     }
 
     private function makeService(
