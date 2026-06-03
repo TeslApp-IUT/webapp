@@ -6,3 +6,10 @@ services:
       - '50025:80'
     env_file: .env
     restart: unless-stopped
+    networks:
+      - shared
+
+networks:
+  shared:
+    name: teslapp_shared
+    external: true
