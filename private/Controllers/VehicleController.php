@@ -16,10 +16,7 @@ use Teslapp\Utils\Http;
  */
 final class VehicleController
 {
-    public function __construct(
-        private readonly VehicleService $vehicleService,
-    ) {
-    }
+    public function __construct(private readonly VehicleService $vehicleService) {}
 
     /**
      * GET vehicle/select — refresh from the Tesla API (best effort), then show the list.
@@ -31,7 +28,10 @@ final class VehicleController
         } catch (TeslaAppException $e) {
             // Tesla unreachable (no token yet, vehicle offline...): fall back to the stored list.
             error_log('Vehicle sync failed: ' . $e->getMessage());
-            Flash::set('info', 'Synchronisation Tesla indisponible, affichage des véhicules connus.');
+            Flash::set(
+                'info',
+                'Synchronisation Tesla indisponible, affichage des véhicules connus.',
+            );
         }
 
         $vehicles = $this->vehicleService->listForUser(DEV_USER_ID);
@@ -53,7 +53,7 @@ final class VehicleController
         // Only a VIN the user actually owns can be selected (do not trust the POST).
         $owned = array_filter(
             $this->vehicleService->listForUser(DEV_USER_ID),
-            static fn (Vehicle $v): bool => $v->vin->value === $vin,
+            static fn(Vehicle $v): bool => $v->vin->value === $vin,
         );
 
         if ($owned === []) {

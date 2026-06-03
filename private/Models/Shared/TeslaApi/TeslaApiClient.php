@@ -17,8 +17,7 @@ final class TeslaApiClient implements VehicleStateClient
     public function __construct(
         private readonly string $baseUrl,
         private readonly int $timeoutSeconds = 10,
-    ) {
-    }
+    ) {}
 
     /**
      * @return Vehicle[]
@@ -85,11 +84,16 @@ final class TeslaApiClient implements VehicleStateClient
         try {
             $decoded = json_decode($response, true, flags: JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            throw new TeslaApiException("Tesla API returned invalid JSON on GET {$path}.", previous: $e);
+            throw new TeslaApiException(
+                "Tesla API returned invalid JSON on GET {$path}.",
+                previous: $e,
+            );
         }
 
         if (!is_array($decoded)) {
-            throw new TeslaApiException("Tesla API returned an unexpected JSON shape on GET {$path}.");
+            throw new TeslaApiException(
+                "Tesla API returned an unexpected JSON shape on GET {$path}.",
+            );
         }
 
         return $decoded;

@@ -26,7 +26,12 @@ if (is_file($envFile)) {
         $envLine = ltrim($envLine);
 
         // Skip blank lines and comments (# or ;). Values are never inline-commented.
-        if ($envLine === '' || $envLine[0] === '#' || $envLine[0] === ';' || !str_contains($envLine, '=')) {
+        if (
+            $envLine === '' ||
+            $envLine[0] === '#' ||
+            $envLine[0] === ';' ||
+            !str_contains($envLine, '=')
+        ) {
             continue;
         }
 
@@ -36,9 +41,9 @@ if (is_file($envFile)) {
 
         // Strip a single pair of surrounding quotes, if present.
         if (
-            strlen($envValue) >= 2
-            && ($envValue[0] === '"' || $envValue[0] === "'")
-            && $envValue[strlen($envValue) - 1] === $envValue[0]
+            strlen($envValue) >= 2 &&
+            ($envValue[0] === '"' || $envValue[0] === "'") &&
+            $envValue[strlen($envValue) - 1] === $envValue[0]
         ) {
             $envValue = substr($envValue, 1, -1);
         }

@@ -16,8 +16,7 @@ final readonly class Vehicle
         public string $userId,
         public string $name,
         public string $modelId,
-    ) {
-    }
+    ) {}
 
     public function isAccessibleBy(string $userId): bool
     {
