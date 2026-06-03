@@ -18,4 +18,4 @@ jobs:
       - name: Deploy webapp
         run: |
           cd $GITHUB_WORKSPACE
-          docker compose up -d --build --force-recreate webapp
+          docker compose build --no-cache && docker compose up -d --build --force-recreate webapp
