@@ -10,7 +10,7 @@ services:
       - ./docker/nginx.${ENVIRONMENT:-local}.conf:/etc/nginx/nginx.conf:ro
     networks:
       shared:
-        ipv4_address: 172.22.0.10
+        ipv4_address: 172.22.0.11
     develop:
       watch:
         - action: sync
