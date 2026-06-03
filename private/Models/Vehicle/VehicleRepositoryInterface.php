@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Teslapp\Models\Vehicle;
+
+use Teslapp\Models\Shared\ValueObjects\Vin;
+
+interface VehicleRepositoryInterface
+{
+    public function findByVin(Vin $vin): ?Vehicle;
+
+    /** @return Vehicle[] */
+    public function findByUser(string $userId): array;
+
+    public function save(Vehicle $vehicle): void;
+
+    public function deleteByVin(Vin $vin): void;
+
+    public function isAccessibleBy(Vin $vin, string $userId): bool;
+}
