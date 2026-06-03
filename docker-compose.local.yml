@@ -1,8 +1,7 @@
 # Local development override
-name: teslapp
+name: teslapp-local
 services:
   webapp:
-    container_name: app-local
     ports:
       - '50079:80'
     networks:
