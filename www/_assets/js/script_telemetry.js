@@ -6,7 +6,7 @@
 
 const VIN = process.argv[2];
 const ACCESS_TOKEN = process.argv[3];
-const BASE_URL = 'https://fleet-api.prd.eu.vn.cloud.tesla.com';
+const BASE_URL = 'https://proxy.teslapp.feyli.dev/';
 
 const body = {
   vins: [VIN],
