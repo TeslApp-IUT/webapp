@@ -162,6 +162,7 @@ $RECYCLE.BIN/
 
 docker/data/
 .docker-volumes/
+docker-compose.override.yml
 
 
 # ──────────────────────────────────────────────────────────
