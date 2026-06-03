@@ -1,0 +1,17 @@
+# Local development override
+name: teslapp
+services:
+  webapp:
+    container_name: app-local
+    ports:
+      - '50079:80'
+    networks:
+      shared:
+        ipv4_address: 172.22.0.11
+
+networks:
+  shared:
+    external: false
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
