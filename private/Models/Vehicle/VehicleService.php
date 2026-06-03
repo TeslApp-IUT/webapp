@@ -95,8 +95,9 @@ final class VehicleService
     /** @param array<string, string> $modelIdsByName */
     private function resolveModelId(Vin $vin, array $modelIdsByName): string
     {
-        $name = $this->modelLineFromVin($vin)
-            ?? throw new \InvalidArgumentException("Unknown Tesla model for VIN {$vin->value}");
+        $name =
+            $this->modelLineFromVin($vin) ??
+            throw new \InvalidArgumentException("Unknown Tesla model for VIN {$vin->value}");
 
         return $modelIdsByName[$name] ??
             throw new \RuntimeException(

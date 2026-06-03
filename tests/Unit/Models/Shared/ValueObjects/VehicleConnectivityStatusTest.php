@@ -15,22 +15,40 @@ final class VehicleConnectivityStatusTest extends TestCase
     #[Test]
     public function mapsKnownApiStates(): void
     {
-        self::assertSame(VehicleConnectivityStatus::Online, VehicleConnectivityStatus::fromApiState('online'));
-        self::assertSame(VehicleConnectivityStatus::Asleep, VehicleConnectivityStatus::fromApiState('asleep'));
-        self::assertSame(VehicleConnectivityStatus::Offline, VehicleConnectivityStatus::fromApiState('offline'));
+        self::assertSame(
+            VehicleConnectivityStatus::Online,
+            VehicleConnectivityStatus::fromApiState('online'),
+        );
+        self::assertSame(
+            VehicleConnectivityStatus::Asleep,
+            VehicleConnectivityStatus::fromApiState('asleep'),
+        );
+        self::assertSame(
+            VehicleConnectivityStatus::Offline,
+            VehicleConnectivityStatus::fromApiState('offline'),
+        );
     }
 
     #[Test]
     public function isCaseInsensitive(): void
     {
-        self::assertSame(VehicleConnectivityStatus::Online, VehicleConnectivityStatus::fromApiState('ONLINE'));
+        self::assertSame(
+            VehicleConnectivityStatus::Online,
+            VehicleConnectivityStatus::fromApiState('ONLINE'),
+        );
     }
 
     #[Test]
     public function fallsBackToUnknownForUnexpectedStates(): void
     {
-        self::assertSame(VehicleConnectivityStatus::Unknown, VehicleConnectivityStatus::fromApiState('charging'));
-        self::assertSame(VehicleConnectivityStatus::Unknown, VehicleConnectivityStatus::fromApiState(''));
+        self::assertSame(
+            VehicleConnectivityStatus::Unknown,
+            VehicleConnectivityStatus::fromApiState('charging'),
+        );
+        self::assertSame(
+            VehicleConnectivityStatus::Unknown,
+            VehicleConnectivityStatus::fromApiState(''),
+        );
     }
 
     #[Test]
