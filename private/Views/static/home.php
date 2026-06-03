@@ -25,7 +25,7 @@ ob_start();
       </p>
       <!-- Action: Tesla login -->
       <div class="hero-actions">
-        <?php require_once __DIR__ . '/../partials/login_with_tesla.php'; ?>
+        <?php require __DIR__ . '/../partials/login_with_tesla.php'; ?>
       </div>
     </div>
   </section>
@@ -164,7 +164,7 @@ ob_start();
         Rejoignez TeslApp et pilotez votre véhicule à distance en toute simplicité et sécurité.
       </p>
       <div class="cta-actions">
-        <?php require_once __DIR__ . '/../partials/login_with_tesla.php'; ?>
+        <?php require __DIR__ . '/../partials/login_with_tesla.php'; ?>
       </div>
     </div>
   </section>

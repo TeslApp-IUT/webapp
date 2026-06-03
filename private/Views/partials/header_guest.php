@@ -23,7 +23,7 @@
 
     <!-- Action: Tesla connection -->
     <div class="header-actions">
-      <?php require_once __DIR__ . '/../partials/login_with_tesla.php'; ?>
+      <?php require __DIR__ . '/../partials/login_with_tesla.php'; ?>
     </div>
 
     <!-- Mobile Menu Button -->
@@ -57,7 +57,7 @@
     </nav>
 
     <div class="mobile-menu-actions">
-      <?php require_once __DIR__ . '/../partials/login_with_tesla.php'; ?>
+      <?php require __DIR__ . '/../partials/login_with_tesla.php'; ?>
     </div>
   </div>
 </div>

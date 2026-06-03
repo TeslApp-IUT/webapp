@@ -1,4 +1,5 @@
 /*! tailwindcss v4.3.0 | MIT License | https://tailwindcss.com */
+@layer properties;
 @layer theme, base, components, utilities;
 @layer theme {
   :root, :host {
@@ -6,6 +7,9 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
+    --color-black: #000;
+    --color-white: #fff;
+    --font-weight-normal: 400;
     --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
     --default-font-family: var(--font-sans);
@@ -206,9 +210,21 @@
   .inline {
     display: inline;
   }
-  .size-full {
-    width: 100%;
-    height: 100%;
+  .w-auto {
+    width: auto;
+  }
+  .self-stretch {
+    align-self: stretch;
+  }
+  .\!bg-white {
+    background-color: var(--color-white) !important;
+  }
+  .\!font-normal {
+    --tw-font-weight: var(--font-weight-normal) !important;
+    font-weight: var(--font-weight-normal) !important;
+  }
+  .\!text-black {
+    color: var(--color-black) !important;
   }
   .lowercase {
     text-transform: lowercase;
@@ -294,6 +310,10 @@ img {
   color: #ffffff;
   background-color: var(--color-primary);
   border-radius: 8px;
+}
+.btn-primary img {
+  height: 20px;
+  width: auto;
 }
 .btn-primary:hover {
   background-color: var(--color-primary-hover);
@@ -1228,5 +1248,16 @@ input:focus-visible {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+@property --tw-font-weight {
+  syntax: "*";
+  inherits: false;
+}
+@layer properties {
+  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+    *, ::before, ::after, ::backdrop {
+      --tw-font-weight: initial;
+    }
   }
 }
