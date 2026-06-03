@@ -45,7 +45,7 @@
     ?>
     <main id="main">
         <?php
-        // Messages flash : consommés une fois depuis la session, puis supprimés.
+        // Flash messages: displayed once during the session, then deleted.
         $errors = \Teslapp\Utils\Flash::consume('errors', []);
         $success = \Teslapp\Utils\Flash::consume('success');
         $info = \Teslapp\Utils\Flash::consume('info');
