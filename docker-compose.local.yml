@@ -1,4 +1,4 @@
-# Local development override — uses host network bridge, hot reload
+# Local development override
 name: teslapp
 services:
   webapp:
