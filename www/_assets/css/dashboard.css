@@ -4,190 +4,190 @@
 
 /* DASHBOARD LAYOUT */
 .dashboard {
-    min-height: calc(100vh - 64px);
-    padding: 48px 0 80px;
-    background-color: var(--color-bg-secondary);
+  min-height: calc(100vh - 64px);
+  padding: 48px 0 80px;
+  background-color: var(--color-bg-secondary);
 }
 
 .dashboard-title {
-    margin-bottom: 40px;
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--color-text);
+  margin-bottom: 40px;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-text);
 }
 
 /* TELEMETRY GRID */
 .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-    margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
 }
 
 /* TELEMETRY CARDS */
 .dashboard-card {
-    padding: 32px;
-    background-color: var(--color-bg-card);
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
-    box-shadow: var(--shadow-card);
+  padding: 32px;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
 }
 
 .card-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    margin-bottom: 24px;
-    background-color: rgba(136, 232, 33, 0.2);
-    border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 24px;
+  background-color: rgba(136, 232, 33, 0.2);
+  border-radius: 50%;
 }
 
 .card-icon svg {
-    width: 24px;
-    height: 24px;
-    stroke: var(--color-primary1);
+  width: 24px;
+  height: 24px;
+  stroke: var(--color-primary1);
 }
 
 .card-title {
-    margin-bottom: 20px;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--color-text);
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 .card-content {
-    margin-bottom: 24px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--color-border);
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .card-value {
-    font-size: 48px;
-    font-weight: 700;
-    line-height: 1;
-    color: var(--color-text);
-    letter-spacing: -1px;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-text);
+  letter-spacing: -1px;
 }
 
 .card-value span {
-    font-size: 20px;
-    font-weight: 400;
-    color: var(--color-text-secondary);
-    letter-spacing: 0;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  letter-spacing: 0;
 }
 
 .card-label {
-    margin-top: 8px;
-    font-size: 14px;
-    color: var(--color-text-secondary);
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
 }
 
 .card-details {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .card-details p {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--color-text-secondary);
 }
 
 .card-details p span {
-    font-weight: 600;
-    color: var(--color-text);
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 .status-on {
-    color: var(--color-success) !important;
+  color: var(--color-success) !important;
 }
 
 .status-off {
-    color: var(--color-text-muted) !important;
+  color: var(--color-text-muted) !important;
 }
 
 /* ACTIONS SECTION */
 .dashboard-actions {
-    padding: 32px;
-    background-color: var(--color-bg-card);
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
-    box-shadow: var(--shadow-card);
+  padding: 32px;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
 }
 
 .dashboard-actions-title {
-    margin-bottom: 24px;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--color-text);
+  margin-bottom: 24px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 .actions-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
 }
 
 .action-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    cursor: not-allowed;
-    opacity: 0.5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 /* RESPONSIVE */
 @media (max-width: 1024px) {
-    .actions-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+  .actions-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
-    .dashboard {
-        padding: 32px 0 60px;
-    }
+  .dashboard {
+    padding: 32px 0 60px;
+  }
 
-    .dashboard-title {
-        font-size: 26px;
-    }
+  .dashboard-title {
+    font-size: 26px;
+  }
 
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 
-    .dashboard-card {
-        padding: 24px;
-    }
+  .dashboard-card {
+    padding: 24px;
+  }
 
-    .card-value {
-        font-size: 36px;
-    }
+  .card-value {
+    font-size: 36px;
+  }
 
-    .actions-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-    .dashboard-actions {
-        padding: 24px;
-    }
+  .dashboard-actions {
+    padding: 24px;
+  }
 }
 
 @media (max-width: 480px) {
-    .actions-grid {
-        grid-template-columns: 1fr;
-    }
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
 }
