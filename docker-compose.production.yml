@@ -4,6 +4,8 @@ services:
   webapp:
     container_name: app-prod
     restart: always
+    ports:
+      - '50025:80'
     networks:
       shared:
         ipv4_address: 172.22.0.10
