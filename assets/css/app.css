@@ -2,7 +2,9 @@
 
 /* Scan PHP templates for Tailwind utility classes */
 @source "../../private/Views/**/*.php";
+@source "../private/Views/**/*.php";
 @source "../../www/**/*.php";
+@source "../www/**/*.php";
 
 /* ===================================================================================================
    TeslApp - STYLESHEET
