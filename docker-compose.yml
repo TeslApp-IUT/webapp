@@ -5,3 +5,27 @@ services:
       - '50025:80'
     env_file: .env
     restart: unless-stopped
+    develop:
+      watch:
+        # Static assets: synced instantly, nginx serves them directly (no PHP/opcache).
+        - action: sync
+          path: ./www/_assets
+          target: /var/www/html/_assets
+        # PHP source: sync + restart to flush opcache immediately.
+        - action: sync+restart
+          path: ./www
+          target: /var/www/html
+          ignore:
+            - _assets/
+        - action: sync+restart
+          path: ./private
+          target: /var/www/private
+        # Image rebuild only when dependencies or server config change.
+        - action: rebuild
+          path: composer.json
+        - action: rebuild
+          path: composer.lock
+        - action: rebuild
+          path: Dockerfile
+        - action: rebuild
+          path: docker/
