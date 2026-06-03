@@ -32,6 +32,7 @@ docker compose down
 ```
 
 **Features:**
+
 - Port: `50025`
 - Nginx config: `nginx.local.conf`
 - Hot reload: PHP and static assets sync in real-time
@@ -53,6 +54,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --force-rec
 ```
 
 **Configuration:**
+
 - Port: `50026`
 - IP: `172.22.0.7` (on `teslapp_shared` network)
 - Nginx config: `nginx.dev.conf`
@@ -62,6 +64,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --force-rec
 - Secrets: `WEBAPP_ENV_DEV`
 
 **GitHub Workflow:**
+
 - File: `.github/workflows/deploy-dev.yml`
 - Trigger: Pushes to `development` branch
 - Required secret: `WEBAPP_ENV_DEV` (dev environment variables)
@@ -82,6 +85,7 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --force-re
 ```
 
 **Configuration:**
+
 - Port: `50025`
 - IP: `172.22.0.6` (on `teslapp_shared` network)
 - Nginx config: `nginx.prod.conf`
@@ -93,6 +97,7 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --force-re
 - Secrets: `WEBAPP_ENV`
 
 **GitHub Workflow:**
+
 - File: `.github/workflows/deploy.yml`
 - Trigger: Pushes to `main` branch
 - Required secret: `WEBAPP_ENV` (prod environment variables)
@@ -102,14 +107,18 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --force-re
 Each environment uses a separate `.env` file injected at deployment:
 
 ### Local Development
+
 Create a `.env` file in the project root (gitignored):
+
 ```bash
 cp .env.example .env
 # Edit .env with local settings
 ```
 
 ### Server Deployments
+
 Set GitHub secrets in your repository:
+
 - `WEBAPP_ENV` — Production environment variables
 - `WEBAPP_ENV_DEV` — Development environment variables
 
@@ -120,16 +129,19 @@ These are injected into `.env` at deploy time by the GitHub workflows.
 Each environment has a dedicated config with security headers tailored to its needs:
 
 ### `nginx.local.conf`
+
 - No HTTPS redirect (local development)
 - Relaxed CSP: `'unsafe-inline'` for Browsersync, `ws:/wss:` for sockets
 - Gzip: Level 5 (balanced)
 
 ### `nginx.dev.conf`
+
 - HTTPS redirect enabled
 - Relaxed CSP: `'unsafe-inline'` for dev tools
 - Gzip: Level 5
 
 ### `nginx.prod.conf`
+
 - HTTPS redirect with preload
 - Strict CSP: No `'unsafe-inline'`
 - Higher gzip compression: Level 6
@@ -138,18 +150,21 @@ Each environment has a dedicated config with security headers tailored to its ne
 ## Deploying Changes
 
 ### Local Development
+
 1. Make code changes
 2. Files auto-sync via Docker watch
 3. Opcache flushes on PHP changes
 4. No explicit deploy needed
 
 ### Development (dev.teslapp.feyli.dev)
+
 1. Push to `development` branch
 2. GitHub workflow triggers automatically
 3. New Docker image built and deployed
 4. Old container replaced with minimal downtime
 
 ### Production (teslapp.feyli.dev)
+
 1. Merge to `main` branch (via pull request)
 2. GitHub workflow triggers automatically
 3. New Docker image built and deployed
@@ -158,6 +173,7 @@ Each environment has a dedicated config with security headers tailored to its ne
 ## Verification
 
 After deployment, the GitHub workflows run a health check:
+
 ```bash
 curl -f http://localhost:PORT/
 ```
@@ -167,11 +183,13 @@ If this fails, the workflow exits with code 1 and alerts you.
 ## Troubleshooting
 
 ### Check running containers
+
 ```bash
 docker compose ps
 ```
 
 ### View logs
+
 ```bash
 # All services
 docker compose logs -f
@@ -181,11 +199,13 @@ docker compose logs -f webapp
 ```
 
 ### Access shell in running container
+
 ```bash
 docker compose exec webapp sh
 ```
 
 ### Rebuild without cache
+
 ```bash
 # Local
 docker compose build --no-cache
@@ -198,11 +218,13 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml build --no-cache
 ### Network issues on Kárkharos
 
 If containers can't communicate, verify the shared network exists:
+
 ```bash
 docker network inspect teslapp_shared
 ```
 
 If missing, create it:
+
 ```bash
 docker network create --subnet 172.22.0.0/16 teslapp_shared
 ```
