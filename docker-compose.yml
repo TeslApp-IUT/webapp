@@ -1,3 +1,4 @@
+name: teslapp
 services:
   webapp:
     build: .
@@ -5,6 +6,9 @@ services:
       - '50025:80'
     env_file: .env
     restart: unless-stopped
+    networks:
+      shared:
+        ipv4_address: 172.22.0.6
     develop:
       watch:
         # Static assets: synced instantly, nginx serves them directly (no PHP/opcache).
@@ -29,3 +33,8 @@ services:
           path: Dockerfile
         - action: rebuild
           path: docker/
+
+networks:
+  shared:
+    name: teslapp_shared
+    external: true
