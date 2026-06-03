@@ -213,9 +213,6 @@
   .w-auto {
     width: auto;
   }
-  .self-stretch {
-    align-self: stretch;
-  }
   .\!bg-white {
     background-color: var(--color-white) !important;
   }
@@ -238,6 +235,7 @@
 }
 :root {
   --color-primary: #e82127;
+  --color-primary1: #98e821;
   --color-primary-hover: #ff3b3f;
   --color-error: #ef4444;
   --color-success: #22c55e;
@@ -310,10 +308,6 @@ img {
   color: #ffffff;
   background-color: var(--color-primary);
   border-radius: 8px;
-}
-.btn-primary img {
-  height: 20px;
-  width: auto;
 }
 .btn-primary:hover {
   background-color: var(--color-primary-hover);
