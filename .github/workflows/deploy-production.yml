@@ -1,0 +1,24 @@
+name: Deploy to Prod (Kárkharos)
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy-prod:
+    runs-on: self-hosted
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Write .env
+        run: echo '${{ secrets.WEBAPP_ENV_PRODUCTION }}' > $GITHUB_WORKSPACE/.env
+
+      - name: Deploy to prod
+        run: |
+          cd $GITHUB_WORKSPACE
+          export $(cat .env | xargs)
+          docker compose build --no-cache
+          docker compose up -d --force-recreate webapp

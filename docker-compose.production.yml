@@ -1,0 +1,16 @@
+# Production environment override — runs on Kárkharos, external network
+name: teslapp
+services:
+  webapp:
+    container_name: app-prod
+    restart: always
+    ports:
+      - '50025:80'
+    networks:
+      shared:
+        ipv4_address: 172.22.0.10
+
+networks:
+  shared:
+    name: teslapp_shared
+    external: true

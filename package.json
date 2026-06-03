@@ -2,7 +2,7 @@
   "scripts": {
     "build": "tailwindcss -i ./assets/css/app.css -o ./www/_assets/css/styles.css --minify",
     "dev": "tailwindcss -i ./assets/css/app.css -o ./www/_assets/css/styles.css --watch",
-    "reload": "bunx browser-sync start --proxy localhost:50025 --files 'www/_assets/css/styles.css,private/Views/**/*.php,www/**/*.php' --port 3000"
+    "reload": "bunx browser-sync start --proxy localhost:50079 --files 'www/_assets/css/styles.css,private/Views/**/*.php,www/**/*.php' --port 3000"
   },
   "devDependencies": {
     "@prettier/plugin-php": "^0.24.0",
