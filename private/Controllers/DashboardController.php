@@ -30,9 +30,9 @@ class DashboardController
     {
         $userId = $_SESSION['user_id'] ?? null;
 
-        /* Redirect to login if no user is found in session */
+        /* Redirect to the home page if no user is found in session */
         if (!$userId) {
-            header('Location: /login');
+            header('Location: /site/home');
             exit();
         }
 
