@@ -1,26 +1,42 @@
 <?php
 /**
- * Dependency injection container configuration
- *
- * Declares the "recipes" for building the application's services
- * (controllers, and later services, repositories, Tesla ports, etc.) and then
- * returns the container ready for use.
- *
- * This file is loaded by the front controller (www/index.php) after
- * Composer autoloading, and grows with each new dependency to be wired.
- * The wiring is explicit (no autowiring) to ensure readability.
+ * DI container: explicit build recipes for the application services.
+ * Loaded by www/index.php after Composer autoloading.
  */
 declare(strict_types=1);
 
 use Teslapp\Controllers\StaticPagesController;
+use Teslapp\Models\Database;
+use Teslapp\Models\Shared\TeslaApi\TeslaApiClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
+use Teslapp\Models\Vehicle\TeslaModelRepository;
+use Teslapp\Models\Vehicle\TeslaModelRepositoryInterface;
+use Teslapp\Models\Vehicle\VehicleRepository;
+use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 use Teslapp\Utils\Container;
 
 $container = new Container();
 
-// Controllers
 $container->set(
     StaticPagesController::class,
     static fn(): StaticPagesController => new StaticPagesController(),
 );
+
+$container->set(
+    VehicleRepositoryInterface::class,
+    static fn(): VehicleRepositoryInterface => new VehicleRepository(Database::pdo()),
+);
+$container->set(
+    TeslaModelRepositoryInterface::class,
+    static fn(): TeslaModelRepositoryInterface => new TeslaModelRepository(Database::pdo()),
+);
+$container->set(
+    VehicleStateClient::class,
+    static fn(): VehicleStateClient => new TeslaApiClient(
+        getenv('TESLA_FLEET_API_URL') ?: 'https://fleet-api.prd.eu.vn.cloud.tesla.com',
+    ),
+);
+
+// VehicleService, VehicleController and their routes: pending the OAuth AuthService (token provider).
 
 return $container;

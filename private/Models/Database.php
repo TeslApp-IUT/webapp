@@ -59,6 +59,10 @@ final class Database
                     PDO::ATTR_EMULATE_PREPARES => false,
                     PDO::ATTR_STRINGIFY_FETCHES => false,
                 ]);
+
+                // Application tables live in the `app` schema (see db/script_creation_app.sql).
+                // Set the search_path once so repositories can use unqualified table names.
+                self::$instance->exec('SET search_path TO app, public');
             } catch (\PDOException $e) {
                 // On journalise le détail technique mais on n'expose jamais
                 // l'erreur SQL brute à l'utilisateur (cf. erreurs-exceptions.md).
