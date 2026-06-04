@@ -5,6 +5,8 @@
  */
 declare(strict_types=1);
 
+use Teslapp\Controllers\AuthController;
+use Teslapp\Controllers\CallbackAuthController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Models\Database;
 use Teslapp\Models\Shared\TeslaApi\TeslaApiClient;
@@ -17,6 +19,7 @@ use Teslapp\Utils\Container;
 
 $container = new Container();
 
+// Controllers
 $container->set(
     StaticPagesController::class,
     static fn(): StaticPagesController => new StaticPagesController(),
@@ -38,5 +41,15 @@ $container->set(
 );
 
 // VehicleService, VehicleController and their routes: pending the OAuth AuthService (token provider).
+
+$container->set(
+    AuthController::class,
+    static fn(): AuthController => new AuthController(),
+);
+
+$container->set(
+    CallbackAuthController::class,
+    static fn(): CallbackAuthController => new CallbackAuthController()
+);
 
 return $container;

@@ -11,8 +11,10 @@
 declare(strict_types=1);
 
 use Teslapp\Controllers\DashboardController;
+use Teslapp\Controllers\CallbackAuthController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\VehicleController;
+use Teslapp\Controllers\AuthController;
 
 return [
     // URLs for static pages accessible to everyone
@@ -26,4 +28,8 @@ return [
     'vehicle/select' => [VehicleController::class, 'select', true],
     'vehicle/choose' => [VehicleController::class, 'choose', true],
     'vehicle/dashboard' => [DashboardController::class, 'index', true],
+
+    // URLs for authentification
+    'auth' => [AuthController::class, 'auth', false],
+    'callback_auth' => [CallbackAuthController::class, 'callback', false],
 ];
