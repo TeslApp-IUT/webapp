@@ -47,13 +47,13 @@ $container->set(
     static fn(Container $c): VehicleService => new VehicleService(
         $c->get(VehicleStateClient::class),
         $c->get(VehicleRepositoryInterface::class),
-        $c->get(TeslaModelRepositoryInterface::class)
+        $c->get(TeslaModelRepositoryInterface::class),
     ),
 );
 $container->set(
     VehicleController::class,
     static fn(Container $c): VehicleController => new VehicleController(
-        $c->get(VehicleService::class)
+        $c->get(VehicleService::class),
     ),
 );
 $container->set(
