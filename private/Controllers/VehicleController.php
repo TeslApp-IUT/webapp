@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Teslapp\Controllers;
 
 use Teslapp\Models\Shared\Exceptions\TeslaAppException;
+use Teslapp\Models\Shared\ValueObjects\AccessToken;
 use Teslapp\Models\Shared\ValueObjects\VehicleConnectivityStatus;
 use Teslapp\Models\Vehicle\Vehicle;
 use Teslapp\Models\Vehicle\VehicleService;
@@ -20,27 +21,37 @@ final class VehicleController
     public function __construct(private readonly VehicleService $vehicleService) {}
 
     /**
-     * GET vehicle/select — refresh from the Tesla API (best effort), then show the list.
+     * GET vehicle/select — refresh from the Tesla API when a token is available, then show the list.
      */
     public function select(): void
     {
-        try {
-            $this->vehicleService->syncUserVehicles($_SESSION['user_id']);
-        } catch (TeslaAppException $e) {
-            // Tesla unreachable (no token yet, vehicle offline...): fall back to the stored list.
-            error_log('Vehicle sync failed: ' . $e->getMessage());
-            Flash::set(
-                'info',
-                'Synchronisation Tesla indisponible, affichage des véhicules connus.',
-            );
-        }
+        $token = isset($_SESSION['access_token'])
+            ? new AccessToken($_SESSION['access_token']): null;
 
         $statuses = [];
-        try {
-            $statuses = $this->vehicleService->connectivityForUser($_SESSION['user_id']);
-        } catch (TeslaAppException $e) {
-            // Live status is optional: show the cards without a dot if it fails.
-            error_log('Connectivity fetch failed: ' . $e->getMessage());
+
+        if ($token !== null)
+        {
+            try
+            {
+                $this->vehicleService->syncUserVehicles($_SESSION['user_id'], $token);
+            }
+            catch (TeslaAppException $e)
+            {
+                // Tesla unreachable (no token yet, vehicle offline...): fall back to the stored list.
+                error_log('Vehicle sync failed: ' . $e->getMessage());
+                Flash::set(
+                'info',
+                'Synchronisation Tesla indisponible, affichage des véhicules connus.',
+                );
+            }
+
+            try {
+                $statuses = $this->vehicleService->connectivityForUser($token);
+            } catch (TeslaAppException $e) {
+                // Live status is optional: show the cards without a dot if it fails.
+                error_log('Connectivity fetch failed: ' . $e->getMessage());
+            }
         }
 
         $selectedVin = $_SESSION['selected_vin'] ?? null;
