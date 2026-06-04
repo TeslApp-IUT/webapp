@@ -10,7 +10,5 @@ namespace Teslapp\Controllers\Auth;
  */
 final class AuthCallbackController
 {
-    public function callback(): void {
-
-    }
+    public function callback(): void {}
 }

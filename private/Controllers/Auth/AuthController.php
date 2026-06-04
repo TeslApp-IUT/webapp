@@ -15,7 +15,7 @@ final class AuthController
         match ($_SERVER['REQUEST_METHOD']) {
             'GET' => $this->handleGet(),
             'POST' => $this->handlePost(),
-            default => $this->methodNotAllowed()
+            default => $this->methodNotAllowed(),
         };
     }
 
