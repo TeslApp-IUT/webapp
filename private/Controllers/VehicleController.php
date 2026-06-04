@@ -26,23 +26,20 @@ final class VehicleController
     public function select(): void
     {
         $token = isset($_SESSION['access_token'])
-            ? new AccessToken($_SESSION['access_token']): null;
+            ? new AccessToken($_SESSION['access_token'])
+            : null;
 
         $statuses = [];
 
-        if ($token !== null)
-        {
-            try
-            {
+        if ($token !== null) {
+            try {
                 $this->vehicleService->syncUserVehicles($_SESSION['user_id'], $token);
-            }
-            catch (TeslaAppException $e)
-            {
+            } catch (TeslaAppException $e) {
                 // Tesla unreachable (no token yet, vehicle offline...): fall back to the stored list.
                 error_log('Vehicle sync failed: ' . $e->getMessage());
                 Flash::set(
-                'info',
-                'Synchronisation Tesla indisponible, affichage des véhicules connus.',
+                    'info',
+                    'Synchronisation Tesla indisponible, affichage des véhicules connus.',
                 );
             }
 

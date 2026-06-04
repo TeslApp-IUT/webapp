@@ -68,7 +68,6 @@ final class VehicleService
     /** @return array<string, VehicleConnectivityStatus> VIN => live status */
     public function connectivityForUser(AccessToken $token): array
     {
-
         return $this->teslaApi->fetchConnectivity($token);
     }
 
