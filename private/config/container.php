@@ -12,6 +12,8 @@
  */
 declare(strict_types=1);
 
+use Teslapp\Controllers\AuthController;
+use Teslapp\Controllers\CallbackAuthController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Utils\Container;
 
@@ -21,6 +23,16 @@ $container = new Container();
 $container->set(
     StaticPagesController::class,
     static fn(): StaticPagesController => new StaticPagesController(),
+);
+
+$container->set(
+    AuthController::class,
+    static fn(): AuthController => new AuthController(),
+);
+
+$container->set(
+    CallbackAuthController::class,
+    static fn(): CallbackAuthController => new CallbackAuthController()
 );
 
 return $container;

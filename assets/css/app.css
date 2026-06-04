@@ -232,7 +232,7 @@ input:focus-visible {
   top: 0;
   z-index: 1000;
   background-color: var(--color-bg);
-  border-bottom: 0.667px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .header .container {
