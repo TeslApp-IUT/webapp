@@ -52,10 +52,8 @@ $container->set(
 );
 
 $container->set(
-    CallbackAuthController::class,
-    static fn(): CallbackAuthController => new CallbackAuthController(),
+    AuthCallbackController::class,
+    static fn(): AuthCallbackController => new AuthCallbackController()
 );
-
-
 
 return $container;
