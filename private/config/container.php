@@ -5,8 +5,8 @@
  */
 declare(strict_types=1);
 
-use Teslapp\Controllers\AuthController;
-use Teslapp\Controllers\CallbackAuthController;
+use Teslapp\Controllers\Auth\AuthCallbackController;
+use Teslapp\Controllers\Auth\AuthController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Models\Database;
@@ -54,8 +54,8 @@ $container->set(
 );
 
 $container->set(
-    CallbackAuthController::class,
-    static fn(): CallbackAuthController => new CallbackAuthController()
+    AuthCallbackController::class,
+    static fn(): AuthCallbackController => new AuthCallbackController()
 );
 
 

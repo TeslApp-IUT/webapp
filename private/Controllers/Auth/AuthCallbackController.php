@@ -1,8 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
-namespace Teslapp\Controllers;
+namespace Teslapp\Controllers\Auth;
 
 /**
  * Authentification Controller
@@ -10,10 +8,9 @@ namespace Teslapp\Controllers;
  * This controller handles authentication through Tesla
  *
  */
-final class CallbackAuthController
+final class AuthCallbackController
 {
     public function callback(): void {
 
     }
 }
-
