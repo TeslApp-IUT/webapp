@@ -35,12 +35,10 @@ class DashboardController
             header('Location: /site/home');
             exit();
         }
-
-        $token = $this->getAccessToken($userId);
         $vin = $this->getSelectedVin();
 
-        /* Redirect to vehicle selection if token or VIN is missing */
-        if (!$token || !$vin) {
+        /* Redirect to vehicle selection if VIN is missing */
+        if (!$vin) {
             header('Location: /vehicle/select');
             exit();
         }
@@ -48,31 +46,6 @@ class DashboardController
         $data = $this->getTelemetryData($vin);
 
         require_once __DIR__ . '/../Views/Vehicle/dashboard.php';
-    }
-
-    /**
-     * Retrieves and decrypts the Tesla OAuth2 access token for the given user.
-     * Returns null if no token is found.
-     * TODO: load TESLAPP_TOKEN_ENCRYPTION_KEY once auth colleague has set it up.
-     **/
-    private function getAccessToken(int $userId): ?string
-    {
-        $token = $this->db->prepare("SELECT access_token_encrypted, access_token_nonce
-                                    FROM oauth2_token
-                                    WHERE user_id = ?
-                                    ORDER BY created_at DESC LIMIT 1");
-        $token->execute([$userId]);
-        $row = $token->fetch();
-
-        if (!$row) {
-            return null;
-        }
-
-        $cipher = new \Teslapp\Models\Shared\TokenCipher(
-            base64_decode($_ENV['TESLAPP_TOKEN_ENCRYPTION_KEY']),
-        );
-
-        return $cipher->decrypt($row['access_token_encrypted'], $row['access_token_nonce']);
     }
 
     /**
