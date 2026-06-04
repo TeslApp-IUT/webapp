@@ -10,7 +10,7 @@ use Teslapp\Controllers\Auth\AuthController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Models\Database;
-use Teslapp\Models\Shared\TeslaApi\TeslaApiClient;
+use Teslapp\Models\Shared\TeslaApi\TeslaStateClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
 use Teslapp\Models\Vehicle\TeslaModelRepository;
 use Teslapp\Models\Vehicle\TeslaModelRepositoryInterface;
@@ -36,9 +36,7 @@ $container->set(
 );
 $container->set(
     VehicleStateClient::class,
-    static fn(): VehicleStateClient => new TeslaApiClient(
-        getenv('TESLA_FLEET_API_URL') ?: 'https://fleet-api.prd.eu.vn.cloud.tesla.com',
-    ),
+    static fn(): VehicleStateClient => new TeslaStateClient(),
 );
 
 $container->set(
@@ -54,8 +52,8 @@ $container->set(
 );
 
 $container->set(
-    AuthCallbackController::class,
-    static fn(): AuthCallbackController => new AuthCallbackController()
+    CallbackAuthController::class,
+    static fn(): CallbackAuthController => new CallbackAuthController(),
 );
 
 

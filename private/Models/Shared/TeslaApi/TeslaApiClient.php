@@ -16,9 +16,9 @@ use Teslapp\Models\Vehicle\Vehicle;
 final readonly class TeslaApiClient implements VehicleStateClient
 {
     public function __construct(
-        private string $baseUrl,
-        private int    $timeoutSeconds = 10,
-    ) {}
+        private readonly string $baseUrl,
+        private readonly int $timeoutSeconds = 10,
+    ) {} //http
 
     /**
      * @return Vehicle[]
@@ -124,5 +124,5 @@ final readonly class TeslaApiClient implements VehicleStateClient
         }
 
         return $decoded;
-    }
+    } // http
 }
