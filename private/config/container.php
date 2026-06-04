@@ -42,14 +42,11 @@ $container->set(
 
 // VehicleService, VehicleController and their routes: pending the OAuth AuthService (token provider).
 
-$container->set(
-    AuthController::class,
-    static fn(): AuthController => new AuthController(),
-);
+$container->set(AuthController::class, static fn(): AuthController => new AuthController());
 
 $container->set(
     CallbackAuthController::class,
-    static fn(): CallbackAuthController => new CallbackAuthController()
+    static fn(): CallbackAuthController => new CallbackAuthController(),
 );
 
 return $container;
