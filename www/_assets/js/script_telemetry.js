@@ -60,8 +60,7 @@ const body = {
 };
 
 async function startTelemetry() {
-  try
-  {
+  try {
     const response = await fetch(`${BASE_URL}/api/1/vehicles/fleet_telemetry_config`, {
       method: 'POST',
       headers: {
@@ -76,9 +75,7 @@ async function startTelemetry() {
 
     console.log('Status:', response.status);
     console.log(JSON.stringify(data, null, 2));
-  }
-  catch (err)
-  {
+  } catch (err) {
     console.error(err);
   }
 }
