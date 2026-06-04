@@ -18,7 +18,7 @@ final class TeslaApiClient implements VehicleStateClient
     public function __construct(
         private readonly string $baseUrl,
         private readonly int $timeoutSeconds = 10,
-    ) {}
+    ) {} //http
 
     /**
      * @return Vehicle[]
@@ -124,5 +124,5 @@ final class TeslaApiClient implements VehicleStateClient
         }
 
         return $decoded;
-    }
+    } // http
 }
