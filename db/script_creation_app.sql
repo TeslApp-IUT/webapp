@@ -40,7 +40,7 @@ CREATE TABLE app.vehicles
 (
     vin      VARCHAR(17),
     user_id  UUID        NOT NULL,
-    name     VARCHAR(50) NOT NULL,
+    name     VARCHAR(100) NOT NULL,
     model_id UUID        NOT NULL,
 
     CONSTRAINT pk_vehicles PRIMARY KEY (vin),

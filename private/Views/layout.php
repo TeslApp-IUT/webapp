@@ -11,6 +11,7 @@
  *   $extraJs     string[]  additional scripts, without extension (optional)
  *   $bodyClass   string    <body> class(es) (optional)
  *   $headExtra   string    HTML fragment injected at the end of <head>, e.g. JSON-LD (optional)
+ *   $header      string    'guest' (default) or 'user' — selects the header partial (optional)
  */
 ?>
 <!DOCTYPE html>
@@ -31,12 +32,20 @@
 <body class="<?= e($bodyClass ?? '') ?>">
 
     <a class="skip-link" href="#main">Aller au contenu principal</a>
-
-    <?php require_once __DIR__ . '/partials/header_guest.php'; ?>
-
+    <?php
+    /**
+     * Header variant: 'guest' (default) or 'user' (a view sets $header before include).
+     * Strict whitelist -> prevents any arbitrary file inclusion through $header.
+     **/
+    $headerVariant = $header ?? 'guest';
+    if (!in_array($headerVariant, ['guest', 'user'], true)) {
+      $headerVariant = 'guest';
+    }
+    require_once __DIR__ . '/partials/header_' . $headerVariant . '.php';
+    ?>
     <main id="main">
         <?php
-        // Messages flash : consommés une fois depuis la session, puis supprimés.
+        // Flash messages: displayed once during the session, then deleted.
         $errors = \Teslapp\Utils\Flash::consume('errors', []);
         $success = \Teslapp\Utils\Flash::consume('success');
         $info = \Teslapp\Utils\Flash::consume('info');

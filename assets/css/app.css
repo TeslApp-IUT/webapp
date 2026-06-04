@@ -18,6 +18,7 @@
 :root {
   /* Primary Colors - Tesla Red */
   --color-primary: #e82127;
+  --color-primary1: #98e821;
   --color-primary-hover: #ff3b3f;
 
   /* Status Colors */
