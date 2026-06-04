@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Teslapp\Models\Vehicle;
 
-use Teslapp\Models\Shared\TeslaApi\AccessTokenProviderInterface;
+use Teslapp\Models\Shared\ValueObjects\AccessToken;
 use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
 use Teslapp\Models\Shared\ValueObjects\VehicleConnectivityStatus;
 use Teslapp\Models\Shared\ValueObjects\Vin;
@@ -16,7 +16,6 @@ final class VehicleService
 {
     public function __construct(
         private readonly VehicleStateClient $teslaApi,
-        private readonly AccessTokenProviderInterface $tokenProvider,
         private readonly VehicleRepositoryInterface $vehicleRepository,
         private readonly TeslaModelRepositoryInterface $modelRepository,
     ) {}
@@ -26,9 +25,8 @@ final class VehicleService
      * but missing in database is inserted; a VIN stored in database but gone from
      * the API is removed (the API is the source of truth).
      */
-    public function syncUserVehicles(string $userId): void
+    public function syncUserVehicles(string $userId, AccessToken $token): void
     {
-        $token = $this->tokenProvider->getValidAccessToken($userId);
         $apiVehicles = $this->teslaApi->listVehicles($token);
         $dbVehicles = $this->vehicleRepository->findByUser($userId);
 
@@ -68,9 +66,8 @@ final class VehicleService
     }
 
     /** @return array<string, VehicleConnectivityStatus> VIN => live status */
-    public function connectivityForUser(string $userId): array
+    public function connectivityForUser(AccessToken $token): array
     {
-        $token = $this->tokenProvider->getValidAccessToken($userId);
 
         return $this->teslaApi->fetchConnectivity($token);
     }
