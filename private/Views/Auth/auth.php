@@ -62,11 +62,15 @@ ob_start();
   </script>
 !-->
 
+<link rel="stylesheet"
   <div class="w-dvw h-dvh flex flex-col items-center justify-center">
-    <div class="bg-gray-700 border border-gray-600 p-4 rounded-xl">
-      <button id="auth-button" class="btn-primary bg-white! text-black! !font-normal">
+    <div class="flex flex-col items-center justify-center bg-gray-800 border border-gray-700 p-4 rounded-xl gap-5">
+      <img src="/_assets/images/Logo.svg" width="325">
+      <button id="auth-button" class="btn-primary hover:bg-gray-200! active:scale-95 transition-all! bg-white! text-black! font-normal!">
         <img src="/_assets/images/tesla_logo_gray.png" alt="logo Tesla">
-        <span>Se connecter avec Tesla</span>
+        <span id="button-connect" class="visible">Se connecter avec Tesla</span>
+        <span id="button-retry" class="hidden">Réessayer</span>
+        <span id="button-pending" class="hidden">Authentification...</span>
       </button>
     </div>
   </div>
@@ -82,19 +86,19 @@ ob_start();
       const windowProxy = window.open(teslaUrl.href, '_blank', 'popup=true,width=500,height=700,top=100,left=50');
 
       const closedCheckInterval = setInterval(() => {
-        const text = document.querySelector('#replaceable-text');
+        const buttonText = document.querySelector('span');
 
         if (windowProxy === null) {
-          text.innerHTML = 'La fenêtre n\'a pas pu être ouverte.'
+          buttonText.innerHTML = 'Réessayer';
           return;
         }
         if (!windowProxy.closed) {
-          text.innerHTML = 'Authentification en cours dans une nouvelle fenêtre...'
+          buttonText.innerHTML = 'Authentification...';
           return;
         }
         if (windowProxy.closed) {
           clearInterval(closedCheckInterval);
-          text.innerHTML = 'La fenêtre a été fermée.'
+          buttonText.innerHTML = 'Réessayer';
         }
       }, 500);
     });
@@ -103,3 +107,5 @@ ob_start();
 <?php
 $content = ob_get_clean();
 require_once __DIR__ . '/../layout.php';
+
+
