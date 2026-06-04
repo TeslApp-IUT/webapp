@@ -6,9 +6,9 @@ FROM composer:lts AS deps
 
 WORKDIR /app
 
-RUN --mount=type=bind,source=composer.json,target=composer.json \
-    --mount=type=bind,source=composer.lock,target=composer.lock \
-    --mount=type=cache,target=/tmp/cache \
+COPY composer.json ./
+RUN --mount=type=cache,target=/tmp/composer-cache \
+    COMPOSER_CACHE_DIR=/tmp/composer-cache \
     composer install --no-dev --no-interaction
 
 ################################################################################

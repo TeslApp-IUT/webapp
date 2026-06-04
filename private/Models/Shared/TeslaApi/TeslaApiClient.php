@@ -13,11 +13,11 @@ use Teslapp\Models\Vehicle\Vehicle;
 /**
  * Tesla Fleet API client over HTTP (cURL). Targets the regional Fleet API base URL.
  */
-final class TeslaApiClient implements VehicleStateClient
+final readonly class TeslaApiClient implements VehicleStateClient
 {
     public function __construct(
-        private readonly string $baseUrl,
-        private readonly int $timeoutSeconds = 10,
+        private string $baseUrl,
+        private int    $timeoutSeconds = 10,
     ) {}
 
     /**
@@ -81,7 +81,7 @@ final class TeslaApiClient implements VehicleStateClient
     {
         $ch = curl_init($this->baseUrl . $path);
         if ($ch === false) {
-            throw new TeslaApiException("Could not initialise the HTTP request for GET {$path}.");
+            throw new TeslaApiException("Could not initialise the HTTP request for GET $path.");
         }
 
         curl_setopt_array($ch, [
@@ -101,25 +101,25 @@ final class TeslaApiClient implements VehicleStateClient
 
         // The token is never included in any error message (it must not leak into logs).
         if (!is_string($response)) {
-            throw new TeslaApiException("Tesla API network error on GET {$path}: {$error}");
+            throw new TeslaApiException("Tesla API network error on GET $path: $error");
         }
 
         if ($status >= 400) {
-            throw new TeslaApiException("Tesla API returned HTTP {$status} on GET {$path}.");
+            throw new TeslaApiException("Tesla API returned HTTP $status on GET $path.");
         }
 
         try {
             $decoded = json_decode($response, true, flags: JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
             throw new TeslaApiException(
-                "Tesla API returned invalid JSON on GET {$path}.",
+                "Tesla API returned invalid JSON on GET $path.",
                 previous: $e,
             );
         }
 
         if (!is_array($decoded)) {
             throw new TeslaApiException(
-                "Tesla API returned an unexpected JSON shape on GET {$path}.",
+                "Tesla API returned an unexpected JSON shape on GET $path.",
             );
         }
 
