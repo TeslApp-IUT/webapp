@@ -1,8 +1,12 @@
 <?php
+declare(strict_types=1);
+
 namespace Teslapp\Controllers;
+use PDO;
 
 /**
- * Controller responsible for displaying the vehicle dashboard
+ * Controller responsible for displaying the vehicle dashboard.
+ * Reads telemetry data from the fleet_telemetry schema and passes it to the view.
  **/
 class DashboardController
 {
@@ -18,8 +22,9 @@ class DashboardController
     }
 
     /**
-     * Entry point of the dashboard
-     * Retrieves the connected user, their vehicle and telemetry data, then loads the view
+     * Entry point of the dashboard.
+     * Checks that the user is authenticated and has selected a vehicle,
+     * then fetches telemetry data and loads the view.
      **/
     public function index(): void
     {
@@ -32,28 +37,26 @@ class DashboardController
         }
 
         $token = $this->getAccessToken($userId);
-        $vin = $this->getSelectedVin($userId);
+        $vin = $this->getSelectedVin();
 
         /* Redirect to vehicle selection if token or VIN is missing */
         if (!$token || !$vin) {
-            header('Location: /vehicles');
+            header('Location: /vehicle/select');
             exit();
         }
 
         $data = $this->getTelemetryData($vin);
 
-        require_once '../private/Views/Vehicle/dashboard.php';
+        require_once __DIR__ . '/../Views/Vehicle/dashboard.php';
     }
 
     /**
-     * Retrieves and decrypts the Tesla OAuth2 access token for the given user
-     * Returns null if no token is found
-     * TODO: load TESLAPP_TOKEN_ENCRYPTION_KEY once auth is set up
+     * Retrieves and decrypts the Tesla OAuth2 access token for the given user.
+     * Returns null if no token is found.
+     * TODO: load TESLAPP_TOKEN_ENCRYPTION_KEY once auth colleague has set it up.
      **/
     private function getAccessToken(int $userId): ?string
     {
-        require_once '../private/Models/Shared/TokenCipher.php';
-
         $token = $this->db->prepare("SELECT access_token_encrypted, access_token_nonce
                                     FROM oauth2_token
                                     WHERE user_id = ?
@@ -73,22 +76,17 @@ class DashboardController
     }
 
     /**
-     * Retrieves the VIN of the vehicle selected by the given user
-     * Returns null if no vehicle is found
+     * Retrieves the VIN stored in the session by the vehicle selection controller.
+     * Returns null if no vehicle has been selected yet.
      **/
-    private function getSelectedVin(int $userId): ?string
+    private function getSelectedVin(): ?string
     {
-        $selectVin = $this->db->prepare("SELECT vin
-                                    FROM vehicles
-                                    WHERE user_id = ? LIMIT 1");
-        $selectVin->execute([$userId]);
-        $row = $selectVin->fetch();
-
-        return $row['vin'] ?? null;
+        return $_SESSION['selected_vin'] ?? null;
     }
 
     /**
-     * Retrieves the latest telemetry data for the given VIN from the fleet_telemetry schema
+     * Fetches the latest telemetry data for the given VIN from the fleet_telemetry schema.
+     * Each value comes from its own table and represents the most recent entry.
      **/
     private function getTelemetryData(string $vin): array
     {
