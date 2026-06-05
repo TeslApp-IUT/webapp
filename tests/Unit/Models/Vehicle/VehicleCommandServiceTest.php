@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
 use Teslapp\Models\Shared\ValueObjects\AccessToken;
+use Teslapp\Models\Shared\ValueObjects\TrunkSide;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\VehicleCommandService;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
@@ -149,5 +150,38 @@ final class VehicleCommandServiceTest extends TestCase
 
         $this->expectException(VehicleUnauthorizedException::class);
         $service->flashLights('user-2', $vin, $token);
+    }
+
+    #[Test]
+    public function actuateTrunkSendsTheCommandWhenTheUserOwnsTheVehicle(): void
+    {
+        $vin = new Vin(self::VIN);
+        $token = new AccessToken('tok');
+
+        $commands = $this->createMock(VehicleCommandClient::class);
+        $commands->expects($this->once())->method('actuateTrunk')->with($token, $vin, TrunkSide::Rear);
+
+        $vehicles = $this->createMock(VehicleRepositoryInterface::class);
+        $vehicles->method('isAccessibleBy')->with($vin, 'user-1')->willReturn(true);
+
+        (new VehicleCommandService($commands, $vehicles))->actuateTrunk('user-1', $vin, TrunkSide::Rear, $token);
+    }
+
+    #[Test]
+    public function actuateTrunkThrowsWhenTheUserDoesNotOwnTheVehicle(): void
+    {
+        $vin = new Vin(self::VIN);
+        $token = new AccessToken('tok');
+
+        $commands = $this->createMock(VehicleCommandClient::class);
+        $commands->expects($this->never())->method('actuateTrunk');
+
+        $vehicles = $this->createMock(VehicleRepositoryInterface::class);
+        $vehicles->method('isAccessibleBy')->willReturn(false);
+
+        $service = new VehicleCommandService($commands, $vehicles);
+
+        $this->expectException(VehicleUnauthorizedException::class);
+        $service->actuateTrunk('user-2', $vin, TrunkSide::Front, $token);
     }
 }
