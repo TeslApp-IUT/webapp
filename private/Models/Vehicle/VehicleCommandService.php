@@ -71,6 +71,13 @@ final class VehicleCommandService
         $this->commands->closeChargePortDoor($token, $vin);
     }
 
+    /** Wakes the vehicle from sleep. */
+    public function wakeUp(string $userId, Vin $vin, AccessToken $token): void
+    {
+        $this->assertAccessibleBy($userId, $vin);
+        $this->commands->wakeUp($token, $vin);
+    }
+
     /**
      * @throws VehicleUnauthorizedException if the user does not own the vehicle.
      */
