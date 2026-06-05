@@ -14,7 +14,7 @@ final class AuthCallbackController
 
         if (!is_string($code) || $code === '') {
             $status = 'error';
-            $error  = 'missing_code';
+            $error = 'missing_code';
             require __DIR__ . '/../../Views/Auth/auth_callback.php';
             return;
         }
@@ -22,11 +22,11 @@ final class AuthCallbackController
         try {
             TeslaHttpClient::exchangeCodeForUserToken($code);
             $status = 'success';
-            $error  = null;
+            $error = null;
         } catch (TeslaApiException $e) {
             error_log('OAuth code exchange failed: ' . $e->getMessage());
             $status = 'error';
-            $error  = 'token_exchange_failed';
+            $error = 'token_exchange_failed';
         }
 
         require __DIR__ . '/../../Views/Auth/auth_callback.php';

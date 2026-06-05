@@ -41,28 +41,22 @@ final class TeslaHttpClient
      * @throws TeslaApiException
      */
     private static function send(
-        string       $method,
-        string       $path,
+        string $method,
+        string $path,
         ?AccessToken $token,
-        ?array       $body,
-        ?string      $overrideBaseURL,
-        bool         $formEncoded = false,
-    ): array
-    {
+        ?array $body,
+        ?string $overrideBaseURL,
+        bool $formEncoded = false,
+    ): array {
         $baseUrl = $overrideBaseURL ?: getenv('TESLACE_BASE_URL') ?: self::DEFAULT_BASE_URL;
 
         $ch = curl_init($baseUrl . $path);
         if ($ch === false) {
-            throw new TeslaApiException(
-                "Could not initialise the HTTP request for $method $path.",
-            );
+            throw new TeslaApiException("Could not initialise the HTTP request for $method $path.");
         }
 
         $contentType = $formEncoded ? 'application/x-www-form-urlencoded' : 'application/json';
-        $headers = [
-            "Content-Type: $contentType",
-            'Accept: application/json',
-        ];
+        $headers = ["Content-Type: $contentType", 'Accept: application/json'];
         // Token requests (partner/user OAuth) are unauthenticated; only add the header when present.
         if ($token !== null) {
             $headers[] = 'Authorization: Bearer ' . $token->value;
@@ -93,7 +87,7 @@ final class TeslaHttpClient
         curl_setopt_array($ch, $options);
 
         $response = curl_exec($ch);
-        $status = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $error = curl_error($ch);
 
         if (!is_string($response)) {
@@ -131,12 +125,21 @@ final class TeslaHttpClient
                 'client_id' => getenv('CLIENT_ID'),
                 'client_secret' => getenv('CLIENT_SECRET'),
                 'audience' => 'https://fleet-api.prd.eu.vn.cloud.tesla.com',
-                'scope' => 'openid offline_access user_data vehicle_device_data vehicle_location vehicle_cmds vehicle_charging_cmds vehicle_specs'
+                'scope' =>
+                    'openid offline_access user_data vehicle_device_data vehicle_location vehicle_cmds vehicle_charging_cmds vehicle_specs',
             ];
-            $res = self::send('POST', '/oauth2/v3/token', null, $body, 'https://fleet-auth.prd.vn.cloud.tesla.com', formEncoded: true);
+            $res = self::send(
+                'POST',
+                '/oauth2/v3/token',
+                null,
+                $body,
+                'https://fleet-auth.prd.vn.cloud.tesla.com',
+                formEncoded: true,
+            );
             self::$partnerAccessToken = $res['access_token'];
             // Subtract TIMEOUT_SECONDS + another 60 seconds buffer so we never use a token that could expire mid-request.
-            self::$partnerAccessTokenExpiresAt = time() + (int)$res['expires_in'] - (self::TIMEOUT_SECONDS + 60);
+            self::$partnerAccessTokenExpiresAt =
+                time() + (int) $res['expires_in'] - (self::TIMEOUT_SECONDS + 60);
         }
 
         return new AccessToken(self::$partnerAccessToken);
@@ -154,7 +157,7 @@ final class TeslaHttpClient
     public static function getUserAccessToken(): AccessToken
     {
         $cached = $_SESSION['access_token'] ?? null;
-        $expiresAt = (int)($_SESSION['access_token_expires_at'] ?? 0);
+        $expiresAt = (int) ($_SESSION['access_token_expires_at'] ?? 0);
 
         if (is_string($cached) && $cached !== '' && time() < $expiresAt) {
             return new AccessToken($cached);
@@ -170,7 +173,14 @@ final class TeslaHttpClient
             'client_id' => getenv('CLIENT_ID'),
             'refresh_token' => $refreshToken,
         ];
-        $res = self::send('POST', self::TOKEN_PATH, null, $body, self::FLEET_AUTH_BASE_URL, formEncoded: true);
+        $res = self::send(
+            'POST',
+            self::TOKEN_PATH,
+            null,
+            $body,
+            self::FLEET_AUTH_BASE_URL,
+            formEncoded: true,
+        );
 
         return self::persistTokenResponse($res);
     }
@@ -200,7 +210,14 @@ final class TeslaHttpClient
         error_log($body['code']);
         error_log($body['audience']);
         error_log($body['redirect_uri']);
-        $res = self::send('POST', self::TOKEN_PATH, null, $body, self::FLEET_AUTH_BASE_URL, formEncoded: true);
+        $res = self::send(
+            'POST',
+            self::TOKEN_PATH,
+            null,
+            $body,
+            self::FLEET_AUTH_BASE_URL,
+            formEncoded: true,
+        );
 
         return self::persistTokenResponse($res);
     }
@@ -222,7 +239,7 @@ final class TeslaHttpClient
     {
         $accessToken = $res['access_token'] ?? null;
         $refreshToken = $res['refresh_token'] ?? null;
-        $expiresIn = (int)($res['expires_in'] ?? 0);
+        $expiresIn = (int) ($res['expires_in'] ?? 0);
 
         if (!is_string($accessToken) || $accessToken === '') {
             throw new TeslaApiException('Token endpoint response is missing the access token.');
@@ -242,8 +259,8 @@ final class TeslaHttpClient
         }
 
         $sub = isset($claims['sub'])
-            ? (string)$claims['sub']
-            : (string)($_SESSION['user_id'] ?? '');
+            ? (string) $claims['sub']
+            : (string) ($_SESSION['user_id'] ?? '');
 
         if ($sub !== '') {
             $cipher = new TokenCipher(
@@ -257,17 +274,17 @@ final class TeslaHttpClient
             if ($claims !== null) {
                 $aud = $claims['aud'] ?? '';
                 if (is_array($aud)) {
-                    $aud = (string)($aud[0] ?? '');
+                    $aud = (string) ($aud[0] ?? '');
                 }
 
-                $repository->ensureUser($sub, (string)($claims['email'] ?? ''));
+                $repository->ensureUser($sub, (string) ($claims['email'] ?? ''));
                 $repository->saveJwt(
                     $sub,
-                    (string)($claims['iss'] ?? ''),
-                    (string)$aud,
-                    (int)($claims['auth_time'] ?? $now),
-                    (int)($claims['exp'] ?? $accessExpiresAt),
-                    (int)($claims['iat'] ?? $now),
+                    (string) ($claims['iss'] ?? ''),
+                    (string) $aud,
+                    (int) ($claims['auth_time'] ?? $now),
+                    (int) ($claims['exp'] ?? $accessExpiresAt),
+                    (int) ($claims['iat'] ?? $now),
                 );
             }
 
@@ -308,7 +325,7 @@ final class TeslaHttpClient
         }
 
         $payload = strtr($parts[1], '-_', '+/');
-        $payload .= str_repeat('=', (4 - strlen($payload) % 4) % 4);
+        $payload .= str_repeat('=', (4 - (strlen($payload) % 4)) % 4);
 
         $decoded = base64_decode($payload, strict: true);
         if ($decoded === false) {
