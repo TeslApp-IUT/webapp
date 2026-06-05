@@ -8,7 +8,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Teslapp\Models\Shared\TeslaApi\AccessTokenProviderInterface;
 use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
 use Teslapp\Models\Shared\ValueObjects\AccessToken;
 use Teslapp\Models\Shared\ValueObjects\VehicleConnectivityStatus;
@@ -51,7 +50,10 @@ final class VehicleServiceTest extends TestCase
         $modelRepo = $this->createMock(TeslaModelRepositoryInterface::class);
         $modelRepo->method('findAll')->willReturn([new TeslaModel('model-3-id', 'Model 3')]);
 
-        $this->makeService($api, $vehicleRepo, $modelRepo)->syncUserVehicles('user-1');
+        $this->makeService($api, $vehicleRepo, $modelRepo)->syncUserVehicles(
+            'user-1',
+            new AccessToken('tok'),
+        );
     }
 
     #[Test]
@@ -73,7 +75,10 @@ final class VehicleServiceTest extends TestCase
 
         $modelRepo = $this->createMock(TeslaModelRepositoryInterface::class);
 
-        $this->makeService($api, $vehicleRepo, $modelRepo)->syncUserVehicles('user-1');
+        $this->makeService($api, $vehicleRepo, $modelRepo)->syncUserVehicles(
+            'user-1',
+            new AccessToken('tok'),
+        );
     }
 
     #[Test]
@@ -101,7 +106,7 @@ final class VehicleServiceTest extends TestCase
         $api = $this->createMock(VehicleStateClient::class);
         $api->expects($this->once())
             ->method('fetchConnectivity')
-            ->with(new AccessToken('tok')) // the token resolved from the provider
+            ->with(new AccessToken('tok'))
             ->willReturn([
                 '5YJ3E1EA7KF000316' => VehicleConnectivityStatus::Online,
             ]);
@@ -114,7 +119,7 @@ final class VehicleServiceTest extends TestCase
 
         self::assertSame(
             ['5YJ3E1EA7KF000316' => VehicleConnectivityStatus::Online],
-            $service->connectivityForUser('user-1'),
+            $service->connectivityForUser(new AccessToken('tok')),
         );
     }
 
@@ -149,9 +154,6 @@ final class VehicleServiceTest extends TestCase
         VehicleRepositoryInterface $vehicleRepo,
         TeslaModelRepositoryInterface $modelRepo,
     ): VehicleService {
-        $token = $this->createMock(AccessTokenProviderInterface::class);
-        $token->method('getValidAccessToken')->willReturn(new AccessToken('tok'));
-
-        return new VehicleService($api, $token, $vehicleRepo, $modelRepo);
+        return new VehicleService($api, $vehicleRepo, $modelRepo);
     }
 }
