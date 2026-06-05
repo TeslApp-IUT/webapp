@@ -54,4 +54,9 @@ final readonly class TeslaCommandClient implements VehicleCommandClient
     {
         TeslaHttpClient::post("/api/1/vehicles/{$vin->value}/command/charge_port_door_open", $token);
     }
+
+    public function closeChargePortDoor(AccessToken $token, Vin $vin): void
+    {
+        TeslaHttpClient::post("/api/1/vehicles/{$vin->value}/command/charge_port_door_close", $token);
+    }
 }

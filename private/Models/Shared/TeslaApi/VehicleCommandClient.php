@@ -55,4 +55,11 @@ interface VehicleCommandClient
      * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
      */
     public function openChargePortDoor(AccessToken $token, Vin $vin): void;
+
+    /**
+     * Closes the charge port door.
+     *
+     * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
+     */
+    public function closeChargePortDoor(AccessToken $token, Vin $vin): void;
 }
