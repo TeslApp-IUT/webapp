@@ -64,6 +64,13 @@ final class VehicleCommandService
         $this->commands->openChargePortDoor($token, $vin);
     }
 
+    /** Closes the charge port door. */
+    public function closeChargePortDoor(string $userId, Vin $vin, AccessToken $token): void
+    {
+        $this->assertAccessibleBy($userId, $vin);
+        $this->commands->closeChargePortDoor($token, $vin);
+    }
+
     /**
      * @throws VehicleUnauthorizedException if the user does not own the vehicle.
      */
