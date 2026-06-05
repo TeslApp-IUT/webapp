@@ -6,6 +6,6 @@ final class AuthSignUpController
 {
     public function signup(): void
     {
-        //TO-DO: Sign up
+        require_once __DIR__ . '/../../Views/Auth/auth_signup.php';
     }
 }
