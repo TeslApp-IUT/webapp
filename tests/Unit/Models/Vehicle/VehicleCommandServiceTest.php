@@ -184,4 +184,37 @@ final class VehicleCommandServiceTest extends TestCase
         $this->expectException(VehicleUnauthorizedException::class);
         $service->actuateTrunk('user-2', $vin, TrunkSide::Front, $token);
     }
+
+    #[Test]
+    public function openChargePortDoorSendsTheCommandWhenTheUserOwnsTheVehicle(): void
+    {
+        $vin = new Vin(self::VIN);
+        $token = new AccessToken('tok');
+
+        $commands = $this->createMock(VehicleCommandClient::class);
+        $commands->expects($this->once())->method('openChargePortDoor')->with($token, $vin);
+
+        $vehicles = $this->createMock(VehicleRepositoryInterface::class);
+        $vehicles->method('isAccessibleBy')->with($vin, 'user-1')->willReturn(true);
+
+        (new VehicleCommandService($commands, $vehicles))->openChargePortDoor('user-1', $vin, $token);
+    }
+
+    #[Test]
+    public function openChargePortDoorThrowsWhenTheUserDoesNotOwnTheVehicle(): void
+    {
+        $vin = new Vin(self::VIN);
+        $token = new AccessToken('tok');
+
+        $commands = $this->createMock(VehicleCommandClient::class);
+        $commands->expects($this->never())->method('openChargePortDoor');
+
+        $vehicles = $this->createMock(VehicleRepositoryInterface::class);
+        $vehicles->method('isAccessibleBy')->willReturn(false);
+
+        $service = new VehicleCommandService($commands, $vehicles);
+
+        $this->expectException(VehicleUnauthorizedException::class);
+        $service->openChargePortDoor('user-2', $vin, $token);
+    }
 }
