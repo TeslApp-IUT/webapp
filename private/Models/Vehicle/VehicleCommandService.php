@@ -35,6 +35,13 @@ final class VehicleCommandService
         $this->commands->unlock($token, $vin);
     }
 
+    /** Honks the horn. */
+    public function honkHorn(string $userId, Vin $vin, AccessToken $token): void
+    {
+        $this->assertAccessibleBy($userId, $vin);
+        $this->commands->honkHorn($token, $vin);
+    }
+
     /**
      * @throws VehicleUnauthorizedException if the user does not own the vehicle.
      */
