@@ -7,6 +7,7 @@ namespace Teslapp\Models\Vehicle;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
 use Teslapp\Models\Shared\ValueObjects\AccessToken;
+use Teslapp\Models\Shared\ValueObjects\TrunkSide;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 
 /**
@@ -47,6 +48,13 @@ final class VehicleCommandService
     {
         $this->assertAccessibleBy($userId, $vin);
         $this->commands->flashLights($token, $vin);
+    }
+
+    /** Opens or closes the front or rear trunk. */
+    public function actuateTrunk(string $userId, Vin $vin, TrunkSide $side, AccessToken $token): void
+    {
+        $this->assertAccessibleBy($userId, $vin);
+        $this->commands->actuateTrunk($token, $vin, $side);
     }
 
     /**
