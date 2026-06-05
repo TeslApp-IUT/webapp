@@ -48,4 +48,11 @@ interface VehicleCommandClient
      * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
      */
     public function actuateTrunk(AccessToken $token, Vin $vin, TrunkSide $side): void;
+
+    /**
+     * Opens the charge port door.
+     *
+     * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
+     */
+    public function openChargePortDoor(AccessToken $token, Vin $vin): void;
 }

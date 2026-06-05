@@ -49,4 +49,9 @@ final readonly class TeslaCommandClient implements VehicleCommandClient
             ['which_trunk' => $side->value],
         );
     }
+
+    public function openChargePortDoor(AccessToken $token, Vin $vin): void
+    {
+        TeslaHttpClient::post("/api/1/vehicles/{$vin->value}/command/charge_port_door_open", $token);
+    }
 }
