@@ -40,12 +40,17 @@ if (is_file($envFile)) {
         $envValue = trim($envValue);
 
         // Strip a single pair of surrounding quotes, if present.
+        // Double-quoted values additionally unescape \" → " to match Docker Compose behaviour.
         if (
             strlen($envValue) >= 2 &&
             ($envValue[0] === '"' || $envValue[0] === "'") &&
             $envValue[strlen($envValue) - 1] === $envValue[0]
         ) {
+            $quote = $envValue[0];
             $envValue = substr($envValue, 1, -1);
+            if ($quote === '"') {
+                $envValue = str_replace('\\"', '"', $envValue);
+            }
         }
 
         // Existing environment values always win (never overwritten).
