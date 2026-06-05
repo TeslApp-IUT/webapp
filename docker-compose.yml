@@ -5,7 +5,7 @@ services:
     env_file: .env
     restart: unless-stopped
     volumes:
-      - ./docker/nginx.${ENVIRONMENT:-local}.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx.${ENVIRONMENT:-local}.conf:/etc/nginx/nginx.conf:ro,z
     networks:
       shared:
         ipv4_address: 172.22.0.11

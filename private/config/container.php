@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Teslapp\Controllers\Auth\AuthCallbackController;
+use Teslapp\Controllers\Auth\AuthSignUpController;
 use Teslapp\Controllers\Auth\AuthController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
@@ -53,6 +54,11 @@ $container->set(
 $container->set(
     AuthCallbackController::class,
     static fn(): AuthCallbackController => new AuthCallbackController(),
+);
+
+$container->set(
+    AuthSignUpController::class,
+    static fn(): AuthSignUpController => new AuthSignUpController(),
 );
 
 return $container;
