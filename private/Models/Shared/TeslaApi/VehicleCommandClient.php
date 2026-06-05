@@ -62,4 +62,12 @@ interface VehicleCommandClient
      * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
      */
     public function closeChargePortDoor(AccessToken $token, Vin $vin): void;
+
+    /**
+     * Wakes the vehicle from sleep. Unlike the other commands, this hits a
+     * vehicle endpoint (no /command/ segment) and is not signed.
+     *
+     * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
+     */
+    public function wakeUp(AccessToken $token, Vin $vin): void;
 }

@@ -59,4 +59,10 @@ final readonly class TeslaCommandClient implements VehicleCommandClient
     {
         TeslaHttpClient::post("/api/1/vehicles/{$vin->value}/command/charge_port_door_close", $token);
     }
+
+    public function wakeUp(AccessToken $token, Vin $vin): void
+    {
+        // wake_up is a vehicle endpoint, not a signed command: no /command/ segment.
+        TeslaHttpClient::post("/api/1/vehicles/{$vin->value}/wake_up", $token);
+    }
 }
