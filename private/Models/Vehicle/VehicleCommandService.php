@@ -42,6 +42,13 @@ final class VehicleCommandService
         $this->commands->honkHorn($token, $vin);
     }
 
+    /** Briefly flashes the headlights. */
+    public function flashLights(string $userId, Vin $vin, AccessToken $token): void
+    {
+        $this->assertAccessibleBy($userId, $vin);
+        $this->commands->flashLights($token, $vin);
+    }
+
     /**
      * @throws VehicleUnauthorizedException if the user does not own the vehicle.
      */
