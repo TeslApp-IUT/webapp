@@ -89,7 +89,7 @@ ob_start();
     document.getElementById('auth-button').addEventListener('click', () => {
       const currentLocation = new URL(window.location.href);
 
-      const redirectUri = currentLocation.origin + '/callback_auth';
+      const redirectUri = currentLocation.origin + '/auth/callback';
       const teslaUrl = new URL('<?php echo $href ?>');
       teslaUrl.searchParams.set('redirect_uri', redirectUri.toString());
       const windowProxy = window.open(teslaUrl.href, '_blank', 'popup=true,width=500,height=700,top=100,left=50');

@@ -6,7 +6,8 @@
   "require": {
     "php": ">=8.2",
     "ext-sodium": "*",
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "ext-pdo": "*"
   },
   "autoload": {
     "psr-4": {
