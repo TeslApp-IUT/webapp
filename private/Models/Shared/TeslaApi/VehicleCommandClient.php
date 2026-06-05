@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Teslapp\Models\Shared\TeslaApi;
+
+use Teslapp\Models\Shared\Exceptions\TeslaApiException;
+use Teslapp\Models\Shared\ValueObjects\AccessToken;
+use Teslapp\Models\Shared\ValueObjects\Vin;
+
+/**
+ * Sends commands to a vehicle through the Tesla API.
+ */
+interface VehicleCommandClient
+{
+    /**
+     * Locks the vehicle's doors.
+     *
+     * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
+     */
+    public function lock(AccessToken $token, Vin $vin): void;
+}
