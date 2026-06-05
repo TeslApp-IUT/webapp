@@ -6,6 +6,7 @@ namespace Teslapp\Models\Shared\TeslaApi;
 
 use Teslapp\Models\Shared\Exceptions\TeslaApiException;
 use Teslapp\Models\Shared\ValueObjects\AccessToken;
+use Teslapp\Models\Shared\ValueObjects\TrunkSide;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 
 /**
@@ -40,4 +41,11 @@ interface VehicleCommandClient
      * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
      */
     public function flashLights(AccessToken $token, Vin $vin): void;
+
+    /**
+     * Opens or closes the front or rear trunk (the motor toggles its state).
+     *
+     * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
+     */
+    public function actuateTrunk(AccessToken $token, Vin $vin, TrunkSide $side): void;
 }

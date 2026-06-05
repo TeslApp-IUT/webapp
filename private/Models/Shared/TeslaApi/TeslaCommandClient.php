@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Teslapp\Models\Shared\TeslaApi;
 
 use Teslapp\Models\Shared\ValueObjects\AccessToken;
+use Teslapp\Models\Shared\ValueObjects\TrunkSide;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 
 /**
@@ -38,5 +39,14 @@ final readonly class TeslaCommandClient implements VehicleCommandClient
     public function flashLights(AccessToken $token, Vin $vin): void
     {
         TeslaHttpClient::post("/api/1/vehicles/{$vin->value}/command/flash_lights", $token);
+    }
+
+    public function actuateTrunk(AccessToken $token, Vin $vin, TrunkSide $side): void
+    {
+        TeslaHttpClient::post(
+            "/api/1/vehicles/{$vin->value}/command/actuate_trunk",
+            $token,
+            ['which_trunk' => $side->value],
+        );
     }
 }
