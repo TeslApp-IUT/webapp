@@ -34,7 +34,7 @@ services:
 networks:
   shared:
     name: teslapp_shared
-    external: ${EXTERNAL_NETWORK:-false}
+    external: false
     ipam:
       config:
         - subnet: 172.22.0.0/16
