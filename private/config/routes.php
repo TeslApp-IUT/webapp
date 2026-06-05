@@ -27,7 +27,7 @@ return [
     // URLs for the post authentification
     'vehicle/select' => [VehicleController::class, 'select', true],
     'vehicle/choose' => [VehicleController::class, 'choose', true],
-    'vehicle/dashboard' => [DashboardController::class, 'index', true],
+    'dashboard/overview' => [DashboardController::class, 'index', true],
 
     // URLs for authentification
     'auth' => [AuthController::class, 'auth', false],

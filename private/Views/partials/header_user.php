@@ -29,7 +29,7 @@ $userInitial = $userEmail !== '' ? mb_strtoupper(mb_substr($userEmail, 0, 1)) : 
 
         <!-- Main navigation (logged-in: includes the dashboard) -->
         <nav class="nav dashboard-nav" aria-label="navigation principale">
-            <a href="/vehicle/dashboard" class="nav-link">Tableau de bord</a>
+            <a href="/dashboard/overview" class="nav-link">Tableau de bord</a>
             <a href="/site/home" class="nav-link">Accueil</a>
             <a href="/site/sitemap" class="nav-link">Plan du site</a>
             <a href="/site/legal" class="nav-link">Mentions légales</a>
@@ -80,7 +80,7 @@ $userInitial = $userEmail !== '' ? mb_strtoupper(mb_substr($userEmail, 0, 1)) : 
     <div class="mobile-menu-content">
         <div class="mobile-menu-section-title">NAVIGATION</div>
         <nav class="mobile-menu-nav" aria-label="navigation">
-            <a href="/vehicle/dashboard" class="mobile-menu-link">Tableau de bord</a>
+            <a href="/dashboard/overview" class="mobile-menu-link">Tableau de bord</a>
             <a href="/site/home" class="mobile-menu-link">Accueil</a>
             <a href="/site/sitemap" class="mobile-menu-link">Plan du site</a>
             <a href="/site/legal" class="mobile-menu-link">Mentions légales</a>
