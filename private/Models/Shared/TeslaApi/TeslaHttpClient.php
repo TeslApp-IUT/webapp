@@ -151,13 +151,13 @@ final class TeslaHttpClient
      *
      * @throws TeslaApiException if no valid token and no usable refresh token are available.
      */
-    public static function getUserAccessToken(): string
+    public static function getUserAccessToken(): AccessToken
     {
         $cached = $_SESSION['access_token'] ?? null;
         $expiresAt = (int)($_SESSION['access_token_expires_at'] ?? 0);
 
         if (is_string($cached) && $cached !== '' && time() < $expiresAt) {
-            return $cached;
+            return new AccessToken($cached);
         }
 
         $refreshToken = $_SESSION['refresh_token'] ?? null;
@@ -181,7 +181,7 @@ final class TeslaHttpClient
      *
      * @throws TeslaApiException
      */
-    public static function exchangeCodeForUserToken(string $code): string
+    public static function exchangeCodeForUserToken(string $code): AccessToken
     {
         $appUrl = rtrim(getenv('APP_URL') ?: 'http://localhost', '/');
         $redirectUri = $appUrl . '/auth/callback';
@@ -218,7 +218,7 @@ final class TeslaHttpClient
      *
      * @throws TeslaApiException
      */
-    private static function persistTokenResponse(array $res): string
+    private static function persistTokenResponse(array $res): AccessToken
     {
         $accessToken = $res['access_token'] ?? null;
         $refreshToken = $res['refresh_token'] ?? null;
@@ -289,7 +289,7 @@ final class TeslaHttpClient
         // Same safety buffer as the partner token so we refresh before the real expiry.
         $_SESSION['access_token_expires_at'] = $accessExpiresAt - (self::TIMEOUT_SECONDS + 60);
 
-        return $accessToken;
+        return new AccessToken($accessToken);
     }
 
     /**
@@ -333,9 +333,9 @@ final class TeslaHttpClient
      *
      * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
      */
-    public static function get(string $path, AccessToken $token): array
+    public static function get(string $path): array
     {
-        return self::send('GET', $path, $token, null, null);
+        return self::send('GET', $path, self::getUserAccessToken(), null, null);
     }
 
     /**
@@ -345,8 +345,8 @@ final class TeslaHttpClient
      *
      * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
      */
-    public static function post(string $path, AccessToken $token, array $body = []): array
+    public static function post(string $path, array $body = []): array
     {
-        return self::send('POST', $path, $token, $body, null);
+        return self::send('POST', $path, self::getUserAccessToken(), $body, null);
     }
 }
