@@ -57,6 +57,13 @@ final class VehicleCommandService
         $this->commands->actuateTrunk($token, $vin, $side);
     }
 
+    /** Opens the charge port door. */
+    public function openChargePortDoor(string $userId, Vin $vin, AccessToken $token): void
+    {
+        $this->assertAccessibleBy($userId, $vin);
+        $this->commands->openChargePortDoor($token, $vin);
+    }
+
     /**
      * @throws VehicleUnauthorizedException if the user does not own the vehicle.
      */
