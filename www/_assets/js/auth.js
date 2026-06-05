@@ -4,7 +4,7 @@ const ERRORS = {
 };
 
 function switchTo(nextId) {
-  document.querySelectorAll('#auth-button span').forEach(span => {
+  document.querySelectorAll('#auth-button span').forEach((span) => {
     span.className = span.id === nextId ? 'visible' : 'hidden';
   });
 }
@@ -42,7 +42,11 @@ document.getElementById('auth-button').addEventListener('click', () => {
   hideError();
 
   const href = document.getElementById('auth-button').dataset.href;
-  const windowProxy = window.open(href, '_blank', 'popup=true,width=500,height=700,top=100,left=50');
+  const windowProxy = window.open(
+    href,
+    '_blank',
+    'popup=true,width=500,height=700,top=100,left=50',
+  );
 
   if (windowProxy === null) {
     switchTo('button-retry');
