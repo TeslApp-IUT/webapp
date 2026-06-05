@@ -117,4 +117,37 @@ final class VehicleCommandServiceTest extends TestCase
         $this->expectException(VehicleUnauthorizedException::class);
         $service->honkHorn('user-2', $vin, $token);
     }
+
+    #[Test]
+    public function flashLightsSendsTheCommandWhenTheUserOwnsTheVehicle(): void
+    {
+        $vin = new Vin(self::VIN);
+        $token = new AccessToken('tok');
+
+        $commands = $this->createMock(VehicleCommandClient::class);
+        $commands->expects($this->once())->method('flashLights')->with($token, $vin);
+
+        $vehicles = $this->createMock(VehicleRepositoryInterface::class);
+        $vehicles->method('isAccessibleBy')->with($vin, 'user-1')->willReturn(true);
+
+        (new VehicleCommandService($commands, $vehicles))->flashLights('user-1', $vin, $token);
+    }
+
+    #[Test]
+    public function flashLightsThrowsWhenTheUserDoesNotOwnTheVehicle(): void
+    {
+        $vin = new Vin(self::VIN);
+        $token = new AccessToken('tok');
+
+        $commands = $this->createMock(VehicleCommandClient::class);
+        $commands->expects($this->never())->method('flashLights');
+
+        $vehicles = $this->createMock(VehicleRepositoryInterface::class);
+        $vehicles->method('isAccessibleBy')->willReturn(false);
+
+        $service = new VehicleCommandService($commands, $vehicles);
+
+        $this->expectException(VehicleUnauthorizedException::class);
+        $service->flashLights('user-2', $vin, $token);
+    }
 }
