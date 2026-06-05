@@ -19,4 +19,11 @@ interface VehicleCommandClient
      * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
      */
     public function lock(AccessToken $token, Vin $vin): void;
+
+    /**
+     * Unlocks the vehicle's doors.
+     *
+     * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
+     */
+    public function unlock(AccessToken $token, Vin $vin): void;
 }
