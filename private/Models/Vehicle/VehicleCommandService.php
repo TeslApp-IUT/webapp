@@ -28,6 +28,13 @@ final class VehicleCommandService
         $this->commands->lock($token, $vin);
     }
 
+    /** Unlocks the vehicle's doors. */
+    public function unlock(string $userId, Vin $vin, AccessToken $token): void
+    {
+        $this->assertAccessibleBy($userId, $vin);
+        $this->commands->unlock($token, $vin);
+    }
+
     /**
      * @throws VehicleUnauthorizedException if the user does not own the vehicle.
      */
