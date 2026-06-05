@@ -33,4 +33,11 @@ interface VehicleCommandClient
      * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
      */
     public function honkHorn(AccessToken $token, Vin $vin): void;
+
+    /**
+     * Briefly flashes the headlights. Requires the vehicle to be in park.
+     *
+     * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
+     */
+    public function flashLights(AccessToken $token, Vin $vin): void;
 }
