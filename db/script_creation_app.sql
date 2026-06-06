@@ -1,5 +1,5 @@
 ------------------------------------------------------------------
---                           VERSION 9                          --
+--                          VERSION 10                          --
 ------------------------------------------------------------------
 
 DROP TABLE IF EXISTS app.vehicles CASCADE;
@@ -57,7 +57,6 @@ CREATE TABLE app.vehicles
 CREATE TABLE app.jwt
 (
     id         UUID        NOT NULL,
-    user_id    UUID        NOT NULL,
     iss        VARCHAR(64) NOT NULL,
     sub        UUID UNIQUE NOT NULL,
     aud        UUID        NOT NULL,
@@ -68,7 +67,8 @@ CREATE TABLE app.jwt
 
     CONSTRAINT pk_jwt PRIMARY KEY (id),
 
-    CONSTRAINT fk_jwt_users FOREIGN KEY (user_id)
+    -- The Tesla `sub` claim is the user identity; it maps directly to users.id.
+    CONSTRAINT fk_jwt_users FOREIGN KEY (sub)
         REFERENCES app.users (id)
         ON DELETE CASCADE
 );
@@ -90,6 +90,9 @@ CREATE TABLE app.oauth2_token
     updated_at               TIMESTAMP DEFAULT now() NOT NULL,
 
     CONSTRAINT pk_oauth2_token PRIMARY KEY (id),
+
+    -- One token row per user, so the OAuth material can be upserted on refresh.
+    CONSTRAINT uq_oauth2_token_user UNIQUE (user_id),
 
     CONSTRAINT fk_oauth2_token_users FOREIGN KEY (user_id)
         REFERENCES app.users (id)

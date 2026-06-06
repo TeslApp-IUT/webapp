@@ -12,9 +12,9 @@ use Teslapp\Models\Shared\ValueObjects\Vin;
 /**
  * Persists vehicles in the `vehicles` table.
  */
-final class VehicleRepository implements VehicleRepositoryInterface
+final readonly class VehicleRepository implements VehicleRepositoryInterface
 {
-    public function __construct(private readonly PDO $pdo) {}
+    public function __construct(private PDO $pdo) {}
 
     public function findByVin(Vin $vin): ?Vehicle
     {

@@ -5,8 +5,9 @@
  */
 declare(strict_types=1);
 
-use Teslapp\Controllers\AuthController;
-use Teslapp\Controllers\CallbackAuthController;
+use Teslapp\Controllers\Auth\AuthCallbackController;
+use Teslapp\Controllers\Auth\AuthSignUpController;
+use Teslapp\Controllers\Auth\AuthController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\VehicleController;
@@ -59,9 +60,15 @@ $container->set(
     static fn(): DashboardController => new DashboardController(Database::pdo()),
 );
 $container->set(AuthController::class, static fn(): AuthController => new AuthController());
+
 $container->set(
-    CallbackAuthController::class,
-    static fn(): CallbackAuthController => new CallbackAuthController(),
+    AuthCallbackController::class,
+    static fn(): AuthCallbackController => new AuthCallbackController(),
+);
+
+$container->set(
+    AuthSignUpController::class,
+    static fn(): AuthSignUpController => new AuthSignUpController(),
 );
 
 return $container;
