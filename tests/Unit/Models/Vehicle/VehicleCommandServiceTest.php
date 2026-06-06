@@ -159,12 +159,20 @@ final class VehicleCommandServiceTest extends TestCase
         $token = new AccessToken('tok');
 
         $commands = $this->createMock(VehicleCommandClient::class);
-        $commands->expects($this->once())->method('actuateTrunk')->with($token, $vin, TrunkSide::Rear);
+        $commands
+            ->expects($this->once())
+            ->method('actuateTrunk')
+            ->with($token, $vin, TrunkSide::Rear);
 
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->with($vin, 'user-1')->willReturn(true);
 
-        (new VehicleCommandService($commands, $vehicles))->actuateTrunk('user-1', $vin, TrunkSide::Rear, $token);
+        (new VehicleCommandService($commands, $vehicles))->actuateTrunk(
+            'user-1',
+            $vin,
+            TrunkSide::Rear,
+            $token,
+        );
     }
 
     #[Test]
@@ -197,7 +205,11 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->with($vin, 'user-1')->willReturn(true);
 
-        (new VehicleCommandService($commands, $vehicles))->openChargePortDoor('user-1', $vin, $token);
+        (new VehicleCommandService($commands, $vehicles))->openChargePortDoor(
+            'user-1',
+            $vin,
+            $token,
+        );
     }
 
     #[Test]
@@ -230,7 +242,11 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->with($vin, 'user-1')->willReturn(true);
 
-        (new VehicleCommandService($commands, $vehicles))->closeChargePortDoor('user-1', $vin, $token);
+        (new VehicleCommandService($commands, $vehicles))->closeChargePortDoor(
+            'user-1',
+            $vin,
+            $token,
+        );
     }
 
     #[Test]

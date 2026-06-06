@@ -51,8 +51,12 @@ final class VehicleCommandService
     }
 
     /** Opens or closes the front or rear trunk. */
-    public function actuateTrunk(string $userId, Vin $vin, TrunkSide $side, AccessToken $token): void
-    {
+    public function actuateTrunk(
+        string $userId,
+        Vin $vin,
+        TrunkSide $side,
+        AccessToken $token,
+    ): void {
         $this->assertAccessibleBy($userId, $vin);
         $this->commands->actuateTrunk($token, $vin, $side);
     }

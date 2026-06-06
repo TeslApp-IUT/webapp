@@ -43,21 +43,25 @@ final readonly class TeslaCommandClient implements VehicleCommandClient
 
     public function actuateTrunk(AccessToken $token, Vin $vin, TrunkSide $side): void
     {
-        TeslaHttpClient::post(
-            "/api/1/vehicles/{$vin->value}/command/actuate_trunk",
-            $token,
-            ['which_trunk' => $side->value],
-        );
+        TeslaHttpClient::post("/api/1/vehicles/{$vin->value}/command/actuate_trunk", $token, [
+            'which_trunk' => $side->value,
+        ]);
     }
 
     public function openChargePortDoor(AccessToken $token, Vin $vin): void
     {
-        TeslaHttpClient::post("/api/1/vehicles/{$vin->value}/command/charge_port_door_open", $token);
+        TeslaHttpClient::post(
+            "/api/1/vehicles/{$vin->value}/command/charge_port_door_open",
+            $token,
+        );
     }
 
     public function closeChargePortDoor(AccessToken $token, Vin $vin): void
     {
-        TeslaHttpClient::post("/api/1/vehicles/{$vin->value}/command/charge_port_door_close", $token);
+        TeslaHttpClient::post(
+            "/api/1/vehicles/{$vin->value}/command/charge_port_door_close",
+            $token,
+        );
     }
 
     public function wakeUp(AccessToken $token, Vin $vin): void

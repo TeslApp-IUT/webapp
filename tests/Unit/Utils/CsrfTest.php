@@ -18,12 +18,20 @@ final class CsrfTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        unset($_SESSION['csrf_token'], $_SERVER['HTTP_X_CSRF_TOKEN'], $_SERVER['HTTP_X_CUSTOM_CSRF']);
+        unset(
+            $_SESSION['csrf_token'],
+            $_SERVER['HTTP_X_CSRF_TOKEN'],
+            $_SERVER['HTTP_X_CUSTOM_CSRF'],
+        );
     }
 
     protected function tearDown(): void
     {
-        unset($_SESSION['csrf_token'], $_SERVER['HTTP_X_CSRF_TOKEN'], $_SERVER['HTTP_X_CUSTOM_CSRF']);
+        unset(
+            $_SESSION['csrf_token'],
+            $_SERVER['HTTP_X_CSRF_TOKEN'],
+            $_SERVER['HTTP_X_CUSTOM_CSRF'],
+        );
         parent::tearDown();
     }
 
