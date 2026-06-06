@@ -14,9 +14,9 @@ final readonly class TeslaStateClient implements VehicleStateClient
     /**
      * @return Vehicle[]
      **/
-    public function listVehicles(AccessToken $token): array
+    public function listVehicles(): array
     {
-        $body = TeslaHttpClient::get('/api/1/vehicles', $token);
+        $body = TeslaHttpClient::get('/api/1/vehicles');
         $response = $body['response'] ?? [];
 
         if (!is_array($response)) {
@@ -36,9 +36,9 @@ final readonly class TeslaStateClient implements VehicleStateClient
     /**
      * @return array<string, VehicleConnectivityStatus>
      **/
-    public function fetchConnectivity(AccessToken $token): array
+    public function fetchConnectivity(): array
     {
-        $body = TeslaHttpClient::get('/api/1/vehicles', $token);
+        $body = TeslaHttpClient::get('/api/1/vehicles');
         $response = $body['response'] ?? [];
 
         if (!is_array($response)) {
