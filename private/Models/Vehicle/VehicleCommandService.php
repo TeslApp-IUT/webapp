@@ -6,14 +6,14 @@ namespace Teslapp\Models\Vehicle;
 
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
-use Teslapp\Models\Shared\ValueObjects\AccessToken;
 use Teslapp\Models\Shared\ValueObjects\TrunkSide;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 
 /**
  * Vehicle command use cases. Every command first checks the user owns the vehicle
  * (authorization by VIN, throwing VehicleUnauthorizedException otherwise), then
- * delegates to the Tesla command port.
+ * delegates to the Tesla command port. The access token is resolved centrally by
+ * TeslaHttpClient (from the session), so it is not threaded through here.
  */
 final class VehicleCommandService
 {
@@ -23,63 +23,59 @@ final class VehicleCommandService
     ) {}
 
     /** Locks the vehicle's doors. */
-    public function lock(string $userId, Vin $vin, AccessToken $token): void
+    public function lock(string $userId, Vin $vin): void
     {
         $this->assertAccessibleBy($userId, $vin);
-        $this->commands->lock($token, $vin);
+        $this->commands->lock($vin);
     }
 
     /** Unlocks the vehicle's doors. */
-    public function unlock(string $userId, Vin $vin, AccessToken $token): void
+    public function unlock(string $userId, Vin $vin): void
     {
         $this->assertAccessibleBy($userId, $vin);
-        $this->commands->unlock($token, $vin);
+        $this->commands->unlock($vin);
     }
 
     /** Honks the horn. */
-    public function honkHorn(string $userId, Vin $vin, AccessToken $token): void
+    public function honkHorn(string $userId, Vin $vin): void
     {
         $this->assertAccessibleBy($userId, $vin);
-        $this->commands->honkHorn($token, $vin);
+        $this->commands->honkHorn($vin);
     }
 
     /** Briefly flashes the headlights. */
-    public function flashLights(string $userId, Vin $vin, AccessToken $token): void
+    public function flashLights(string $userId, Vin $vin): void
     {
         $this->assertAccessibleBy($userId, $vin);
-        $this->commands->flashLights($token, $vin);
+        $this->commands->flashLights($vin);
     }
 
     /** Opens or closes the front or rear trunk. */
-    public function actuateTrunk(
-        string $userId,
-        Vin $vin,
-        TrunkSide $side,
-        AccessToken $token,
-    ): void {
+    public function actuateTrunk(string $userId, Vin $vin, TrunkSide $side): void
+    {
         $this->assertAccessibleBy($userId, $vin);
-        $this->commands->actuateTrunk($token, $vin, $side);
+        $this->commands->actuateTrunk($vin, $side);
     }
 
     /** Opens the charge port door. */
-    public function openChargePortDoor(string $userId, Vin $vin, AccessToken $token): void
+    public function openChargePortDoor(string $userId, Vin $vin): void
     {
         $this->assertAccessibleBy($userId, $vin);
-        $this->commands->openChargePortDoor($token, $vin);
+        $this->commands->openChargePortDoor($vin);
     }
 
     /** Closes the charge port door. */
-    public function closeChargePortDoor(string $userId, Vin $vin, AccessToken $token): void
+    public function closeChargePortDoor(string $userId, Vin $vin): void
     {
         $this->assertAccessibleBy($userId, $vin);
-        $this->commands->closeChargePortDoor($token, $vin);
+        $this->commands->closeChargePortDoor($vin);
     }
 
     /** Wakes the vehicle from sleep. */
-    public function wakeUp(string $userId, Vin $vin, AccessToken $token): void
+    public function wakeUp(string $userId, Vin $vin): void
     {
         $this->assertAccessibleBy($userId, $vin);
-        $this->commands->wakeUp($token, $vin);
+        $this->commands->wakeUp($vin);
     }
 
     /**

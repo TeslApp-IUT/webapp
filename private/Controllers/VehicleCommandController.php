@@ -6,7 +6,6 @@ namespace Teslapp\Controllers;
 
 use Teslapp\Models\Shared\Exceptions\TeslaApiException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
-use Teslapp\Models\Shared\ValueObjects\AccessToken;
 use Teslapp\Models\Shared\ValueObjects\TrunkSide;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\VehicleCommandService;
@@ -19,8 +18,9 @@ use Teslapp\Utils\Http;
  *
  * Each endpoint is a POST AJAX call answering JSON. The shared guards (HTTP
  * method, authenticated session, CSRF header, selected vehicle) and the
- * exception-to-status mapping live in run(). Kept separate from VehicleController
- * (which handles read/selection) on purpose — one controller per concern.
+ * exception-to-status mapping live in run(). The Tesla access token is resolved
+ * downstream by TeslaHttpClient (from the session), so it is not handled here.
+ * Kept separate from VehicleController (read/selection) on purpose.
  */
 final class VehicleCommandController
 {
@@ -28,64 +28,64 @@ final class VehicleCommandController
 
     public function lock(): never
     {
-        $this->run(function (string $userId, Vin $vin, AccessToken $token): void {
-            $this->service->lock($userId, $vin, $token);
+        $this->run(function (string $userId, Vin $vin): void {
+            $this->service->lock($userId, $vin);
         });
     }
 
     public function unlock(): never
     {
-        $this->run(function (string $userId, Vin $vin, AccessToken $token): void {
-            $this->service->unlock($userId, $vin, $token);
+        $this->run(function (string $userId, Vin $vin): void {
+            $this->service->unlock($userId, $vin);
         });
     }
 
     public function honk(): never
     {
-        $this->run(function (string $userId, Vin $vin, AccessToken $token): void {
-            $this->service->honkHorn($userId, $vin, $token);
+        $this->run(function (string $userId, Vin $vin): void {
+            $this->service->honkHorn($userId, $vin);
         });
     }
 
     public function flash(): never
     {
-        $this->run(function (string $userId, Vin $vin, AccessToken $token): void {
-            $this->service->flashLights($userId, $vin, $token);
+        $this->run(function (string $userId, Vin $vin): void {
+            $this->service->flashLights($userId, $vin);
         });
     }
 
     public function trunkFront(): never
     {
-        $this->run(function (string $userId, Vin $vin, AccessToken $token): void {
-            $this->service->actuateTrunk($userId, $vin, TrunkSide::Front, $token);
+        $this->run(function (string $userId, Vin $vin): void {
+            $this->service->actuateTrunk($userId, $vin, TrunkSide::Front);
         });
     }
 
     public function trunkRear(): never
     {
-        $this->run(function (string $userId, Vin $vin, AccessToken $token): void {
-            $this->service->actuateTrunk($userId, $vin, TrunkSide::Rear, $token);
+        $this->run(function (string $userId, Vin $vin): void {
+            $this->service->actuateTrunk($userId, $vin, TrunkSide::Rear);
         });
     }
 
     public function chargePortOpen(): never
     {
-        $this->run(function (string $userId, Vin $vin, AccessToken $token): void {
-            $this->service->openChargePortDoor($userId, $vin, $token);
+        $this->run(function (string $userId, Vin $vin): void {
+            $this->service->openChargePortDoor($userId, $vin);
         });
     }
 
     public function chargePortClose(): never
     {
-        $this->run(function (string $userId, Vin $vin, AccessToken $token): void {
-            $this->service->closeChargePortDoor($userId, $vin, $token);
+        $this->run(function (string $userId, Vin $vin): void {
+            $this->service->closeChargePortDoor($userId, $vin);
         });
     }
 
     public function wake(): never
     {
-        $this->run(function (string $userId, Vin $vin, AccessToken $token): void {
-            $this->service->wakeUp($userId, $vin, $token);
+        $this->run(function (string $userId, Vin $vin): void {
+            $this->service->wakeUp($userId, $vin);
         });
     }
 
@@ -94,7 +94,7 @@ final class VehicleCommandController
      * runs the command and maps the outcome to a JSON response. Every path ends
      * with Http::json() (which exits), hence the `never` return type.
      *
-     * @param callable(string, Vin, AccessToken): void $command
+     * @param callable(string, Vin): void $command
      */
     private function run(callable $command): never
     {
@@ -103,10 +103,9 @@ final class VehicleCommandController
         }
 
         $userId = $_SESSION['user_id'] ?? '';
-        $token = $_SESSION['access_token'] ?? '';
         $vin = $_SESSION['selected_vin'] ?? '';
 
-        if (!is_string($userId) || $userId === '' || !is_string($token) || $token === '') {
+        if (!is_string($userId) || $userId === '') {
             Http::json(['error' => 'Authentication required'], 401);
         }
 
@@ -119,7 +118,7 @@ final class VehicleCommandController
         }
 
         try {
-            $command($userId, new Vin($vin), new AccessToken($token));
+            $command($userId, new Vin($vin));
         } catch (VehicleUnauthorizedException) {
             Http::json(['error' => 'You do not have access to this vehicle'], 403);
         } catch (TeslaApiException) {

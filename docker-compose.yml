@@ -5,7 +5,7 @@ services:
     env_file: .env
     restart: unless-stopped
     volumes:
-      - ./docker/nginx.${ENVIRONMENT:-local}.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx.${ENVIRONMENT:-local}.conf:/etc/nginx/nginx.conf:ro,z
     networks:
       shared:
         ipv4_address: 172.22.0.11
@@ -34,7 +34,7 @@ services:
 networks:
   shared:
     name: teslapp_shared
-    external: ${EXTERNAL_NETWORK:-false}
+    external: false
     ipam:
       config:
         - subnet: 172.22.0.0/16

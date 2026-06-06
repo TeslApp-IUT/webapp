@@ -21,7 +21,7 @@ interface VehicleStateClient
      *
      * @throws TeslaApiException on a network or API error.
      */
-    public function listVehicles(AccessToken $token): array;
+    public function listVehicles(): array;
 
     /**
      * Live connectivity status per VIN.
@@ -30,5 +30,5 @@ interface VehicleStateClient
      *
      * @throws TeslaApiException on a network or API error.
      */
-    public function fetchConnectivity(AccessToken $token): array;
+    public function fetchConnectivity(): array;
 }

@@ -10,12 +10,13 @@
  */
 declare(strict_types=1);
 
+use Teslapp\Controllers\Auth\AuthCallbackController;
+use Teslapp\Controllers\Auth\AuthController;
+use Teslapp\Controllers\Auth\AuthSignUpController;
 use Teslapp\Controllers\DashboardController;
-use Teslapp\Controllers\CallbackAuthController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\VehicleController;
 use Teslapp\Controllers\VehicleCommandController;
-use Teslapp\Controllers\AuthController;
 
 return [
     // URLs for static pages accessible to everyone
@@ -43,5 +44,6 @@ return [
 
     // URLs for authentification
     'auth' => [AuthController::class, 'auth', false],
-    'callback_auth' => [CallbackAuthController::class, 'callback', false],
+    'auth/callback' => [AuthCallbackController::class, 'callback', false],
+    'auth/signup' => [AuthSignUpController::class, 'signup', false],
 ];

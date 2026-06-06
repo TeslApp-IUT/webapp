@@ -5,8 +5,10 @@
  */
 declare(strict_types=1);
 
-use Teslapp\Controllers\AuthController;
-use Teslapp\Controllers\CallbackAuthController;
+use Teslapp\Controllers\Auth\AuthCallbackController;
+use Teslapp\Controllers\Auth\AuthSignUpController;
+use Teslapp\Controllers\Auth\AuthController;
+use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\VehicleCommandController;
 use Teslapp\Models\Database;
@@ -42,11 +44,23 @@ $container->set(
     static fn(): VehicleStateClient => new TeslaStateClient(),
 );
 
+$container->set(
+    DashboardController::class,
+    static fn(): DashboardController => new DashboardController(Database::pdo()),
+);
+
+// VehicleService, VehicleController and their routes: pending the OAuth AuthService (token provider).
+
 $container->set(AuthController::class, static fn(): AuthController => new AuthController());
 
 $container->set(
-    CallbackAuthController::class,
-    static fn(): CallbackAuthController => new CallbackAuthController(),
+    AuthCallbackController::class,
+    static fn(): AuthCallbackController => new AuthCallbackController(),
+);
+
+$container->set(
+    AuthSignUpController::class,
+    static fn(): AuthSignUpController => new AuthSignUpController(),
 );
 
 // Vehicle commands (issue #26): command port -> adapter, then service and controller.
