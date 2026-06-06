@@ -1,4 +1,6 @@
 <?php
+$vehicleName = $vehicleName ?? 'Mon véhicule';
+
 /* Telemetry value */
 $battery_level = $data['battery_level'] ?? 'N/A';
 $charge_enable_request = $data['charge_enable_request'] ?? false;
@@ -23,59 +25,94 @@ $extraCss = ['dashboard'];
 
 ob_start();
 ?>
-<section class="dashboard">
-  <div class="container">
-    <h1 class="dashboard-title">Dashboard — Mon véhicule</h1>
-    <div class="dashboard-grid">
-      <!-- Batterie -->
-      <div class="dashboard-card">
-        <div class="card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="2" y="7" width="16" height="10" rx="2"/>
-            <line x1="22" y1="11" x2="22" y2="13"/>
-          </svg>
-        </div>
-        <h2 class="card-title">Batterie</h2>
-        <div class="card-content">
-          <p class="card-value"><?= e((string) $battery_level) ?><span> %</span></p>
-          <p class="card-label">Batterie actuelle</p>
-        </div>
-        <div class="card-details">
-          <p>Charge activée <span class="<?= $charge_enable_request ? 'status-on' : 'status-off' ?>"><?= $charge_enable_request ? 'Oui' : 'Non' ?></span></p>
-          <p>Charge programmée <span><?= e($scheduled_charging_start_time ?? 'Non programmée') ?></span></p>
-        </div>
-      </div>
+<section>
+  <div class="dashboard-layout">
+    <!-- Left Section -->
+    <nav class="dashboard-navigation">
+      <a href="/vehicle/dashboard" class="nav-item nav-item--active" aria-label="Vue générale">
+            <span class="nav-item__icon nav-item__icon--overview">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                </svg>
+            </span>
+        <span class="nav-item__label">Vue d’ensemble</span>
+      </a>
+      <a href="/vehicle/select" class="nav-item" aria-label="Véhicule">
+            <span class="nav-item__icon nav-item__icon--vehicle">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                </svg>
+            </span>
+        <span class="nav-item__label">Véhicule</span>
+      </a>
+      <a href="/dashboard/ac" class="nav-item" aria-label="Climatisation">
+            <span class="nav-item__icon nav-item__icon--ac">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 2v20M4.93 4.93l14.14 14.14M2 12h20M4.93 19.07l14.14-14.14"/>
+                </svg>
+            </span>
+        <span class="nav-item__label">Climatisation</span>
+      </a>
+      <a href="/dashboard/battery" class="nav-item" aria-label="Batterie">
+            <span class="nav-item__icon nav-item__icon--battery">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 10.5h.375c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125H21M3.75 18h15A2.25 2.25 0 0 0 21 15.75v-6a2.25 2.25 0 0 0-2.25-2.25h-15A2.25 2.25 0 0 0 1.5 9.75v6A2.25 2.25 0 0 0 3.75 18Z" />
+                </svg>
+            </span>
+        <span class="nav-item__label">Batterie</span>
+      </a>
+      <a href="/dashboard/navigation" class="nav-item" aria-label="Navigation">
+            <span class="nav-item__icon nav-item__icon--navigation">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+                </svg>
+            </span>
+        <span class="nav-item__label">Navigation</span>
+      </a>
+    </nav>
 
-      <!-- Climatisation -->
-      <div class="dashboard-card">
-        <div class="card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 2v20M4.93 4.93l14.14 14.14M2 12h20M4.93 19.07l14.14-14.14"/>
-          </svg>
+    <!-- Right Section -->
+    <main class="dashboard-content">
+      <h1 class="dashboard-title">Tableau de bord — <?= e($vehicleName) ?></h1>
+      <div class="dashboard-grid">
+        <!-- Battery -->
+        <div class="dashboard-card">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 10.5h.375c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125H21M3.75 18h15A2.25 2.25 0 0 0 21 15.75v-6a2.25 2.25 0 0 0-2.25-2.25h-15A2.25 2.25 0 0 0 1.5 9.75v6A2.25 2.25 0 0 0 3.75 18Z" />
+            </svg>
+          </div>
+          <h2 class="card-title">Batterie</h2>
+          <div class="card-content">
+            <p class="card-value"><?= e((string) $battery_level) ?><span> %</span></p>
+            <p class="card-label">Batterie actuelle</p>
+          </div>
+          <div class="card-details">
+            <p>Charge activée <span class="<?= $charge_enable_request ? 'status-on' : 'status-off' ?>"><?= $charge_enable_request ? 'Oui' : 'Non' ?></span></p>
+            <p>Charge programmée <span><?= e($scheduled_charging_start_time ?? 'Non programmée') ?></span></p>
+          </div>
         </div>
-        <h2 class="card-title">Climatisation</h2>
-        <div class="card-content">
-          <p class="card-value"><?= e((string) $inside_temp) ?><span> °C</span></p>
-          <p class="card-label">Température intérieure</p>
-        </div>
-        <div class="card-details">
-          <p>AC activée <span class="<?= $hvac_ac_enabled ? 'status-on' : 'status-off' ?>"><?= $hvac_ac_enabled ? 'Oui' : 'Non' ?></span></p>
-          <p>Mode keeper <span><?= e($keeper_modes[$climate_keeper_mode] ?? 'Inconnu') ?></span></p>
+        <!-- Clim -->
+        <div class="dashboard-card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 2v20M4.93 4.93l14.14 14.14M2 12h20M4.93 19.07l14.14-14.14"/>
+            </svg>
+          </div>
+          <h2 class="card-title">Climatisation</h2>
+          <div class="card-content">
+            <p class="card-value"><?= e((string) $inside_temp) ?><span> °C</span></p>
+            <p class="card-label">Température intérieure</p>
+          </div>
+          <div class="card-details">
+            <p>AC activée <span class="<?= $hvac_ac_enabled ? 'status-on' : 'status-off' ?>"><?= $hvac_ac_enabled ? 'Oui' : 'Non' ?></span></p>
+            <p>Mode keeper <span><?= e($keeper_modes[$climate_keeper_mode] ?? 'Inconnu') ?></span></p>
+          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Actions -->
-    <div class="dashboard-actions">
-      <h2 class="dashboard-actions-title">Actions disponibles</h2>
-      <div class="actions-grid">
-        <button class="action-btn" type="button" disabled>Verrouiller / Déverrouiller</button>
-        <button class="action-btn" type="button" disabled>Klaxon</button>
-        <button class="action-btn" type="button" disabled>Batterie</button>
-        <button class="action-btn" type="button" disabled>Climatisation</button>
-        <button class="action-btn" type="button" disabled>Localisation</button>
-      </div>
-    </div>
+    </main>
   </div>
 </section>
 <?php
