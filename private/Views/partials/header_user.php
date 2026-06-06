@@ -27,12 +27,12 @@ $userInitial = $userEmail !== '' ? mb_strtoupper(mb_substr($userEmail, 0, 1)) : 
             <img src="/_assets/images/Logo.svg" alt="TeslApp">
         </a>
 
-        <!-- Main navigation (logged-in: includes the dashboard) -->
-        <nav class="nav dashboard-nav" aria-label="navigation principale">
-            <a href="/dashboard/overview" class="nav-link">Tableau de bord</a>
+        <!-- Main navigation -->
+        <nav class="nav" aria-label="navigation principale">
             <a href="/site/home" class="nav-link">Accueil</a>
             <a href="/site/sitemap" class="nav-link">Plan du site</a>
             <a href="/site/legal" class="nav-link">Mentions légales</a>
+            <a href="/vehicle/select" class="nav-link">Tableau de bord</a>
         </nav>
 
         <!-- Header actions: logout + profile -->
