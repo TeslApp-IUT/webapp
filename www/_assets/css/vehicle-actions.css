@@ -1,0 +1,49 @@
+/* vehicle-actions.css — interactive state for the issue #26 command buttons.
+ *
+ * The base .action-btn (dashboard.css, issue #25) is styled as a disabled
+ * placeholder (cursor: not-allowed; opacity: 0.5) because every action button
+ * started as a "coming soon" disabled button. These rules give the buttons that
+ * are actually wired (marked with data-action) a proper clickable look, plus the
+ * AJAX feedback line. Scoped to #26 so dashboard.css is left untouched. Buttons
+ * without data-action (battery, climate, location) keep the placeholder look.
+ */
+
+.action-btn[data-action] {
+  color: var(--color-text);
+  cursor: pointer;
+  opacity: 1;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    transform 0.05s ease;
+}
+
+.action-btn[data-action]:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-bg-card);
+}
+
+.action-btn[data-action]:active {
+  transform: translateY(1px);
+}
+
+/* While a command is in flight the JS disables the button. */
+.action-btn[data-action]:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.actions-feedback {
+  margin-top: 16px;
+  min-height: 1.25rem;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.actions-feedback[data-state='success'] {
+  color: var(--color-success);
+}
+
+.actions-feedback[data-state='error'] {
+  color: var(--color-error);
+}
