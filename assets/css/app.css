@@ -144,44 +144,44 @@
 
 /* ----- Success Button ----- */
 .btn-success {
-    background-color: #13803b;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
+  background-color: #13803b;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .btn-success:hover {
-    background-color: #16a34a;
+  background-color: #16a34a;
 }
 
 .btn-success:active {
-    background-color: #15803d;
+  background-color: #15803d;
 }
 
 /* ----- Enabled Button ----- */
 .btn-enabled {
-    background-color: #ffffff;
-    color: #111111;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
+  background-color: #ffffff;
+  color: #111111;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .btn-enabled:hover {
-    background-color: #e5e5e5;
+  background-color: #e5e5e5;
 }
 
 .btn-enabled:active {
-    background-color: #d4d4d4;
+  background-color: #d4d4d4;
 }
 /* ===================================================================================================
    5. HELPERS (accessibility & navigation)
