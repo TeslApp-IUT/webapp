@@ -80,10 +80,10 @@ $userInitial = $userEmail !== '' ? mb_strtoupper(mb_substr($userEmail, 0, 1)) : 
     <div class="mobile-menu-content">
         <div class="mobile-menu-section-title">NAVIGATION</div>
         <nav class="mobile-menu-nav" aria-label="navigation">
-            <a href="/dashboard/overview" class="mobile-menu-link">Tableau de bord</a>
             <a href="/site/home" class="mobile-menu-link">Accueil</a>
             <a href="/site/sitemap" class="mobile-menu-link">Plan du site</a>
             <a href="/site/legal" class="mobile-menu-link">Mentions légales</a>
+            <a href="/vehicle/select" class="nav-link">Tableau de bord</a>
         </nav>
 
         <div class="mobile-menu-actions">
