@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Teslapp\Models\Climate;
 
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
+use Teslapp\Models\Shared\ValueObjects\GeoPoint;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 
 /**
- * A preconditioning schedule: the car is warmed up for `activationHour` on the
- * selected `days` (e.g. before departure).
- *
+ * A preconditioning schedule: warm up the car at `activationHour` on `days`.
  * Maps to preconditioning_planner (+ preconditioning_plans for the days).
  */
 final readonly class PreconditioningPlanner
@@ -20,6 +19,9 @@ final readonly class PreconditioningPlanner
      * @param string $activationHour "HH:MM"
      * @param bool $deactivateAfterSuccess true = one-off, false = recurring (kept long term)
      * @param list<DayOfWeek> $days
+     * @param bool $enabled current on/off state (a new plan is active)
+     * @param GeoPoint|null $location the geofence where preconditioning applies
+     * @param string|null $locationLabel readable address of the location
      */
     public function __construct(
         public ?string $id,
@@ -27,6 +29,9 @@ final readonly class PreconditioningPlanner
         public string $activationHour,
         public bool $deactivateAfterSuccess,
         public array $days,
+        public bool $enabled = true,
+        public ?GeoPoint $location = null,
+        public ?string $locationLabel = null,
     ) {}
 
     /** Whether the user asked to keep this schedule indefinitely (recurring). */
@@ -66,6 +71,12 @@ final readonly class PreconditioningPlanner
      */
     public static function fromRow(array $row, array $dayIds): self
     {
+        $latitude = $row['activation_latitude'] ?? null;
+        $longitude = $row['activation_longitude'] ?? null;
+        $location = ($latitude !== null && $longitude !== null)
+            ? new GeoPoint((float) $latitude, (float) $longitude)
+            : null;
+
         return new self(
             id: (string) $row['id'],
             vin: new Vin((string) $row['vin']),
@@ -73,6 +84,9 @@ final readonly class PreconditioningPlanner
             activationHour: substr((string) $row['activation_hour'], 0, 5),
             deactivateAfterSuccess: (bool) $row['deactivate_after_success'],
             days: array_map(static fn(int $id): DayOfWeek => DayOfWeek::from($id), $dayIds),
+            enabled: (bool) $row['enabled'],
+            location: $location,
+            locationLabel: isset($row['location_label']) ? (string) $row['location_label'] : null,
         );
     }
 }
