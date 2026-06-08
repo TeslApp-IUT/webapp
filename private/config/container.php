@@ -20,6 +20,7 @@ use Teslapp\Models\Vehicle\VehicleRepository;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 use Teslapp\Models\Vehicle\VehicleService;
 use Teslapp\Utils\Container;
+use Teslapp\Controllers\Climate\ClimateController;
 
 $container = new Container();
 
@@ -28,7 +29,6 @@ $container->set(
     StaticPagesController::class,
     static fn(): StaticPagesController => new StaticPagesController(),
 );
-
 $container->set(
     VehicleRepositoryInterface::class,
     static fn(): VehicleRepositoryInterface => new VehicleRepository(Database::pdo()),
@@ -65,10 +65,13 @@ $container->set(
     AuthCallbackController::class,
     static fn(): AuthCallbackController => new AuthCallbackController(),
 );
-
 $container->set(
     AuthSignUpController::class,
     static fn(): AuthSignUpController => new AuthSignUpController(),
+);
+$container->set(
+    ClimateController::class,
+    static fn(): ClimateController => new ClimateController(Database::pdo())
 );
 
 return $container;
