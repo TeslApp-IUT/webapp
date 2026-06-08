@@ -30,6 +30,7 @@ return [
     'vehicle/select' => [VehicleController::class, 'select', true],
     'vehicle/choose' => [VehicleController::class, 'choose', true],
     'dashboard/overview' => [DashboardController::class, 'index', true],
+    'dashboard/vehicle' => [VehicleCommandController::class, 'page', true],
 
     // Vehicle commands (issue #26) — POST AJAX endpoints answering JSON
     'vehicle/lock' => [VehicleCommandController::class, 'lock', true],

@@ -26,6 +26,28 @@ final class VehicleCommandController
 {
     public function __construct(private readonly VehicleCommandService $service) {}
 
+    /**
+     * Renders the vehicle command page (GET) — the "Véhicule" dashboard tab.
+     * Guards the session like the dashboard; the buttons themselves POST to the
+     * JSON endpoints below.
+     */
+    public function page(): void
+    {
+        if (!isset($_SESSION['user_id']) || !is_string($_SESSION['user_id']) || $_SESSION['user_id'] === '') {
+            Http::redirect('/site/home');
+        }
+
+        if (
+            !isset($_SESSION['selected_vin'])
+            || !is_string($_SESSION['selected_vin'])
+            || $_SESSION['selected_vin'] === ''
+        ) {
+            Http::redirect('/vehicle/select');
+        }
+
+        require_once __DIR__ . '/../Views/Vehicle/control.php';
+    }
+
     public function lock(): never
     {
         $this->run(function (string $userId, Vin $vin): void {
