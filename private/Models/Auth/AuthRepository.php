@@ -22,14 +22,23 @@ final readonly class AuthRepository
     /**
      * Inserts the user keyed by the Tesla `sub`, or refreshes its email on conflict.
      */
-    public function ensureUser(string $userId, string $email, string $firstName, string $lastName): void
-    {
+    public function ensureUser(
+        string $userId,
+        string $email,
+        string $firstName,
+        string $lastName,
+    ): void {
         try {
             $stmt = $this->pdo->prepare(
                 'INSERT INTO users (id, email, first_name, last_name) VALUES (:id, :email, :first_name, :last_name)
                  ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email, updated_at = now(), first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name',
             );
-            $stmt->execute([':id' => $userId, ':email' => $email, ':first_name' => $firstName, ':last_name' => $lastName]);
+            $stmt->execute([
+                ':id' => $userId,
+                ':email' => $email,
+                ':first_name' => $firstName,
+                ':last_name' => $lastName,
+            ]);
         } catch (PDOException $e) {
             throw new DatabaseException("Failed to upsert user $userId", previous: $e);
         }
