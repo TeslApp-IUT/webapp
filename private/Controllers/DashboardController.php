@@ -44,6 +44,7 @@ class DashboardController
         }
 
         $data = $this->getTelemetryData($vin);
+        $vehicleName = $this->getVehicleName($vin);
 
         require_once __DIR__ . '/../Views/Vehicle/dashboard.php';
     }
@@ -55,6 +56,16 @@ class DashboardController
     private function getSelectedVin(): ?string
     {
         return $_SESSION['selected_vin'] ?? null;
+    }
+
+    private function getVehicleName(string $vin): string
+    {
+        $name = $this->db->prepare("SELECT name
+                                    FROM vehicles
+                                    WHERE vin = ? LIMIT 1");
+        $name->execute([$vin]);
+        $vehicleName = $name->fetch();
+        return $vehicleName['name'] ?? 'Mon véhicule';
     }
 
     /**

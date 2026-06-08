@@ -14,18 +14,11 @@ $message = $status === 'success'
     ? ['success' => true]
     : ['success' => false, 'error' => $error];
 ?>
-<script>
-  (function () {
-    const message = <?php try {
-      echo json_encode($message, JSON_THROW_ON_ERROR);
-    } catch (JsonException $e) {
-      echo '{}';
-    } ?>;
-
-    if (window.opener) {
-      window.opener.postMessage(message, window.location.origin);
-    }
-
-    window.close();
-  })();
-</script>
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><title>TeslApp</title></head>
+<body>
+<div id="auth-data" data-message="<?= htmlspecialchars(json_encode($message), ENT_QUOTES) ?>" hidden></div>
+<script src="/_assets/js/auth_callback.js"></script>
+</body>
+</html>

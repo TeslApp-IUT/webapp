@@ -68,7 +68,7 @@ final class ClimateService
         bool $memorizeLongTerm,
     ): void {
         $this->assertOwnership($vin, $userId);
-        $this->assertPlannerBelongsToVehicle($planId, $vin);
+        $this->assertPlannerBelongsToVehicle($planId, $vin, $userId);
 
         $planner = new PreconditioningPlanner(
             id: $planId,
@@ -85,7 +85,7 @@ final class ClimateService
     public function deletePlan(string $userId, Vin $vin, string $planId): void
     {
         $this->assertOwnership($vin, $userId);
-        $this->assertPlannerBelongsToVehicle($planId, $vin);
+        $this->assertPlannerBelongsToVehicle($planId, $vin, $userId);
 
         $this->plannerRepository->deleteById($planId);
     }
@@ -94,21 +94,17 @@ final class ClimateService
     private function assertOwnership(Vin $vin, string $userId): void
     {
         if (!$this->vehicleRepository->isAccessibleBy($vin, $userId)) {
-            throw new VehicleUnauthorizedException(
-                "User {$userId} cannot manage preconditioning schedules for VIN {$vin->value}.",
-            );
+            throw new VehicleUnauthorizedException($vin->value, $userId);
         }
     }
 
     /** @throws VehicleUnauthorizedException */
-    private function assertPlannerBelongsToVehicle(string $planId, Vin $vin): void
+    private function assertPlannerBelongsToVehicle(string $planId, Vin $vin, string $userId): void
     {
         $planner = $this->plannerRepository->findById($planId);
 
         if ($planner === null || $planner->vin->value !== $vin->value) {
-            throw new VehicleUnauthorizedException(
-                "Preconditioning schedule {$planId} does not belong to VIN {$vin->value}.",
-            );
+            throw new VehicleUnauthorizedException($vin->value, $userId);
         }
     }
 }

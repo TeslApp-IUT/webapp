@@ -17,6 +17,7 @@ $href = $BASE_TESLA_URL . '?' . http_build_query($params);
 $title = 'Authentification — TeslApp';
 $description = "Authentification en cours avec Tesla";
 $noChrome = true;
+$extraJs = ['auth'];
 ob_start();
 ?>
   <!--
@@ -73,7 +74,9 @@ ob_start();
         Vous allez vous connecter à l'aide de votre compte Tesla.
         <br/>Veuillez cliquer sur le bouton ci-dessous afin d'être redirigé.
       </div>
-      <button id="auth-button" class="btn-primary hover:bg-gray-300! active:scale-95 transition-all! bg-white! text-black! font-normal!">
+      <button id="auth-button"
+              data-href="<?= htmlspecialchars($href, ENT_QUOTES) ?>"
+              class="btn-primary hover:bg-gray-300! active:scale-95 transition-all! bg-white! text-black! font-normal!">
         <img src="/_assets/images/tesla_logo_gray.png" alt="logo Tesla">
         <span id="button-connect" class="visible">Se connecter avec Tesla</span>
         <span id="button-retry" class="hidden">Essayer à nouveau</span>
@@ -82,68 +85,6 @@ ob_start();
       <p id="auth-error" class="hidden text-red-400 text-sm text-center"></p>
     </div>
   </div>
-
-  <script>
-    const ERRORS = {
-      missing_code:           'Code d\'autorisation manquant.',
-      token_exchange_failed:  'L\'échange du token a échoué. Veuillez réessayer.',
-    };
-
-    function switchTo(nextId) {
-      document.querySelectorAll('#auth-button span').forEach(span => {
-        span.className = span.id === nextId ? 'visible' : 'hidden';
-      });
-    }
-
-    function showError(code) {
-      const el = document.getElementById('auth-error');
-      el.textContent = ERRORS[code] ?? 'Une erreur inattendue s\'est produite.';
-      el.classList.remove('hidden');
-    }
-
-    function hideError() {
-      document.getElementById('auth-error').classList.add('hidden');
-    }
-
-    let closedCheckInterval = null;
-    let authCompleted = false;
-
-    window.addEventListener('message', (event) => {
-      if (event.origin !== window.location.origin) return;
-      if (typeof event.data?.success !== 'boolean') return;
-
-      authCompleted = true;
-      clearInterval(closedCheckInterval);
-
-      if (event.data?.success) {
-        window.location.href = '/vehicle/dashboard';
-      } else {
-        showError(event.data?.error);
-        switchTo('button-retry');
-      }
-    });
-
-    document.getElementById('auth-button').addEventListener('click', () => {
-      authCompleted = false;
-      hideError();
-
-      const windowProxy = window.open(<?php echo json_encode($href) ?>, '_blank', 'popup=true,width=500,height=700,top=100,left=50');
-
-      if (windowProxy === null) {
-        switchTo('button-retry');
-        return;
-      }
-
-      switchTo('button-pending');
-
-      closedCheckInterval = setInterval(() => {
-        if (windowProxy.closed && !authCompleted) {
-          clearInterval(closedCheckInterval);
-          switchTo('button-retry');
-        }
-      }, 500);
-    });
-  </script>
 
 <?php
 $content = ob_get_clean();

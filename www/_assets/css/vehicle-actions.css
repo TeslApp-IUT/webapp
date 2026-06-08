@@ -1,0 +1,299 @@
+/* vehicle-actions.css — issue #26 vehicle command UI.
+ *
+ * Layout: a full-width primary "wake" banner (.command-hero) followed by four
+ * categories (.command-group) of command tiles (.command-card), each an SVG
+ * pictogram in a tinted circle + a label, reusing the dashboard/sidebar visual
+ * language. The JS (vehicle-actions.js) toggles the .is-loading class during a
+ * command and writes the shared [data-action-feedback] element — it never
+ * rewrites a button's content, so the pictograms survive.
+ */
+
+/* Page header: title + secondary "switch vehicle" action. */
+.commands-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  margin-bottom: 20px;
+}
+
+.commands-header .dashboard-title {
+  margin-bottom: 0;
+}
+
+.btn-switch-vehicle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.btn-switch-vehicle:hover {
+  color: var(--color-text);
+  border-color: var(--color-border-hover);
+}
+
+.btn-switch-vehicle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.btn-switch-vehicle svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* --- Feedback banner (aria-live, kept in flow to avoid layout shift) --- */
+.actions-feedback {
+  min-height: 1.25rem;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.actions-feedback[data-state='success'] {
+  color: var(--color-success);
+}
+
+.actions-feedback[data-state='error'] {
+  color: var(--color-error);
+}
+
+/* --- Command panel: hero (full width) + 4 category columns --- */
+.vehicle-commands {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px 20px;
+  align-items: start;
+}
+
+/* --- Primary action: wake the vehicle (full-width banner) --- */
+.command-hero {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  font-family: inherit;
+  text-align: left;
+  color: var(--color-text);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.08s ease;
+}
+
+.command-hero:hover {
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.command-hero:active {
+  transform: translateY(1px);
+}
+
+.command-hero:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.command-hero.is-loading {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.command-hero__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: rgba(33, 150, 232, 0.15);
+  color: #2196e8;
+}
+
+.command-hero__icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.command-hero__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.command-hero__title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.command-hero__hint {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+/* --- Category --- */
+.command-group__title {
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.command-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* --- Command tile --- */
+.command-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 12px;
+  font-family: inherit;
+  color: var(--color-text);
+  text-align: center;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    transform 0.08s ease,
+    box-shadow 0.15s ease;
+}
+
+.command-card:hover {
+  border-color: var(--color-border-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.command-card:active {
+  transform: translateY(0);
+}
+
+.command-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.command-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.command-card__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.command-card__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Reserve 2 lines so 1-line and 2-line labels yield the same tile height. */
+  min-height: 2.6em;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: center;
+}
+
+/* --- Icon tints per category (mirrors the sidebar nav palette) --- */
+.command-card__icon--access {
+  background-color: rgba(232, 33, 39, 0.15);
+  color: #ff5a5e;
+}
+
+.command-card__icon--trunk {
+  background-color: rgba(163, 163, 163, 0.15);
+  color: #c8c8c8;
+}
+
+.command-card__icon--charge {
+  background-color: rgba(33, 232, 100, 0.15);
+  color: #21e864;
+}
+
+.command-card__icon--signal {
+  background-color: rgba(232, 200, 33, 0.15);
+  color: #e8c821;
+}
+
+/* --- In-flight state (set by the JS) --- */
+.command-card.is-loading {
+  cursor: progress;
+  opacity: 0.55;
+}
+
+.command-card.is-loading .command-card__icon {
+  animation: command-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes command-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* --- Responsive --- */
+@media (max-width: 1100px) {
+  .vehicle-commands {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .vehicle-commands {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .command-hero {
+    padding: 16px 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .command-card,
+  .command-hero,
+  .command-card.is-loading .command-card__icon {
+    transition: none;
+    animation: none;
+  }
+}

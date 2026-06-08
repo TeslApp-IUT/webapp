@@ -53,15 +53,28 @@ final class Http
     }
 
     /**
-     * Sends a JSON response and stops execution.
+     * Sends a JSON response with the given HTTP status code, then stops execution.
+     *
+     * Used by AJAX endpoints (vehicle commands) to answer the browser's fetch().
      *
      * @param array<string, mixed> $data
      */
     public static function json(array $data, int $status = 200): never
     {
+        // Encode before sending the status/headers so an encoding failure can still
+        // switch to a valid 500 JSON body instead of a half-sent response (cf.
+        // erreurs-exceptions.md §6).
+        try {
+            $body = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            error_log('Http::json encode failed: ' . $e->getMessage());
+            $status = 500;
+            $body = '{"error":"Internal error"}';
+        }
+
         http_response_code($status);
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        echo $body;
         exit();
     }
 }

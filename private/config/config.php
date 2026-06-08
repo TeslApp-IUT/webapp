@@ -40,12 +40,17 @@ if (is_file($envFile)) {
         $envValue = trim($envValue);
 
         // Strip a single pair of surrounding quotes, if present.
+        // Double-quoted values additionally unescape \" → " to match Docker Compose behaviour.
         if (
             strlen($envValue) >= 2 &&
             ($envValue[0] === '"' || $envValue[0] === "'") &&
             $envValue[strlen($envValue) - 1] === $envValue[0]
         ) {
+            $quote = $envValue[0];
             $envValue = substr($envValue, 1, -1);
+            if ($quote === '"') {
+                $envValue = str_replace('\\"', '"', $envValue);
+            }
         }
 
         // Existing environment values always win (never overwritten).
@@ -91,3 +96,21 @@ define('TESLA_FIXTURES_PATH', getenv('TESLA_FIXTURES_PATH') ?: BASE_PATH . 'test
  * seeded by db/script_insertion_dev.sql.
  */
 define('DEV_USER_ID', getenv('DEV_USER_ID') ?: '00000000-0000-0000-0000-000000000001');
+
+/**
+ * Safety guard for vehicle commands (issue #26). When true (the default),
+ * TeslaCommandClient does NOT send commands to the Fleet API / proxy — it logs
+ * and simulates success. Set to false ONLY once the virtual key is paired on the
+ * real vehicle (in-person test). Prevents accidental real commands on the
+ * professor's Tesla from a deployed environment.
+ *
+ * Fail-safe: a missing, empty or invalid value falls back to true (blocked).
+ * Only an explicit falsy value (false/0/off/no) turns the guard off.
+ */
+$dryRunRaw = getenv('TESLA_COMMANDS_DRY_RUN');
+define(
+    'TESLA_COMMANDS_DRY_RUN',
+    $dryRunRaw === false || $dryRunRaw === ''
+        ? true
+        : filter_var($dryRunRaw, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? true,
+);

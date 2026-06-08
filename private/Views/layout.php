@@ -23,6 +23,7 @@ use Teslapp\Utils\Flash;
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="<?= e($description ?? '') ?>">
+  <meta name="csrf-token" content="<?= e($_SESSION['csrf_token'] ?? '') ?>">
   <title><?= e($title ?? 'TeslApp') ?></title>
   <link rel="icon" type="image/svg+xml" href="/_assets/images/favicon.svg">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
