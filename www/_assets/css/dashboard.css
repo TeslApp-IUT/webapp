@@ -2,10 +2,101 @@
   * TeslApp - DASHBOARD STYLESHEET
   **/
 
-/* DASHBOARD LAYOUT */
-.dashboard {
+/* Layout */
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 100px 1fr;
   min-height: calc(100vh - 64px);
-  padding: 48px 0 80px;
+}
+
+/* Left Nav */
+.dashboard-navigation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 8px;
+  background-color: var(--color-bg-card);
+  border-right: 1px solid var(--color-border);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  width: 100%;
+  border-radius: 12px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.nav-item:hover {
+  background-color: var(--color-bg-hover);
+}
+
+.nav-item__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.nav-item__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.nav-item__label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+/* Icons colors */
+.nav-item__icon--overview {
+  background-color: rgba(232, 33, 39, 0.2);
+  color: #871c1f;
+}
+
+.nav-item__icon--vehicle {
+  background-color: rgba(100, 100, 100, 0.2);
+  color: #a3a3a3;
+}
+
+.nav-item__icon--ac {
+  background-color: rgba(33, 150, 232, 0.2);
+  color: #2196e8;
+}
+
+.nav-item__icon--battery {
+  background-color: rgba(33, 232, 100, 0.2);
+  color: #21e864;
+}
+
+.nav-item__icon--navigation {
+  background-color: rgba(232, 200, 33, 0.2);
+  color: #e8c821;
+}
+
+/* Current Button */
+.nav-item--active .nav-item__label {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.nav-item--active .nav-item__icon--overview {
+  background-color: #871c1f;
+  color: #ffffff;
+}
+
+/* Active button */
+.dashboard-content {
+  padding: 48px;
   background-color: var(--color-bg-secondary);
 }
 
@@ -16,7 +107,7 @@
   color: var(--color-text);
 }
 
-/* TELEMETRY GRID */
+/* Telemetry Grid */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -24,7 +115,7 @@
   margin-bottom: 24px;
 }
 
-/* TELEMETRY CARDS */
+/* Telemetry Cards */
 .dashboard-card {
   padding: 32px;
   background-color: var(--color-bg-card);
@@ -111,53 +202,29 @@
   color: var(--color-text-muted) !important;
 }
 
-/* ACTIONS SECTION */
-.dashboard-actions {
-  padding: 32px;
-  background-color: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: 14px;
-  box-shadow: var(--shadow-card);
-}
-
-.dashboard-actions-title {
-  margin-bottom: 24px;
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.actions-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  background-color: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-/* RESPONSIVE */
+/* Responsive */
 @media (max-width: 1024px) {
-  .actions-grid {
-    grid-template-columns: repeat(3, 1fr);
+  .dashboard-layout {
+    grid-template-columns: 80px 1fr;
   }
 }
 
 @media (max-width: 768px) {
-  .dashboard {
-    padding: 32px 0 60px;
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .dashboard-navigation {
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 12px;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .dashboard-content {
+    padding: 24px 16px;
   }
 
   .dashboard-title {
@@ -175,19 +242,5 @@
 
   .card-value {
     font-size: 36px;
-  }
-
-  .actions-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .dashboard-actions {
-    padding: 24px;
-  }
-}
-
-@media (max-width: 480px) {
-  .actions-grid {
-    grid-template-columns: 1fr;
   }
 }

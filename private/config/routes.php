@@ -29,7 +29,7 @@ return [
     // URLs for the post authentification
     'vehicle/select' => [VehicleController::class, 'select', true],
     'vehicle/choose' => [VehicleController::class, 'choose', true],
-    'vehicle/dashboard' => [DashboardController::class, 'index', true],
+    'dashboard/overview' => [DashboardController::class, 'index', true],
 
     // Vehicle commands (issue #26) — POST AJAX endpoints answering JSON
     'vehicle/lock' => [VehicleCommandController::class, 'lock', true],

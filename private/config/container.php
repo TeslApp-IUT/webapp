@@ -8,9 +8,10 @@ declare(strict_types=1);
 use Teslapp\Controllers\Auth\AuthCallbackController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
 use Teslapp\Controllers\Auth\AuthController;
-use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
+use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\VehicleCommandController;
+use Teslapp\Controllers\VehicleController;
 use Teslapp\Models\Database;
 use Teslapp\Models\Shared\TeslaApi\TeslaCommandClient;
 use Teslapp\Models\Shared\TeslaApi\TeslaStateClient;
@@ -21,6 +22,7 @@ use Teslapp\Models\Vehicle\TeslaModelRepositoryInterface;
 use Teslapp\Models\Vehicle\VehicleCommandService;
 use Teslapp\Models\Vehicle\VehicleRepository;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
+use Teslapp\Models\Vehicle\VehicleService;
 use Teslapp\Utils\Container;
 
 $container = new Container();
@@ -43,14 +45,24 @@ $container->set(
     VehicleStateClient::class,
     static fn(): VehicleStateClient => new TeslaStateClient(),
 );
-
+$container->set(
+    VehicleService::class,
+    static fn(Container $c): VehicleService => new VehicleService(
+        $c->get(VehicleStateClient::class),
+        $c->get(VehicleRepositoryInterface::class),
+        $c->get(TeslaModelRepositoryInterface::class),
+    ),
+);
+$container->set(
+    VehicleController::class,
+    static fn(Container $c): VehicleController => new VehicleController(
+        $c->get(VehicleService::class),
+    ),
+);
 $container->set(
     DashboardController::class,
     static fn(): DashboardController => new DashboardController(Database::pdo()),
 );
-
-// VehicleService, VehicleController and their routes: pending the OAuth AuthService (token provider).
-
 $container->set(AuthController::class, static fn(): AuthController => new AuthController());
 
 $container->set(
