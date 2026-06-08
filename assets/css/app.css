@@ -551,7 +551,7 @@ input:focus-visible {
 
 .footer {
   padding: 48px 0 0;
-  background-color: var(--color-bg-card);
+  background-color: var(--color-bg);
   border-top: 0.667px solid var(--color-border);
 }
 
