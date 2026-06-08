@@ -29,7 +29,7 @@ ob_start();
     <div class="dashboard-layout">
       <!-- Left Section -->
       <nav class="dashboard-navigation">
-        <a href="/vehicle/dashboard" class="nav-item nav-item--active" aria-label="Vue générale">
+        <a href="/dashboard/overview" class="nav-item nav-item--active" aria-label="Vue générale">
             <span class="nav-item__icon nav-item__icon--overview">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                      stroke="currentColor" class="size-6">
