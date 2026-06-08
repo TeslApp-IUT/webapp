@@ -78,7 +78,11 @@ final class PreconditioningController
     public function delete(): never
     {
         $this->handle(
-            fn(string $userId, Vin $vin) => $this->service->deletePlan($userId, $vin, $this->post('plan_id')),
+            fn(string $userId, Vin $vin) => $this->service->deletePlan(
+                $userId,
+                $vin,
+                $this->post('plan_id'),
+            ),
             'Planification supprimée.',
         );
     }

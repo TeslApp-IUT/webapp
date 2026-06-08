@@ -8,11 +8,20 @@ declare(strict_types=1);
 use Teslapp\Controllers\Auth\AuthCallbackController;
 use Teslapp\Controllers\Auth\AuthController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
+use Teslapp\Controllers\Climate\GeocodeController;
+use Teslapp\Controllers\Climate\PreconditioningController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\VehicleCommandController;
 use Teslapp\Controllers\VehicleController;
+use Teslapp\Models\Climate\ClimateService;
+use Teslapp\Models\Climate\PreconditioningPlannerRepository;
+use Teslapp\Models\Climate\PreconditioningPlannerRepositoryInterface;
 use Teslapp\Models\Database;
+use Teslapp\Models\Shared\Geocoding\GeocoderInterface;
+use Teslapp\Models\Shared\Geocoding\NominatimGeocoder;
+use Teslapp\Models\Shared\TeslaApi\ClimateCommandClient;
+use Teslapp\Models\Shared\TeslaApi\TeslaClimateClient;
 use Teslapp\Models\Shared\TeslaApi\TeslaCommandClient;
 use Teslapp\Models\Shared\TeslaApi\TeslaStateClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
@@ -90,6 +99,45 @@ $container->set(
     VehicleCommandController::class,
     static fn(Container $c): VehicleCommandController => new VehicleCommandController(
         $c->get(VehicleCommandService::class),
+    ),
+);
+
+// Climate preconditioning: geocoder, command adapter, repository, service, controllers.
+$container->set(
+    GeocoderInterface::class,
+    static fn(): GeocoderInterface => new NominatimGeocoder(
+        NOMINATIM_BASE_URL,
+        NOMINATIM_USER_AGENT,
+    ),
+);
+$container->set(
+    ClimateCommandClient::class,
+    static fn(): ClimateCommandClient => new TeslaClimateClient(TESLA_COMMANDS_DRY_RUN),
+);
+$container->set(
+    PreconditioningPlannerRepositoryInterface::class,
+    static fn(): PreconditioningPlannerRepositoryInterface => new PreconditioningPlannerRepository(
+        Database::pdo(),
+    ),
+);
+$container->set(
+    ClimateService::class,
+    static fn(Container $c): ClimateService => new ClimateService(
+        $c->get(PreconditioningPlannerRepositoryInterface::class),
+        $c->get(VehicleRepositoryInterface::class),
+        $c->get(ClimateCommandClient::class),
+    ),
+);
+$container->set(
+    GeocodeController::class,
+    static fn(Container $c): GeocodeController => new GeocodeController(
+        $c->get(GeocoderInterface::class),
+    ),
+);
+$container->set(
+    PreconditioningController::class,
+    static fn(Container $c): PreconditioningController => new PreconditioningController(
+        $c->get(ClimateService::class),
     ),
 );
 
