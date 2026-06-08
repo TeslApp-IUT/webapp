@@ -29,45 +29,45 @@ final readonly class TeslaCommandClient implements VehicleCommandClient
 
     public function lock(Vin $vin): void
     {
-        $this->send("/api/1/vehicles/{$vin->value}/command/door_lock");
+        $this->send("/api/1/vehicles/$vin->value/command/door_lock");
     }
 
     public function unlock(Vin $vin): void
     {
-        $this->send("/api/1/vehicles/{$vin->value}/command/door_unlock");
+        $this->send("/api/1/vehicles/$vin->value/command/door_unlock");
     }
 
     public function honkHorn(Vin $vin): void
     {
-        $this->send("/api/1/vehicles/{$vin->value}/command/honk_horn");
+        $this->send("/api/1/vehicles/$vin->value/command/honk_horn");
     }
 
     public function flashLights(Vin $vin): void
     {
-        $this->send("/api/1/vehicles/{$vin->value}/command/flash_lights");
+        $this->send("/api/1/vehicles/$vin->value/command/flash_lights");
     }
 
     public function actuateTrunk(Vin $vin, TrunkSide $side): void
     {
-        $this->send("/api/1/vehicles/{$vin->value}/command/actuate_trunk", [
+        $this->send("/api/1/vehicles/$vin->value/command/actuate_trunk", [
             'which_trunk' => $side->value,
         ]);
     }
 
     public function openChargePortDoor(Vin $vin): void
     {
-        $this->send("/api/1/vehicles/{$vin->value}/command/charge_port_door_open");
+        $this->send("/api/1/vehicles/$vin->value/command/charge_port_door_open");
     }
 
     public function closeChargePortDoor(Vin $vin): void
     {
-        $this->send("/api/1/vehicles/{$vin->value}/command/charge_port_door_close");
+        $this->send("/api/1/vehicles/$vin->value/command/charge_port_door_close");
     }
 
     public function wakeUp(Vin $vin): void
     {
         // wake_up is a vehicle endpoint, not a signed command: no /command/ segment.
-        $this->send("/api/1/vehicles/{$vin->value}/wake_up");
+        $this->send("/api/1/vehicles/$vin->value/wake_up");
     }
 
     /**
@@ -82,7 +82,7 @@ final readonly class TeslaCommandClient implements VehicleCommandClient
     private function send(string $path, array $body = []): void
     {
         if ($this->dryRun) {
-            error_log("TESLA_COMMANDS_DRY_RUN active — command not sent: {$path}");
+            error_log("TESLA_COMMANDS_DRY_RUN active — command not sent: $path");
 
             return;
         }
