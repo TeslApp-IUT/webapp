@@ -20,7 +20,7 @@ use Teslapp\Models\Auth\RememberTokenRepository;
 final readonly class RememberToken
 {
     private const COOKIE_NAME = 'teslapp_remember';
-    private const TTL_DAYS    = 30;
+    private const TTL_DAYS = 30;
 
     public function __construct(private RememberTokenRepository $repo) {}
 
@@ -29,16 +29,16 @@ final readonly class RememberToken
      */
     public function issue(string $userId): void
     {
-        $raw       = bin2hex(random_bytes(32));   // 64-char hex
-        $hash      = hash('sha256', $raw);
+        $raw = bin2hex(random_bytes(32)); // 64-char hex
+        $hash = hash('sha256', $raw);
         $expiresAt = time() + self::TTL_DAYS * 86400;
 
         $this->repo->insert($userId, $hash, $expiresAt);
 
         setcookie(self::COOKIE_NAME, $raw, [
-            'expires'  => $expiresAt,
-            'path'     => '/',
-            'secure'   => true,
+            'expires' => $expiresAt,
+            'path' => '/',
+            'secure' => true,
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
@@ -57,7 +57,7 @@ final readonly class RememberToken
             return null;
         }
 
-        $hash   = hash('sha256', $raw);
+        $hash = hash('sha256', $raw);
         $userId = $this->repo->findUserByHash($hash);
 
         if ($userId === null) {
@@ -99,9 +99,9 @@ final readonly class RememberToken
     private function clearCookie(): void
     {
         setcookie(self::COOKIE_NAME, '', [
-            'expires'  => time() - 3600,
-            'path'     => '/',
-            'secure'   => true,
+            'expires' => time() - 3600,
+            'path' => '/',
+            'secure' => true,
             'httponly' => true,
             'samesite' => 'Lax',
         ]);

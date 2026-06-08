@@ -57,7 +57,7 @@ if (isset($_SESSION['LAST_ACTIVITY']) && $now - (int) $_SESSION['LAST_ACTIVITY']
 if (!isset($_SESSION['user_id'])) {
     /** @var RememberToken $rememberToken */
     $rememberToken = $container->get(RememberToken::class);
-    $rememberedId  = $rememberToken->tryReAuth();
+    $rememberedId = $rememberToken->tryReAuth();
     if ($rememberedId !== null) {
         $_SESSION['user_id'] = $rememberedId;
         session_regenerate_id(true);

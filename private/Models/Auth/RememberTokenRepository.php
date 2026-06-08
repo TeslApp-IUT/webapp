@@ -31,12 +31,15 @@ final readonly class RememberTokenRepository
                  VALUES (:user_id, :token_hash, to_timestamp(:expires_at))',
             );
             $stmt->execute([
-                ':user_id'    => $userId,
+                ':user_id' => $userId,
                 ':token_hash' => $tokenHash,
                 ':expires_at' => $expiresAt,
             ]);
         } catch (PDOException $e) {
-            throw new DatabaseException("Failed to insert remember token for user $userId", previous: $e);
+            throw new DatabaseException(
+                "Failed to insert remember token for user $userId",
+                previous: $e,
+            );
         }
     }
 
@@ -77,12 +80,13 @@ final readonly class RememberTokenRepository
     public function deleteAllForUser(string $userId): void
     {
         try {
-            $stmt = $this->pdo->prepare(
-                'DELETE FROM remember_tokens WHERE user_id = :user_id',
-            );
+            $stmt = $this->pdo->prepare('DELETE FROM remember_tokens WHERE user_id = :user_id');
             $stmt->execute([':user_id' => $userId]);
         } catch (PDOException $e) {
-            throw new DatabaseException("Failed to delete all remember tokens for user $userId", previous: $e);
+            throw new DatabaseException(
+                "Failed to delete all remember tokens for user $userId",
+                previous: $e,
+            );
         }
     }
 }
