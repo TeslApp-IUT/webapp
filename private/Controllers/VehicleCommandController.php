@@ -33,14 +33,18 @@ final class VehicleCommandController
      */
     public function page(): void
     {
-        if (!isset($_SESSION['user_id']) || !is_string($_SESSION['user_id']) || $_SESSION['user_id'] === '') {
+        if (
+            !isset($_SESSION['user_id']) ||
+            !is_string($_SESSION['user_id']) ||
+            $_SESSION['user_id'] === ''
+        ) {
             Http::redirect('/site/home');
         }
 
         if (
-            !isset($_SESSION['selected_vin'])
-            || !is_string($_SESSION['selected_vin'])
-            || $_SESSION['selected_vin'] === ''
+            !isset($_SESSION['selected_vin']) ||
+            !is_string($_SESSION['selected_vin']) ||
+            $_SESSION['selected_vin'] === ''
         ) {
             Http::redirect('/vehicle/select');
         }
