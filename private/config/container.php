@@ -56,7 +56,7 @@ $container->set(
 
 $container->set(
     AuthSignUpController::class,
-    static fn(): AuthSignUpController => new AuthSignUpController(),
+    static fn(): AuthSignUpController => new AuthSignUpController(Database::pdo()),
 );
 
 return $container;
