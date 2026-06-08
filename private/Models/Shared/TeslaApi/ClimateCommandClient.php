@@ -20,7 +20,7 @@ interface ClimateCommandClient
      * @param string $daysOfWeekCsv e.g. "Monday,Thursday" (also "All", "Weekdays")
      * @param bool $oneTime true = runs once then disables, false = recurring
      * @param int|null $scheduleId Tesla schedule id to modify, null to create
-     * @return array<string, mixed> decoded Tesla response
+     * @return int|null the Tesla schedule id, null in dry-run or if the response carries none
      * @throws TeslaApiException
      */
     public function addPreconditionSchedule(
@@ -32,7 +32,7 @@ interface ClimateCommandClient
         float $lat,
         float $lon,
         ?int $scheduleId = null,
-    ): array;
+    ): ?int;
 
     /**
      * Removes a preconditioning schedule (Tesla `remove_precondition_schedule`).
