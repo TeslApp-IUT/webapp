@@ -5,31 +5,40 @@
 /* Layout */
 .dashboard-layout {
   display: grid;
-  grid-template-columns: 100px 1fr;
+  grid-template-columns: auto 1fr;
   min-height: calc(100vh - 64px);
 }
 
-/* Left Nav */
+/* Left Nav — floating sticky card */
 .dashboard-navigation {
+  position: sticky;
+  top: 80px; /* sticky header (64px) + 16px breathing space */
+  align-self: start; /* don't stretch to full row height -> enables sticky */
+  z-index: 10; /* above content, below the header (z-index 1000) */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 24px 8px;
+  gap: 6px;
+  width: 92px;
+  margin: 16px; /* gaps: header (top), footer (bottom), edges (left/right) */
+  padding: 14px 8px;
   background-color: var(--color-bg-card);
-  border-right: 1px solid var(--color-border);
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+  box-shadow: var(--shadow-lg);
 }
 
 .nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 12px 8px;
+  gap: 5px;
+  padding: 10px 6px;
   width: 100%;
-  border-radius: 12px;
+  border-radius: 14px;
   cursor: pointer;
   text-decoration: none;
+  transition: background-color 0.15s ease;
 }
 
 .nav-item:hover {
@@ -40,8 +49,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
 }
 
@@ -204,8 +213,8 @@
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .dashboard-layout {
-    grid-template-columns: 80px 1fr;
+  .dashboard-navigation {
+    width: 84px;
   }
 }
 
@@ -216,11 +225,26 @@
   }
 
   .dashboard-navigation {
+    position: sticky;
+    top: 76px; /* sticky header (64px) + 12px breathing space */
+    z-index: 100;
     flex-direction: row;
     justify-content: space-around;
-    padding: 12px;
-    border-right: none;
-    border-bottom: 1px solid var(--color-border);
+    gap: 4px;
+    width: auto;
+    margin: 12px;
+    padding: 8px 6px;
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+  }
+
+  .dashboard-navigation .nav-item {
+    padding: 6px 4px;
+  }
+
+  .dashboard-navigation .nav-item__icon {
+    width: 34px;
+    height: 34px;
   }
 
   .dashboard-content {
