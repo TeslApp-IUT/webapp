@@ -41,7 +41,7 @@ ob_start();
         </a>
         <a href="/vehicle/select" class="nav-item" aria-label="Véhicule">
             <span class="nav-item__icon nav-item__icon--vehicle">
-              <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="100" height="100" viewBox="4 4 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                       d="M28.5 62.5C28.5 66.6421 25.1421 70 21 70C16.8579 70 13.5 66.6421 13.5 62.5C13.5 58.3579 16.8579 55 21 55C25.1421 55 28.5 58.3579 28.5 62.5ZM21 67.1875C23.5888 67.1875 25.6875 65.0888 25.6875 62.5C25.6875 59.9112 23.5888 57.8125 21 57.8125C18.4112 57.8125 16.3125 59.9112 16.3125 62.5C16.3125 65.0888 18.4112 67.1875 21 67.1875Z"
                       fill="currentColor" />
