@@ -32,9 +32,10 @@ final readonly class NominatimGeocoder implements GeocoderInterface
             return null;
         }
 
-        $label = isset($hit['display_name']) && is_string($hit['display_name'])
-            ? $hit['display_name']
-            : $address;
+        $label =
+            isset($hit['display_name']) && is_string($hit['display_name'])
+                ? $hit['display_name']
+                : $address;
 
         return new GeocodeResult(new GeoPoint((float) $hit['lat'], (float) $hit['lon']), $label);
     }
