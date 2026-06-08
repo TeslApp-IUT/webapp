@@ -13,6 +13,7 @@ declare(strict_types=1);
 use Teslapp\Controllers\Auth\AuthCallbackController;
 use Teslapp\Controllers\Auth\AuthController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
+use Teslapp\Controllers\Climate\ClimateController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\VehicleController;
@@ -34,4 +35,9 @@ return [
     'auth' => [AuthController::class, 'auth', false],
     'auth/callback' => [AuthCallbackController::class, 'callback', false],
     'auth/signup' => [AuthSignUpController::class, 'signup', false],
+
+    // URLs for air conditioning
+    'dashboard/ac' => [ClimateController::class, 'ac', true],
+    'climate/toggle' => [ClimateController::class, 'toggle', true],
+    'climate/keeper' => [ClimateController::class, 'setKeeperMode', true],
 ];
