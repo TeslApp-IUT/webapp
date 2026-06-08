@@ -152,8 +152,11 @@ final class ClimateService
     }
 
     /** @throws VehicleUnauthorizedException if the vehicle or planner isn't the user's */
-    private function requireOwnedPlanner(string $userId, Vin $vin, string $planId): PreconditioningPlanner
-    {
+    private function requireOwnedPlanner(
+        string $userId,
+        Vin $vin,
+        string $planId,
+    ): PreconditioningPlanner {
         $this->assertOwnership($vin, $userId);
 
         $planner = $this->plannerRepository->findById($planId);

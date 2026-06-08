@@ -90,7 +90,9 @@ final readonly class PreconditioningPlanner
             enabled: (bool) $row['enabled'],
             location: $location,
             locationLabel: isset($row['location_label']) ? (string) $row['location_label'] : null,
-            teslaScheduleId: isset($row['tesla_schedule_id']) ? (int) $row['tesla_schedule_id'] : null,
+            teslaScheduleId: isset($row['tesla_schedule_id'])
+                ? (int) $row['tesla_schedule_id']
+                : null,
         );
     }
 }

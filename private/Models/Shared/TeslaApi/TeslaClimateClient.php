@@ -40,13 +40,12 @@ final readonly class TeslaClimateClient implements ClimateCommandClient
             $body['id'] = $scheduleId;
         }
 
-        $response = $this->post(
-            "/api/1/vehicles/{$vin->value}/command/add_precondition_schedule",
-            $body,
-        ) ?? [];
+        $response =
+            $this->post("/api/1/vehicles/{$vin->value}/command/add_precondition_schedule", $body) ??
+            [];
 
         $inner = $response['response'] ?? [];
-        $id = is_array($inner) ? ($inner['id'] ?? null) : null;
+        $id = is_array($inner) ? $inner['id'] ?? null : null;
 
         return is_numeric($id) ? (int) $id : null;
     }

@@ -33,7 +33,11 @@ final class ClimateServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(false);
 
-        $service = new ClimateService($planners, $vehicles, $this->createMock(ClimateCommandClient::class));
+        $service = new ClimateService(
+            $planners,
+            $vehicles,
+            $this->createMock(ClimateCommandClient::class),
+        );
 
         $this->expectException(VehicleUnauthorizedException::class);
         $service->listPlansForVehicle(self::USER, new Vin(self::VIN));
@@ -46,12 +50,19 @@ final class ClimateServiceTest extends TestCase
         $plan = $this->makePlanner($vin);
 
         $planners = $this->createMock(PreconditioningPlannerRepositoryInterface::class);
-        $planners->method('findByVin')->with($vin)->willReturn([$plan]);
+        $planners
+            ->method('findByVin')
+            ->with($vin)
+            ->willReturn([$plan]);
 
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->with($vin, self::USER)->willReturn(true);
 
-        $service = new ClimateService($planners, $vehicles, $this->createMock(ClimateCommandClient::class));
+        $service = new ClimateService(
+            $planners,
+            $vehicles,
+            $this->createMock(ClimateCommandClient::class),
+        );
 
         self::assertSame([$plan], $service->listPlansForVehicle(self::USER, $vin));
     }
@@ -99,7 +110,14 @@ final class ClimateServiceTest extends TestCase
 
         $service = new ClimateService($planners, $vehicles, $climate);
 
-        $service->createPlan(self::USER, new Vin(self::VIN), '07:30', [DayOfWeek::Monday], true, true);
+        $service->createPlan(
+            self::USER,
+            new Vin(self::VIN),
+            '07:30',
+            [DayOfWeek::Monday],
+            true,
+            true,
+        );
     }
 
     #[Test]
@@ -171,7 +189,11 @@ final class ClimateServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(true);
 
-        $service = new ClimateService($planners, $vehicles, $this->createMock(ClimateCommandClient::class));
+        $service = new ClimateService(
+            $planners,
+            $vehicles,
+            $this->createMock(ClimateCommandClient::class),
+        );
 
         $service->setPlanEnabled(self::USER, $vin, 'plan-1', false);
     }
@@ -186,7 +208,11 @@ final class ClimateServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(true);
 
-        $service = new ClimateService($planners, $vehicles, $this->createMock(ClimateCommandClient::class));
+        $service = new ClimateService(
+            $planners,
+            $vehicles,
+            $this->createMock(ClimateCommandClient::class),
+        );
 
         $this->expectException(VehicleUnauthorizedException::class);
         $service->setPlanEnabled(self::USER, new Vin(self::VIN), 'plan-1', false);

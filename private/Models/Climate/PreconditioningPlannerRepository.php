@@ -139,7 +139,10 @@ final readonly class PreconditioningPlannerRepository implements
             );
             $stmt->execute([':enabled' => $enabled ? 'true' : 'false', ':id' => $id]);
         } catch (PDOException $e) {
-            throw new DatabaseException("Failed to toggle preconditioning planner {$id}", previous: $e);
+            throw new DatabaseException(
+                "Failed to toggle preconditioning planner {$id}",
+                previous: $e,
+            );
         }
     }
 
