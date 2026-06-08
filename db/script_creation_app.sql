@@ -1,5 +1,5 @@
 ------------------------------------------------------------------
---                          VERSION 12                          --
+--                          VERSION 13                          --
 ------------------------------------------------------------------
 
 DROP TABLE IF EXISTS app.vehicles CASCADE;
@@ -141,6 +141,7 @@ CREATE TABLE app.preconditioning_planner
     activation_latitude      NUMERIC(8, 6),
     activation_longitude     NUMERIC(9, 6),
     location_label           VARCHAR(255),
+    tesla_schedule_id        BIGINT,
 
     CONSTRAINT pk_preconditioning_planner PRIMARY KEY (id),
 
