@@ -13,6 +13,8 @@ declare(strict_types=1);
 use Teslapp\Controllers\Auth\AuthCallbackController;
 use Teslapp\Controllers\Auth\AuthController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
+use Teslapp\Controllers\Climate\GeocodeController;
+use Teslapp\Controllers\Climate\PreconditioningController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\VehicleController;
@@ -42,6 +44,15 @@ return [
     'vehicle/charge-port-open' => [VehicleCommandController::class, 'chargePortOpen', true],
     'vehicle/charge-port-close' => [VehicleCommandController::class, 'chargePortClose', true],
     'vehicle/wake' => [VehicleCommandController::class, 'wake', true],
+
+    // Climate preconditioning: schedule CRUD and address geocoding
+    'dashboard/ac/precondition' => [PreconditioningController::class, 'index', true],
+    'dashboard/ac/precondition/create' => [PreconditioningController::class, 'create', true],
+    'dashboard/ac/precondition/update' => [PreconditioningController::class, 'update', true],
+    'dashboard/ac/precondition/delete' => [PreconditioningController::class, 'delete', true],
+    'dashboard/ac/precondition/toggle' => [PreconditioningController::class, 'toggle', true],
+    'geocode' => [GeocodeController::class, 'geocode', true],
+    'geocode/reverse' => [GeocodeController::class, 'reverse', true],
 
     // URLs for authentification
     'auth' => [AuthController::class, 'auth', false],
