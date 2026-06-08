@@ -22,7 +22,7 @@ final readonly class PreconditioningPlannerRepository implements
     {
         $stmt = $this->pdo->prepare(
             'SELECT id, vin, activation_hour, deactivate_after_success, enabled,
-                    activation_latitude, activation_longitude, location_label
+                    activation_latitude, activation_longitude, location_label, tesla_schedule_id
              FROM preconditioning_planner
              WHERE vin = :vin
              ORDER BY activation_hour',
@@ -44,7 +44,7 @@ final readonly class PreconditioningPlannerRepository implements
     {
         $stmt = $this->pdo->prepare(
             'SELECT id, vin, activation_hour, deactivate_after_success, enabled,
-                    activation_latitude, activation_longitude, location_label
+                    activation_latitude, activation_longitude, location_label, tesla_schedule_id
              FROM preconditioning_planner
              WHERE id = :id',
         );
@@ -99,6 +99,7 @@ final readonly class PreconditioningPlannerRepository implements
                 'UPDATE preconditioning_planner
                  SET activation_hour = :hour,
                      deactivate_after_success = :deactivate,
+                     enabled = :enabled,
                      activation_latitude = :lat,
                      activation_longitude = :lon,
                      location_label = :label
@@ -107,6 +108,7 @@ final readonly class PreconditioningPlannerRepository implements
             $stmt->execute([
                 ':hour' => $planner->activationHour,
                 ':deactivate' => $planner->deactivateAfterSuccess ? 'true' : 'false',
+                ':enabled' => $planner->enabled ? 'true' : 'false',
                 ':lat' => $planner->location?->latitude,
                 ':lon' => $planner->location?->longitude,
                 ':label' => $planner->locationLabel,
@@ -124,6 +126,33 @@ final readonly class PreconditioningPlannerRepository implements
 
             throw new DatabaseException(
                 "Failed to update preconditioning planner {$id}",
+                previous: $e,
+            );
+        }
+    }
+
+    public function setEnabled(string $id, bool $enabled): void
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                'UPDATE preconditioning_planner SET enabled = :enabled WHERE id = :id',
+            );
+            $stmt->execute([':enabled' => $enabled ? 'true' : 'false', ':id' => $id]);
+        } catch (PDOException $e) {
+            throw new DatabaseException("Failed to toggle preconditioning planner {$id}", previous: $e);
+        }
+    }
+
+    public function setTeslaScheduleId(string $id, int $teslaScheduleId): void
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                'UPDATE preconditioning_planner SET tesla_schedule_id = :tid WHERE id = :id',
+            );
+            $stmt->execute([':tid' => $teslaScheduleId, ':id' => $id]);
+        } catch (PDOException $e) {
+            throw new DatabaseException(
+                "Failed to store the Tesla schedule id on preconditioning planner {$id}",
                 previous: $e,
             );
         }

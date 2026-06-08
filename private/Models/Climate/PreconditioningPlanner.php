@@ -22,6 +22,7 @@ final readonly class PreconditioningPlanner
      * @param bool $enabled current on/off state (a new plan is active)
      * @param GeoPoint|null $location the geofence where preconditioning applies
      * @param string|null $locationLabel readable address of the location
+     * @param int|null $teslaScheduleId Tesla-side schedule id, set after the push (null in dry-run)
      */
     public function __construct(
         public ?string $id,
@@ -32,6 +33,7 @@ final readonly class PreconditioningPlanner
         public bool $enabled = true,
         public ?GeoPoint $location = null,
         public ?string $locationLabel = null,
+        public ?int $teslaScheduleId = null,
     ) {}
 
     /** Whether the user asked to keep this schedule indefinitely (recurring). */
@@ -88,6 +90,7 @@ final readonly class PreconditioningPlanner
             enabled: (bool) $row['enabled'],
             location: $location,
             locationLabel: isset($row['location_label']) ? (string) $row['location_label'] : null,
+            teslaScheduleId: isset($row['tesla_schedule_id']) ? (int) $row['tesla_schedule_id'] : null,
         );
     }
 }

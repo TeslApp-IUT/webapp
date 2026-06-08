@@ -18,5 +18,9 @@ interface PreconditioningPlannerRepositoryInterface
 
     public function update(PreconditioningPlanner $planner): void;
 
+    public function setEnabled(string $id, bool $enabled): void;
+
+    public function setTeslaScheduleId(string $id, int $teslaScheduleId): void;
+
     public function deleteById(string $id): void;
 }
