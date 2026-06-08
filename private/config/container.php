@@ -11,6 +11,7 @@ use Teslapp\Controllers\Auth\AuthController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\VehicleController;
+use Teslapp\Models\Auth\RememberTokenRepository;
 use Teslapp\Models\Database;
 use Teslapp\Models\Shared\TeslaApi\TeslaStateClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
@@ -20,6 +21,7 @@ use Teslapp\Models\Vehicle\VehicleRepository;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 use Teslapp\Models\Vehicle\VehicleService;
 use Teslapp\Utils\Container;
+use Teslapp\Utils\RememberToken;
 
 $container = new Container();
 
@@ -69,6 +71,18 @@ $container->set(
 $container->set(
     AuthSignUpController::class,
     static fn(): AuthSignUpController => new AuthSignUpController(),
+);
+
+// Remember-me
+$container->set(
+    RememberTokenRepository::class,
+    static fn(): RememberTokenRepository => new RememberTokenRepository(Database::pdo()),
+);
+$container->set(
+    RememberToken::class,
+    static fn(Container $c): RememberToken => new RememberToken(
+        $c->get(RememberTokenRepository::class),
+    ),
 );
 
 return $container;

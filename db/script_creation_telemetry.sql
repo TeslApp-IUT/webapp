@@ -1,5 +1,5 @@
 ------------------------------------------------------------------
---                           VERSION 4                          --
+--                           VERSION 5                          --
 ------------------------------------------------------------------
 
 DROP TABLE IF EXISTS fleet_telemetry.charge_level CASCADE;
@@ -24,6 +24,8 @@ CREATE TABLE fleet_telemetry.charge_level
         ON DELETE CASCADE
 );
 
+CREATE INDEX idx_charge_level_vin_ts ON fleet_telemetry.charge_level (vin, timestamp DESC);
+
 CREATE TABLE fleet_telemetry.charge_enable
 (
     id                    INT GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -37,6 +39,8 @@ CREATE TABLE fleet_telemetry.charge_enable
         REFERENCES app.vehicles (vin)
         ON DELETE CASCADE
 );
+
+CREATE INDEX idx_charge_enable_vin_ts ON fleet_telemetry.charge_enable (vin, timestamp DESC);
 
 CREATE TABLE fleet_telemetry.charge_scheduled
 (
@@ -52,6 +56,8 @@ CREATE TABLE fleet_telemetry.charge_scheduled
         ON DELETE CASCADE
 );
 
+CREATE INDEX idx_charge_scheduled_vin_ts ON fleet_telemetry.charge_scheduled (vin, timestamp DESC);
+
 CREATE TABLE fleet_telemetry.temp_int
 (
     id          INT GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -66,6 +72,8 @@ CREATE TABLE fleet_telemetry.temp_int
         ON DELETE CASCADE
 );
 
+CREATE INDEX idx_temp_int_vin_ts ON fleet_telemetry.temp_int (vin, timestamp DESC);
+
 CREATE TABLE fleet_telemetry.keeper_mode
 (
     id                  INT GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -73,13 +81,14 @@ CREATE TABLE fleet_telemetry.keeper_mode
     climate_keeper_mode INT                              NOT NULL, -- Mode Keeper
     timestamp           TIMESTAMP DEFAULT now()          NOT NULL,
 
-
     CONSTRAINT pk_keeper_mode PRIMARY KEY (id),
 
     CONSTRAINT fk_keeper_mode_vehicle FOREIGN KEY (vin)
         REFERENCES app.vehicles (vin)
         ON DELETE CASCADE
 );
+
+CREATE INDEX idx_keeper_mode_vin_ts ON fleet_telemetry.keeper_mode (vin, timestamp DESC);
 
 CREATE TABLE fleet_telemetry.ac_enabled
 (
@@ -95,6 +104,8 @@ CREATE TABLE fleet_telemetry.ac_enabled
         ON DELETE CASCADE
 );
 
+CREATE INDEX idx_ac_enabled_vin_ts ON fleet_telemetry.ac_enabled (vin, timestamp DESC);
+
 CREATE TABLE fleet_telemetry.location
 (
     id        INT GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -109,3 +120,5 @@ CREATE TABLE fleet_telemetry.location
         REFERENCES app.vehicles (vin)
         ON DELETE CASCADE
 );
+
+CREATE INDEX idx_location_vin_ts ON fleet_telemetry.location (vin, timestamp DESC);
