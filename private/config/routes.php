@@ -16,6 +16,7 @@ use Teslapp\Controllers\Auth\AuthSignUpController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\VehicleController;
+use Teslapp\Controllers\VehicleCommandController;
 
 return [
     // URLs for static pages accessible to everyone
@@ -29,6 +30,18 @@ return [
     'vehicle/select' => [VehicleController::class, 'select', true],
     'vehicle/choose' => [VehicleController::class, 'choose', true],
     'dashboard/overview' => [DashboardController::class, 'index', true],
+    'dashboard/vehicle' => [VehicleCommandController::class, 'page', true],
+
+    // Vehicle commands (issue #26) — POST AJAX endpoints answering JSON
+    'vehicle/lock' => [VehicleCommandController::class, 'lock', true],
+    'vehicle/unlock' => [VehicleCommandController::class, 'unlock', true],
+    'vehicle/honk' => [VehicleCommandController::class, 'honk', true],
+    'vehicle/flash' => [VehicleCommandController::class, 'flash', true],
+    'vehicle/trunk-front' => [VehicleCommandController::class, 'trunkFront', true],
+    'vehicle/trunk-rear' => [VehicleCommandController::class, 'trunkRear', true],
+    'vehicle/charge-port-open' => [VehicleCommandController::class, 'chargePortOpen', true],
+    'vehicle/charge-port-close' => [VehicleCommandController::class, 'chargePortClose', true],
+    'vehicle/wake' => [VehicleCommandController::class, 'wake', true],
 
     // URLs for authentification
     'auth' => [AuthController::class, 'auth', false],
