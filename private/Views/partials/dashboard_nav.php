@@ -18,7 +18,7 @@ $activeNav = $activeNav ?? 'overview';
         </span>
         <span class="nav-item__label">Vue d’ensemble</span>
     </a>
-    <a href="/vehicle/select" class="nav-item<?= $activeNav === 'vehicle' ? ' nav-item--active' : '' ?>" aria-label="Véhicule">
+    <a href="/dashboard/vehicle" class="nav-item<?= $activeNav === 'vehicle' ? ' nav-item--active' : '' ?>" aria-label="Véhicule">
         <span class="nav-item__icon nav-item__icon--vehicle">
           <svg width="100" height="100" viewBox="4 4 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd"
