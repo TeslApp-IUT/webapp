@@ -8,9 +8,52 @@
  * rewrites a button's content, so the pictograms survive.
  */
 
-/* Tighten the title gap on this page (the empty feedback line sits just below). */
-.dashboard-content .dashboard-title {
+/* Page header: title + secondary "switch vehicle" action. */
+.commands-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
   margin-bottom: 20px;
+}
+
+.commands-header .dashboard-title {
+  margin-bottom: 0;
+}
+
+.btn-switch-vehicle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.btn-switch-vehicle:hover {
+  color: var(--color-text);
+  border-color: var(--color-border-hover);
+}
+
+.btn-switch-vehicle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.btn-switch-vehicle svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* --- Feedback banner (aria-live, kept in flow to avoid layout shift) --- */
