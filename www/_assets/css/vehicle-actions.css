@@ -1,13 +1,76 @@
-/* vehicle-actions.css — interactive state for the issue #26 command buttons.
+/* vehicle-actions.css — styles for the issue #26 command buttons.
  *
- * The base .action-btn (dashboard.css, issue #25) is styled as a disabled
- * placeholder (cursor: not-allowed; opacity: 0.5) because every action button
- * started as a "coming soon" disabled button. These rules give the buttons that
- * are actually wired (marked with data-action) a proper clickable look, plus the
- * AJAX feedback line. Scoped to #26 so dashboard.css is left untouched. Buttons
- * without data-action (battery, climate, location) keep the placeholder look.
+ * Base layout (.dashboard-actions, .actions-grid, .action-btn) originally lived
+ * in dashboard.css (issue #25), but development's dashboard rewrite (sidebar
+ * layout) dropped those classes. They are re-added here, scoped to #26, so the
+ * action grid renders without touching development's dashboard.css.
+ *
+ * The base .action-btn is a disabled "coming soon" placeholder (cursor:
+ * not-allowed; opacity: 0.5); the .action-btn[data-action] rules below give the
+ * wired buttons a clickable look. Buttons without data-action (battery, climate,
+ * location) keep the placeholder look.
  */
 
+/* --- Base layout (rapatriated from dashboard.css #25) --- */
+.dashboard-actions {
+  padding: 32px;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
+}
+
+.dashboard-actions-title {
+  margin-bottom: 24px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+@media (max-width: 1024px) {
+  .actions-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-actions {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Interactive state for wired buttons --- */
 .action-btn[data-action] {
   color: var(--color-text);
   cursor: pointer;
