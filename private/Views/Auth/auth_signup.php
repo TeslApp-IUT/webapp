@@ -2,7 +2,7 @@
 $pendingUser = [
     'firstName' => '',
     'lastName'  => '',
-    'email'     => '',
+    'email'     => $_SESSION['user_email'],
 ];
 
 $profilePicture = $_SESSION['user_profile_picture'] ?? '';
