@@ -1,5 +1,5 @@
 ------------------------------------------------------------------
---                          VERSION 11                          --
+--                          VERSION 12                          --
 ------------------------------------------------------------------
 
 DROP TABLE IF EXISTS app.vehicles CASCADE;
@@ -137,6 +137,10 @@ CREATE TABLE app.preconditioning_planner
     vin                      VARCHAR(17) NOT NULL,
     activation_hour          TIME        NOT NULL,
     deactivate_after_success BOOLEAN,
+    enabled                  BOOLEAN     NOT NULL DEFAULT TRUE,
+    activation_latitude      NUMERIC(8, 6),
+    activation_longitude     NUMERIC(9, 6),
+    location_label           VARCHAR(255),
 
     CONSTRAINT pk_preconditioning_planner PRIMARY KEY (id),
 
@@ -151,8 +155,9 @@ CREATE TABLE app.charging_planner
     vin                      VARCHAR(17) NOT NULL,
     activation_hour          TIME        NOT NULL,
     deactivation_hour        TIME,
-    activation_latitude      DECIMAL,
-    activation_longitude     DECIMAL,
+    activation_latitude      NUMERIC(8, 6),
+    activation_longitude     NUMERIC(9, 6),
+    location_label           VARCHAR(255),
     deactivate_after_success BOOLEAN,
 
     CONSTRAINT pk_charging_planner PRIMARY KEY (id),
