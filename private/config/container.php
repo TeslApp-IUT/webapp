@@ -78,7 +78,7 @@ $container->set(
 // Vehicle commands (issue #26): command port -> adapter, then service and controller.
 $container->set(
     VehicleCommandClient::class,
-    static fn(): VehicleCommandClient => new TeslaCommandClient(),
+    static fn(): VehicleCommandClient => new TeslaCommandClient(TESLA_COMMANDS_DRY_RUN),
 );
 $container->set(
     VehicleCommandService::class,
