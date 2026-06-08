@@ -33,14 +33,14 @@ ob_start();
                 <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
                 <input type="hidden" name="action" value="start">
                 <input type="hidden" name="temperature" value="23" id="temp-hidden">
-                <button type="button" class="btn-primary" id="btn-activer">Activer</button>
+                <button type="button" class="btn-enabled" id="btn-activer">Activer</button>
               </form>
               <!-- Temperature Section -->
               <div id="volet-temp" style="display:none; margin-top: 16px;">
                 <label for="temp-slider" class="card-label">Température : <span id="temp-display">23</span> °C</label>
                 <input type="range" id="temp-slider" min="15" max="28" step="0.5" value="23"
                        style="width:100%; margin: 8px 0;">
-                <button type="submit" form="form-start" class="btn-second">Confirmer</button>
+                <button type="submit" form="form-start" class="btn-success">Confirmer</button>
               </div>
               <!-- Disable Button -->
               <form method="post" action="/climate/toggle" style="margin-top: 8px;">
@@ -68,7 +68,7 @@ ob_start();
                   <option value="2">Dog</option>
                   <option value="3">Camp</option>
                 </select>
-                <button type="submit" class="btn-primary">Appliquer</button>
+                <button type="submit" class="btn-enabled">Appliquer</button>
               </form>
             </div>
           </div>
