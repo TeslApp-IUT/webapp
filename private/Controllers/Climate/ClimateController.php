@@ -27,8 +27,7 @@ class ClimateController
     {
         $vin = $_SESSION['selected_vin'] ?? null;
 
-        if (!$vin)
-        {
+        if (!$vin) {
             header('Location: /vehicle/select');
             exit();
         }
@@ -47,29 +46,24 @@ class ClimateController
         $vin = $_SESSION['selected_vin'] ?? null;
         $token = $_SESSION['access_token'] ?? null;
 
-        if (!$vin || !$token)
-        {
+        if (!$vin || !$token) {
             header('Location: /vehicle/select');
             exit();
         }
 
         $action = filter_input(INPUT_POST, 'action', FILTER_UNSAFE_RAW);
 
-        if ($action === 'start')
-        {
+        if ($action === 'start') {
             $this->sendCommand($vin, $token, 'auto_conditioning_start');
 
             $temp = filter_input(INPUT_POST, 'temperature', FILTER_VALIDATE_FLOAT);
-            if ($temp !== false && $temp >= 15.0 && $temp <= 28.0)
-            {
+            if ($temp !== false && $temp >= 15.0 && $temp <= 28.0) {
                 $this->sendCommand($vin, $token, 'set_temps', [
                     'driver_temp' => $temp,
                     'passenger_temp' => $temp,
                 ]);
             }
-        }
-        elseif ($action === 'stop')
-        {
+        } elseif ($action === 'stop') {
             $this->sendCommand($vin, $token, 'auto_conditioning_stop');
         }
 
@@ -81,8 +75,12 @@ class ClimateController
      * Sends a POST command to the Tesla Fleet API
      * Returns true if the command was accepted, false otherwise
      **/
-    private function sendCommand(string $vin, string $token, string $command, array $body = []): bool
-    {
+    private function sendCommand(
+        string $vin,
+        string $token,
+        string $command,
+        array $body = [],
+    ): bool {
         $url = "{$this->baseUrl}/api/1/vehicles/{$vin}/command/{$command}";
         $ch = curl_init($url);
 
@@ -91,7 +89,7 @@ class ClimateController
             CURLOPT_POST => true,
             CURLOPT_HTTPHEADER => [
                 "Authorization: Bearer {$token}",
-                "Content-Type: application/json",
+                'Content-Type: application/json',
             ],
             CURLOPT_POSTFIELDS => json_encode($body),
         ]);
@@ -111,16 +109,14 @@ class ClimateController
         $vin = $_SESSION['selected_vin'] ?? null;
         $token = $_SESSION['access_token'] ?? null;
 
-        if (!$vin || !$token)
-        {
+        if (!$vin || !$token) {
             header('Location: /vehicle/select');
             exit();
         }
 
         $mode = filter_input(INPUT_POST, 'climate_keeper_mode', FILTER_VALIDATE_INT);
 
-        if ($mode === false || $mode < 0 || $mode > 3)
-        {
+        if ($mode === false || $mode < 0 || $mode > 3) {
             header('Location: /dashboard/ac');
             exit();
         }

@@ -1,4 +1,3 @@
-
 const btnActiver = document.getElementById('btn-activer');
 const voletTemp = document.getElementById('volet-temp');
 const tempSlider = document.getElementById('temp-slider');

@@ -75,7 +75,7 @@ $container->set(
 );
 $container->set(
     ClimateController::class,
-    static fn(): ClimateController => new ClimateController(Database::pdo())
+    static fn(): ClimateController => new ClimateController(Database::pdo()),
 );
 
 // Vehicle commands (issue #26): command port -> adapter, then service and controller.
