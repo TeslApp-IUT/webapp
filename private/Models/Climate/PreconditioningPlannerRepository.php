@@ -13,7 +13,8 @@ use Teslapp\Models\Shared\ValueObjects\Vin;
  * Persists preconditioning schedules and their days
  * (preconditioning_planner + preconditioning_plans).
  */
-final readonly class PreconditioningPlannerRepository implements PreconditioningPlannerRepositoryInterface
+final readonly class PreconditioningPlannerRepository implements
+    PreconditioningPlannerRepositoryInterface
 {
     public function __construct(private PDO $pdo) {}
 
@@ -28,13 +29,15 @@ final readonly class PreconditioningPlannerRepository implements Preconditioning
         );
         $stmt->execute([':vin' => $vin->value]);
 
-        return array_values(array_map(
-            fn(array $row): PreconditioningPlanner => PreconditioningPlanner::fromRow(
-                $row,
-                $this->dayIdsFor((string) $row['id']),
+        return array_values(
+            array_map(
+                fn(array $row): PreconditioningPlanner => PreconditioningPlanner::fromRow(
+                    $row,
+                    $this->dayIdsFor((string) $row['id']),
+                ),
+                $stmt->fetchAll(),
             ),
-            $stmt->fetchAll(),
-        ));
+        );
     }
 
     public function findById(string $id): ?PreconditioningPlanner
@@ -85,8 +88,9 @@ final readonly class PreconditioningPlannerRepository implements Preconditioning
 
     public function update(PreconditioningPlanner $planner): void
     {
-        $id = $planner->id
-            ?? throw new DatabaseException('Cannot update a preconditioning planner without an id');
+        $id =
+            $planner->id ??
+            throw new DatabaseException('Cannot update a preconditioning planner without an id');
 
         $this->pdo->beginTransaction();
 
@@ -109,7 +113,8 @@ final readonly class PreconditioningPlannerRepository implements Preconditioning
                 ':id' => $id,
             ]);
 
-            $this->pdo->prepare('DELETE FROM preconditioning_plans WHERE id = :id')
+            $this->pdo
+                ->prepare('DELETE FROM preconditioning_plans WHERE id = :id')
                 ->execute([':id' => $id]);
             $this->insertDays($id, $planner->dayIds());
 
@@ -117,7 +122,10 @@ final readonly class PreconditioningPlannerRepository implements Preconditioning
         } catch (PDOException $e) {
             $this->pdo->rollBack();
 
-            throw new DatabaseException("Failed to update preconditioning planner {$id}", previous: $e);
+            throw new DatabaseException(
+                "Failed to update preconditioning planner {$id}",
+                previous: $e,
+            );
         }
     }
 
@@ -125,10 +133,14 @@ final readonly class PreconditioningPlannerRepository implements Preconditioning
     {
         try {
             // preconditioning_plans rows are removed by the FK cascade.
-            $this->pdo->prepare('DELETE FROM preconditioning_planner WHERE id = :id')
+            $this->pdo
+                ->prepare('DELETE FROM preconditioning_planner WHERE id = :id')
                 ->execute([':id' => $id]);
         } catch (PDOException $e) {
-            throw new DatabaseException("Failed to delete preconditioning planner {$id}", previous: $e);
+            throw new DatabaseException(
+                "Failed to delete preconditioning planner {$id}",
+                previous: $e,
+            );
         }
     }
 
@@ -148,7 +160,9 @@ final readonly class PreconditioningPlannerRepository implements Preconditioning
     /** @param list<int> $dayIds */
     private function insertDays(string $id, array $dayIds): void
     {
-        $stmt = $this->pdo->prepare('INSERT INTO preconditioning_plans (id, day_id) VALUES (:id, :day_id)');
+        $stmt = $this->pdo->prepare(
+            'INSERT INTO preconditioning_plans (id, day_id) VALUES (:id, :day_id)',
+        );
         foreach ($dayIds as $dayId) {
             $stmt->execute([':id' => $id, ':day_id' => $dayId]);
         }

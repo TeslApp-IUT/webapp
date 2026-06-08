@@ -73,9 +73,10 @@ final readonly class PreconditioningPlanner
     {
         $latitude = $row['activation_latitude'] ?? null;
         $longitude = $row['activation_longitude'] ?? null;
-        $location = ($latitude !== null && $longitude !== null)
-            ? new GeoPoint((float) $latitude, (float) $longitude)
-            : null;
+        $location =
+            $latitude !== null && $longitude !== null
+                ? new GeoPoint((float) $latitude, (float) $longitude)
+                : null;
 
         return new self(
             id: (string) $row['id'],

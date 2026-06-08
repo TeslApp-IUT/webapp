@@ -46,16 +46,19 @@ final class PreconditioningPlannerTest extends TestCase
     #[Test]
     public function fromRowReadsTheLocationWhenPresent(): void
     {
-        $planner = PreconditioningPlanner::fromRow([
-            'id' => 'planner-1',
-            'vin' => '5YJ3E1EA7KF000316',
-            'activation_hour' => '07:30:00',
-            'deactivate_after_success' => true,
-            'enabled' => true,
-            'activation_latitude' => '43.2965',
-            'activation_longitude' => '5.3698',
-            'location_label' => 'Marseille, France',
-        ], [1, 4]);
+        $planner = PreconditioningPlanner::fromRow(
+            [
+                'id' => 'planner-1',
+                'vin' => '5YJ3E1EA7KF000316',
+                'activation_hour' => '07:30:00',
+                'deactivate_after_success' => true,
+                'enabled' => true,
+                'activation_latitude' => '43.2965',
+                'activation_longitude' => '5.3698',
+                'location_label' => 'Marseille, France',
+            ],
+            [1, 4],
+        );
 
         self::assertSame('07:30', $planner->activationHour);
         self::assertTrue($planner->enabled);
@@ -68,16 +71,19 @@ final class PreconditioningPlannerTest extends TestCase
     #[Test]
     public function fromRowLeavesTheLocationNullWhenAbsent(): void
     {
-        $planner = PreconditioningPlanner::fromRow([
-            'id' => 'planner-1',
-            'vin' => '5YJ3E1EA7KF000316',
-            'activation_hour' => '07:30:00',
-            'deactivate_after_success' => false,
-            'enabled' => false,
-            'activation_latitude' => null,
-            'activation_longitude' => null,
-            'location_label' => null,
-        ], [1]);
+        $planner = PreconditioningPlanner::fromRow(
+            [
+                'id' => 'planner-1',
+                'vin' => '5YJ3E1EA7KF000316',
+                'activation_hour' => '07:30:00',
+                'deactivate_after_success' => false,
+                'enabled' => false,
+                'activation_latitude' => null,
+                'activation_longitude' => null,
+                'location_label' => null,
+            ],
+            [1],
+        );
 
         self::assertFalse($planner->enabled);
         self::assertNull($planner->location);
