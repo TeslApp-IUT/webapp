@@ -10,12 +10,16 @@ use Teslapp\Controllers\Auth\AuthSignUpController;
 use Teslapp\Controllers\Auth\AuthController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\DashboardController;
+use Teslapp\Controllers\VehicleCommandController;
 use Teslapp\Controllers\VehicleController;
 use Teslapp\Models\Database;
+use Teslapp\Models\Shared\TeslaApi\TeslaCommandClient;
 use Teslapp\Models\Shared\TeslaApi\TeslaStateClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
 use Teslapp\Models\Vehicle\TeslaModelRepository;
 use Teslapp\Models\Vehicle\TeslaModelRepositoryInterface;
+use Teslapp\Models\Vehicle\VehicleCommandService;
 use Teslapp\Models\Vehicle\VehicleRepository;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 use Teslapp\Models\Vehicle\VehicleService;
@@ -72,6 +76,25 @@ $container->set(
 $container->set(
     ClimateController::class,
     static fn(): ClimateController => new ClimateController(Database::pdo())
+);
+
+// Vehicle commands (issue #26): command port -> adapter, then service and controller.
+$container->set(
+    VehicleCommandClient::class,
+    static fn(): VehicleCommandClient => new TeslaCommandClient(TESLA_COMMANDS_DRY_RUN),
+);
+$container->set(
+    VehicleCommandService::class,
+    static fn(Container $c): VehicleCommandService => new VehicleCommandService(
+        $c->get(VehicleCommandClient::class),
+        $c->get(VehicleRepositoryInterface::class),
+    ),
+);
+$container->set(
+    VehicleCommandController::class,
+    static fn(Container $c): VehicleCommandController => new VehicleCommandController(
+        $c->get(VehicleCommandService::class),
+    ),
 );
 
 return $container;

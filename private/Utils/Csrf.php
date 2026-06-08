@@ -64,6 +64,21 @@ final class Csrf
     }
 
     /**
+     * Checks the CSRF token sent in an HTTP header — used by AJAX (fetch) requests
+     * that send the token via `X-CSRF-Token` instead of a form field.
+     *
+     * @param string $header Server key of the header (default HTTP_X_CSRF_TOKEN = X-CSRF-Token).
+     * @return bool True if the header token matches the session token.
+     */
+    public static function checkFromHeader(string $header = 'HTTP_X_CSRF_TOKEN'): bool
+    {
+        $sess = $_SESSION['csrf_token'] ?? '';
+        $sent = $_SERVER[$header] ?? '';
+
+        return $sess && $sent && hash_equals($sess, $sent);
+    }
+
+    /**
      * Checks the CSRF token and redirects if validation fails
      *
      * Utility method that combines CSRF token validation with
