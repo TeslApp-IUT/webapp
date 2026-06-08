@@ -92,13 +92,6 @@ define('TESLA_API_MODE', getenv('TESLA_API_MODE') ?: 'simulated');
 define('TESLA_FIXTURES_PATH', getenv('TESLA_FIXTURES_PATH') ?: BASE_PATH . 'tests/fixtures/tesla');
 
 /**
- * Development access token placeholder, used while the OAuth login is not wired
- * yet. The simulated client ignores its content; the real client will use the
- * OAuth token provided by AuthService instead (see oauth2-tesla.md).
- */
-define('DEV_ACCESS_TOKEN', getenv('DEV_ACCESS_TOKEN') ?: 'dev-placeholder-token');
-
-/**
  * Development user id, used while there is no real login. Must match the user
  * seeded by db/script_insertion_dev.sql.
  */

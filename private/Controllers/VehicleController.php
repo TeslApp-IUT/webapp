@@ -100,6 +100,6 @@ final class VehicleController
 
         $_SESSION['selected_vin'] = $vin;
         Flash::set('success', 'Véhicule sélectionné.');
-        Http::redirect('/vehicle/dashboard');
+        Http::redirect('/dashboard/overview');
     }
 }
