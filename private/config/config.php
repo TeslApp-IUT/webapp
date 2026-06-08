@@ -112,5 +112,5 @@ define(
     'TESLA_COMMANDS_DRY_RUN',
     $dryRunRaw === false || $dryRunRaw === ''
         ? true
-        : (filter_var($dryRunRaw, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? true),
+        : filter_var($dryRunRaw, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? true,
 );
