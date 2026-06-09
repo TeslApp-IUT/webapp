@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Teslapp\Controllers\Climate;
+namespace Teslapp\Controllers;
 
 use InvalidArgumentException;
 use Teslapp\Models\Shared\Geocoding\GeocoderInterface;
@@ -14,7 +14,7 @@ use Teslapp\Utils\Http;
  * (address to coordinates) and reverse (coordinates to address). Requires
  * login so the app is not an open geocoding proxy; read-only GET, no CSRF.
  */
-final class GeocodeController
+final class GeocodingController
 {
     public function __construct(private readonly GeocoderInterface $geocoder) {}
 

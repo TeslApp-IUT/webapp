@@ -13,7 +13,7 @@ declare(strict_types=1);
 use Teslapp\Controllers\Auth\AuthCallbackController;
 use Teslapp\Controllers\Auth\AuthController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
-use Teslapp\Controllers\Climate\GeocodeController;
+use Teslapp\Controllers\GeocodingController;
 use Teslapp\Controllers\Climate\PreconditioningController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
@@ -51,8 +51,8 @@ return [
     'dashboard/ac/precondition/update' => [PreconditioningController::class, 'update', true],
     'dashboard/ac/precondition/delete' => [PreconditioningController::class, 'delete', true],
     'dashboard/ac/precondition/toggle' => [PreconditioningController::class, 'toggle', true],
-    'geocode' => [GeocodeController::class, 'geocode', true],
-    'geocode/reverse' => [GeocodeController::class, 'reverse', true],
+    'geocode' => [GeocodingController::class, 'geocode', true],
+    'geocode/reverse' => [GeocodingController::class, 'reverse', true],
 
     // URLs for authentification
     'auth' => [AuthController::class, 'auth', false],

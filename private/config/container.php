@@ -8,7 +8,7 @@ declare(strict_types=1);
 use Teslapp\Controllers\Auth\AuthCallbackController;
 use Teslapp\Controllers\Auth\AuthController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
-use Teslapp\Controllers\Climate\GeocodeController;
+use Teslapp\Controllers\GeocodingController;
 use Teslapp\Controllers\Climate\PreconditioningController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
@@ -129,8 +129,8 @@ $container->set(
     ),
 );
 $container->set(
-    GeocodeController::class,
-    static fn(Container $c): GeocodeController => new GeocodeController(
+    GeocodingController::class,
+    static fn(Container $c): GeocodingController => new GeocodingController(
         $c->get(GeocoderInterface::class),
     ),
 );
