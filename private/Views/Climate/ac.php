@@ -1,10 +1,12 @@
 <?php
 $vin = $_SESSION['selected_vin'] ?? null;
 
+$inside_temp = $data['inside_temp'] ?? 'N/A';
+
 $title = 'Climatisation — TeslApp';
 $description = 'Gérez la climatisation de votre Tesla à distance.';
 $header = 'user';
-//$extraCss = ['dashboard', 'ac'];
+$extraCss = ['dashboard', 'ac'];
 $extraJs = ['ac'];
 
 ob_start();
@@ -25,6 +27,10 @@ ob_start();
                    aria-hidden="true">
                 <path d="M12 2v20M4.93 4.93l14.14 14.14M2 12h20M4.93 19.07l14.14-14.14" />
               </svg>
+            </div>
+            <div class="card-content">
+              <p class="card-value"><?= e((string)$inside_temp) ?><span> °C</span></p>
+              <p class="card-label">Température intérieure</p>
             </div>
             <h2 class="card-title">Climatisation</h2>
             <div class="card-details">
