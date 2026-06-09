@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace Teslapp\Controllers\Climate;
 
+use InvalidArgumentException;
 use Teslapp\Models\Climate\ClimateService;
+use Teslapp\Models\Climate\PreconditioningService;
 use Teslapp\Models\Climate\ValueObjects\ClimateAction;
 use Teslapp\Models\Climate\ValueObjects\KeeperMode;
 use Teslapp\Models\Climate\ValueObjects\Temperature;
 use Teslapp\Models\Shared\Exceptions\TeslaAppException;
+use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Utils\Csrf;
 use Teslapp\Utils\Flash;
@@ -15,27 +18,24 @@ use Teslapp\Utils\Http;
 
 final class ClimateController
 {
-    public function __construct(private readonly ClimateService $climateService) {}
+    public function __construct(private readonly ClimateService $climateService,
+                                private readonly PreconditioningService $preconditioningService,
+    ) { }
 
-    /**
-     * GET dashboard/ac
-     * Displays the climate page
-     **/
     public function ac(): void
     {
-        if (!isset($_SESSION['selected_vin'])) {
+        ['userId' => $userId, 'vin' => $vin] = $this->requireSession();
+
+        try {
+            $plans = $this->preconditioningService->listPlansForVehicle($userId, $vin);
+        } catch (InvalidArgumentException|VehicleUnauthorizedException) {
+            Flash::set('error', 'Véhicule invalide ou inaccessible.');
             Http::redirect('/vehicle/select');
         }
 
         require_once __DIR__ . '/../../Views/Climate/ac.php';
     }
 
-    /**
-     * Handles climate activation and deactivation
-     * When action is 'start', activates the climate and optionally sets the temperature
-     * When action is 'stop', deactivates the climate
-     * Redirects to the actual page
-     **/
     public function toggle(): void
     {
         Csrf::requireValid('/dashboard/ac');
@@ -68,10 +68,6 @@ final class ClimateController
         Http::redirect('/dashboard/ac');
     }
 
-    /**
-     * POST climate/keeper
-     * Sets the climate keeper mode : 0 = Off, 1 = Keep, 2 = Dog, 3 = Camp
-     **/
     public function setKeeperMode(): void
     {
         Csrf::requireValid('/dashboard/ac');
@@ -97,9 +93,6 @@ final class ClimateController
         Http::redirect('/dashboard/ac');
     }
 
-    /**
-     * @return array{userId: string, vin: Vin}
-     */
     private function requireSession(): array
     {
         if (!isset($_SESSION['selected_vin'])) {
@@ -107,7 +100,7 @@ final class ClimateController
         }
 
         return [
-            'userId' => (string) ($_SESSION['user_id'] ?? ''),
+            'userId' => (string)($_SESSION['user_id'] ?? ''),
             'vin' => new Vin($_SESSION['selected_vin']),
         ];
     }
