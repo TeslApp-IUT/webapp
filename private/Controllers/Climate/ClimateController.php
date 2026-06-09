@@ -8,7 +8,6 @@ use Teslapp\Models\Climate\ValueObjects\ClimateAction;
 use Teslapp\Models\Climate\ValueObjects\KeeperMode;
 use Teslapp\Models\Climate\ValueObjects\Temperature;
 use Teslapp\Models\Shared\Exceptions\TeslaAppException;
-use Teslapp\Models\Shared\ValueObjects\AccessToken;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Utils\Csrf;
 use Teslapp\Utils\Flash;
@@ -41,7 +40,7 @@ final class ClimateController
     {
         Csrf::requireValid('/dashboard/ac');
 
-        ['vin' => $vin, 'token' => $token] = $this->requireSession();
+        ['userId' => $userId, 'vin' => $vin] = $this->requireSession();
 
         $action = ClimateAction::tryFrom(
             filter_input(INPUT_POST, 'action', FILTER_UNSAFE_RAW) ?? '',
@@ -55,9 +54,9 @@ final class ClimateController
             if ($action === ClimateAction::Start) {
                 $raw = filter_input(INPUT_POST, 'temperature', FILTER_VALIDATE_FLOAT);
                 $temp = $raw !== false ? new Temperature($raw) : null;
-                $this->climateService->activate($vin, $token, $temp);
+                $this->climateService->activate($userId, $vin, $temp);
             } else {
-                $this->climateService->deactivate($vin, $token);
+                $this->climateService->deactivate($userId, $vin);
             }
 
             Flash::set('success', 'Commande envoyée.');
@@ -77,7 +76,7 @@ final class ClimateController
     {
         Csrf::requireValid('/dashboard/ac');
 
-        ['vin' => $vin, 'token' => $token] = $this->requireSession();
+        ['userId' => $userId, 'vin' => $vin] = $this->requireSession();
 
         $raw = filter_input(INPUT_POST, 'climate_keeper_mode', FILTER_VALIDATE_INT);
         $mode = $raw !== false ? KeeperMode::tryFrom($raw) : null;
@@ -88,7 +87,7 @@ final class ClimateController
         }
 
         try {
-            $this->climateService->applyKeeperMode($vin, $token, $mode);
+            $this->climateService->applyKeeperMode($userId, $vin, $mode);
             Flash::set('success', 'Mode keeper appliqué.');
         } catch (TeslaAppException $e) {
             error_log('Keeper mode failed: ' . $e->getMessage());
@@ -98,6 +97,9 @@ final class ClimateController
         Http::redirect('/dashboard/ac');
     }
 
+    /**
+     * @return array{userId: string, vin: Vin}
+     */
     private function requireSession(): array
     {
         if (!isset($_SESSION['selected_vin'])) {
@@ -105,6 +107,7 @@ final class ClimateController
         }
 
         return [
+            'userId' => (string) ($_SESSION['user_id'] ?? ''),
             'vin' => new Vin($_SESSION['selected_vin']),
         ];
     }
