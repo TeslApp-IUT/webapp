@@ -21,6 +21,11 @@ final class AuthController
 
     private function handleGet(): void
     {
+        // Anti-CSRF state for the OAuth flow: generated here, stored in the session,
+        // injected into the /authorize URL by the view, and verified at the callback.
+        $state = bin2hex(random_bytes(32));
+        $_SESSION['oauth_state'] = $state;
+
         require_once __DIR__ . '/../../Views/Auth/auth.php';
     }
 
