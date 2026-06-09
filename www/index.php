@@ -91,6 +91,21 @@ if (!isset($routes[$route])) {
 }
 
 [$class, $method] = $routes[$route];
+$requiresAuth = $routes[$route][2] ?? false;
+
+// Centralised authentication guard: routes flagged requiresAuth need a logged-in user.
+// AJAX callers (Accept: application/json — e.g. the command endpoints) get a 401 JSON;
+// page navigations are redirected to the login screen.
+if ($requiresAuth && empty($_SESSION['user_id'])) {
+    if (str_contains((string) ($_SERVER['HTTP_ACCEPT'] ?? ''), 'application/json')) {
+        http_response_code(401);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => 'Authentication required']);
+    } else {
+        header('Location: /auth');
+    }
+    exit();
+}
 
 /** ==================== Instantiation & Execution ==================== */
 try {

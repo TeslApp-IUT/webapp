@@ -24,12 +24,7 @@ final class DashboardController
      */
     public function index(): void
     {
-        $userId = $_SESSION['user_id'] ?? null;
-        if (!$userId) {
-            header('Location: /site/home');
-            exit();
-        }
-
+        // Authentication is enforced centrally by the front controller (requiresAuth route flag).
         $selectedVin = $_SESSION['selected_vin'] ?? null;
         if (!is_string($selectedVin) || $selectedVin === '') {
             header('Location: /vehicle/select');
