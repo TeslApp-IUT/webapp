@@ -126,7 +126,7 @@ final class TeslaHttpClient
                 'client_secret' => getenv('CLIENT_SECRET'),
                 'audience' => 'https://fleet-api.prd.eu.vn.cloud.tesla.com',
                 'scope' =>
-                    'openid offline_access user_data vehicle_device_data vehicle_location vehicle_cmds vehicle_charging_cmds vehicle_specs',
+                    'openid email offline_access user_data vehicle_device_data vehicle_location vehicle_cmds vehicle_charging_cmds vehicle_specs',
             ];
             $res = self::send(
                 'POST',
@@ -290,12 +290,15 @@ final class TeslaHttpClient
 
                 $_SESSION['tmp_user_email'] = $claims['email'] ?? '';
 
+                //TO-DO: change the database insertion
+                /**
                 $repository->ensureUser(
                     $sub,
                     (string) ($claims['email'] ?? ''),
                     (string) ($claims['given_name'] ?? ''),
                     (string) ($claims['family_name'] ?? ''),
                 );
+                **/
                 $repository->saveJwt(
                     $sub,
                     (string) ($claims['iss'] ?? ''),
