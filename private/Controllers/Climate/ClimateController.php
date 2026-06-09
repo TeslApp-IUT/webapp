@@ -28,7 +28,7 @@ final class ClimateController
             Http::redirect('/vehicle/select');
         }
 
-        require_once __DIR__ . '/../Views/Climate/ac.php';
+        require_once __DIR__ . '/../../Views/Climate/ac.php';
     }
 
     /**
@@ -100,13 +100,12 @@ final class ClimateController
 
     private function requireSession(): array
     {
-        if (!isset($_SESSION['selected_vin'], $_SESSION['access_token'])) {
+        if (!isset($_SESSION['selected_vin'])) {
             Http::redirect('/vehicle/select');
         }
 
         return [
             'vin' => new Vin($_SESSION['selected_vin']),
-            'token' => new AccessToken($_SESSION['access_token']),
         ];
     }
 }
