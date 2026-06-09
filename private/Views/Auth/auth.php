@@ -7,7 +7,7 @@ $params = [
   'response_type' => 'code',
   'client_id' => getenv('CLIENT_ID'),
   'redirect_uri' => $appUrl . '/auth/callback',
-  'scope' => 'openid offline_access user_data vehicle_device_data vehicle_location vehicle_cmds vehicle_charging_cmds vehicle_specs',
+  'scope' => 'openid email offline_access user_data vehicle_device_data vehicle_location vehicle_cmds vehicle_charging_cmds vehicle_specs',
   'require_requested_scopes' => 'true',
   'prompt_missing_scopes' => 'true',
 ];
