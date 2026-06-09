@@ -160,4 +160,16 @@ final readonly class AuthRepository
 
         return $row !== false ? $row : null;
     }
+
+    public function isUserInDatabase(string $sub_id): bool
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT 1
+                   FROM users
+                   WHERE id = :sub_id',
+        );
+        $stmt->execute([':sub_id' => $sub_id]);
+        $row = $stmt->fetch();
+        return $row !== null;
+    }
 }
