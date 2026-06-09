@@ -41,10 +41,7 @@ function initCommon() {
   navLinks.forEach(function (link) {
     link.classList.remove('active');
     const linkPath = link.getAttribute('href');
-    if (
-      (linkPath && currentPath === linkPath) ||
-      (linkPath === '/' && currentPath === '/')
-    ) {
+    if ((linkPath && currentPath === linkPath) || (linkPath === '/' && currentPath === '/')) {
       link.classList.add('active');
     }
   });
