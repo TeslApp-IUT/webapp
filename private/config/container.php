@@ -75,15 +75,10 @@ $container->set(
     AuthSignUpController::class,
     static fn(): AuthSignUpController => new AuthSignUpController(),
 );
-$container->set(
-    ClimateClient::class,
-    static fn(): ClimateClient => new ClimateClient(),
-);
+$container->set(ClimateClient::class, static fn(): ClimateClient => new ClimateClient());
 $container->set(
     ClimateService::class,
-    static fn(Container $c): ClimateService => new ClimateService(
-        $c->get(ClimateClient::class),
-    ),
+    static fn(Container $c): ClimateService => new ClimateService($c->get(ClimateClient::class)),
 );
 $container->set(
     ClimateController::class,

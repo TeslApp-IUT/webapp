@@ -56,8 +56,7 @@ final class ClimateClient
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if ($httpCode !== 200)
-        {
+        if ($httpCode !== 200) {
             throw new ClimateException("Tesla command '{$command}' failed (HTTP {$httpCode}).");
         }
     }

@@ -6,5 +6,5 @@ namespace Teslapp\Models\Climate\ValueObjects;
 enum ClimateAction: string
 {
     case Start = 'start';
-    case Stop  = 'stop';
+    case Stop = 'stop';
 }

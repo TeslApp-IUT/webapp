@@ -24,8 +24,7 @@ final class ClimateController
      **/
     public function ac(): void
     {
-        if (!isset($_SESSION['selected_vin']))
-        {
+        if (!isset($_SESSION['selected_vin'])) {
             Http::redirect('/vehicle/select');
         }
 
@@ -45,31 +44,24 @@ final class ClimateController
         ['vin' => $vin, 'token' => $token] = $this->requireSession();
 
         $action = ClimateAction::tryFrom(
-            filter_input(INPUT_POST, 'action', FILTER_UNSAFE_RAW) ?? ''
+            filter_input(INPUT_POST, 'action', FILTER_UNSAFE_RAW) ?? '',
         );
 
-        if ($action === null)
-        {
+        if ($action === null) {
             Http::redirect('/dashboard/ac');
         }
 
-        try
-        {
-            if ($action === ClimateAction::Start)
-            {
-                $raw  = filter_input(INPUT_POST, 'temperature', FILTER_VALIDATE_FLOAT);
+        try {
+            if ($action === ClimateAction::Start) {
+                $raw = filter_input(INPUT_POST, 'temperature', FILTER_VALIDATE_FLOAT);
                 $temp = $raw !== false ? new Temperature($raw) : null;
                 $this->climateService->activate($vin, $token, $temp);
-            }
-            else
-            {
+            } else {
                 $this->climateService->deactivate($vin, $token);
             }
 
             Flash::set('success', 'Commande envoyée.');
-        }
-        catch (TeslaAppException $e)
-        {
+        } catch (TeslaAppException $e) {
             error_log('Climate toggle failed: ' . $e->getMessage());
             Flash::set('error', 'Impossible d\'envoyer la commande à Tesla.');
         }
@@ -87,22 +79,18 @@ final class ClimateController
 
         ['vin' => $vin, 'token' => $token] = $this->requireSession();
 
-        $raw  = filter_input(INPUT_POST, 'climate_keeper_mode', FILTER_VALIDATE_INT);
+        $raw = filter_input(INPUT_POST, 'climate_keeper_mode', FILTER_VALIDATE_INT);
         $mode = $raw !== false ? KeeperMode::tryFrom($raw) : null;
 
-        if ($mode === null)
-        {
+        if ($mode === null) {
             Flash::set('error', 'Mode invalide.');
             Http::redirect('/dashboard/ac');
         }
 
-        try
-        {
+        try {
             $this->climateService->applyKeeperMode($vin, $token, $mode);
             Flash::set('success', 'Mode keeper appliqué.');
-        }
-        catch (TeslaAppException $e)
-        {
+        } catch (TeslaAppException $e) {
             error_log('Keeper mode failed: ' . $e->getMessage());
             Flash::set('error', 'Impossible d\'appliquer le mode keeper.');
         }
@@ -112,13 +100,12 @@ final class ClimateController
 
     private function requireSession(): array
     {
-        if (!isset($_SESSION['selected_vin'], $_SESSION['access_token']))
-        {
+        if (!isset($_SESSION['selected_vin'], $_SESSION['access_token'])) {
             Http::redirect('/vehicle/select');
         }
 
         return [
-            'vin'   => new Vin($_SESSION['selected_vin']),
+            'vin' => new Vin($_SESSION['selected_vin']),
             'token' => new AccessToken($_SESSION['access_token']),
         ];
     }
