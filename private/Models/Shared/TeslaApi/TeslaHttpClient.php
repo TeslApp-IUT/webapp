@@ -290,12 +290,15 @@ final class TeslaHttpClient
 
                 $_SESSION['tmp_user_email'] = $claims['email'] ?? '';
 
+                //TO-DO: change the database insertion
+                /**
                 $repository->ensureUser(
                     $sub,
                     (string) ($claims['email'] ?? ''),
                     (string) ($claims['given_name'] ?? ''),
                     (string) ($claims['family_name'] ?? ''),
                 );
+                **/
                 $repository->saveJwt(
                     $sub,
                     (string) ($claims['iss'] ?? ''),
