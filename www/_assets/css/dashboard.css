@@ -104,6 +104,26 @@
   color: #ffffff;
 }
 
+.nav-item--active .nav-item__icon--vehicle {
+  background-color: #555555;
+  color: #ffffff;
+}
+
+.nav-item--active .nav-item__icon--ac {
+  background-color: #2196e8;
+  color: #ffffff;
+}
+
+.nav-item--active .nav-item__icon--battery {
+  background-color: #21c55e;
+  color: #ffffff;
+}
+
+.nav-item--active .nav-item__icon--navigation {
+  background-color: #c8a800;
+  color: #ffffff;
+}
+
 /* Active button */
 .dashboard-content {
   padding: 48px;

@@ -29,8 +29,8 @@ ob_start();
   <section>
     <div class="dashboard-layout">
       <!-- Left Section -->
-            <?php $activeNav = 'overview'; require __DIR__ . '/../partials/dashboard_nav.php'; ?>
-
+      <?php $activeNav = 'overview';
+      require __DIR__ . '/../partials/dashboard_nav.php'; ?>
       <!-- Right Section -->
       <main class="dashboard-content">
         <h1 class="dashboard-title">Tableau de bord — <?= e($vehicleName) ?></h1>

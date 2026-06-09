@@ -1,5 +1,5 @@
 ------------------------------------------------------------------
---                          VERSION 11                          --
+--                          VERSION 13                          --
 ------------------------------------------------------------------
 
 DROP TABLE IF EXISTS app.remember_tokens CASCADE;
@@ -9,9 +9,9 @@ DROP TABLE IF EXISTS app.oauth2_token CASCADE;
 DROP TABLE IF EXISTS app.vehicle_models CASCADE;
 DROP TABLE IF EXISTS app.paths CASCADE;
 DROP TABLE IF EXISTS app.path_points CASCADE;
-DROP TABLE IF EXISTS app.air_conditioning_planner CASCADE;
+DROP TABLE IF EXISTS app.preconditioning_planner CASCADE;
 DROP TABLE IF EXISTS app.charging_planner CASCADE;
-DROP TABLE IF EXISTS app.ac_plans CASCADE;
+DROP TABLE IF EXISTS app.preconditioning_plans CASCADE;
 DROP TABLE IF EXISTS app.charging_plans CASCADE;
 DROP TABLE IF EXISTS app.day_of_week CASCADE;
 DROP TABLE IF EXISTS app.jwt CASCADE;
@@ -154,16 +154,21 @@ CREATE TABLE app.path_points
         ON DELETE CASCADE
 );
 
-CREATE TABLE app.air_conditioning_planner
+CREATE TABLE app.preconditioning_planner
 (
     id                       UUID,
     vin                      VARCHAR(17) NOT NULL,
     activation_hour          TIME        NOT NULL,
     deactivate_after_success BOOLEAN,
+    enabled                  BOOLEAN     NOT NULL DEFAULT TRUE,
+    activation_latitude      NUMERIC(8, 6),
+    activation_longitude     NUMERIC(9, 6),
+    location_label           VARCHAR(255),
+    tesla_schedule_id        BIGINT,
 
-    CONSTRAINT pk_air_conditioning_planner PRIMARY KEY (id),
+    CONSTRAINT pk_preconditioning_planner PRIMARY KEY (id),
 
-    CONSTRAINT fk_air_conditioning_planner_vehicle FOREIGN KEY (vin)
+    CONSTRAINT fk_preconditioning_planner_vehicle FOREIGN KEY (vin)
         REFERENCES app.vehicles (vin)
         ON DELETE CASCADE
 );
@@ -174,8 +179,9 @@ CREATE TABLE app.charging_planner
     vin                      VARCHAR(17) NOT NULL,
     activation_hour          TIME        NOT NULL,
     deactivation_hour        TIME,
-    activation_latitude      DECIMAL,
-    activation_longitude     DECIMAL,
+    activation_latitude      NUMERIC(8, 6),
+    activation_longitude     NUMERIC(9, 6),
+    location_label           VARCHAR(255),
     deactivate_after_success BOOLEAN,
 
     CONSTRAINT pk_charging_planner PRIMARY KEY (id),
@@ -193,18 +199,18 @@ CREATE TABLE app.day_of_week
     CONSTRAINT pk_day_of_week PRIMARY KEY (id)
 );
 
-CREATE TABLE app.ac_plans
+CREATE TABLE app.preconditioning_plans
 (
     id     UUID,
     day_id INT,
 
-    CONSTRAINT pk_ac_plans PRIMARY KEY (id, day_id),
+    CONSTRAINT pk_preconditioning_plans PRIMARY KEY (id, day_id),
 
-    CONSTRAINT fk_ac_plans_air_conditioning_planner FOREIGN KEY (id)
-        REFERENCES app.air_conditioning_planner (id)
+    CONSTRAINT fk_preconditioning_plans_preconditioning_planner FOREIGN KEY (id)
+        REFERENCES app.preconditioning_planner (id)
         ON DELETE CASCADE,
 
-    CONSTRAINT fk_ac_plans_day_of_week FOREIGN KEY (day_id)
+    CONSTRAINT fk_preconditioning_plans_day_of_week FOREIGN KEY (day_id)
         REFERENCES app.day_of_week (id)
         ON DELETE CASCADE
 );

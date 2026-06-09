@@ -15,6 +15,9 @@ use Teslapp\Controllers\Auth\AuthController;
 use Teslapp\Controllers\Auth\AuthImpersonateController;
 use Teslapp\Controllers\Auth\AuthLogoutController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
+use Teslapp\Controllers\Climate\ClimateController;
+use Teslapp\Controllers\GeocodingController;
+use Teslapp\Controllers\Climate\PreconditioningController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\VehicleController;
@@ -54,4 +57,17 @@ return [
     'auth/impersonate' => [AuthImpersonateController::class, 'show', true],
     'auth/impersonate/start' => [AuthImpersonateController::class, 'start', true],
     'auth/impersonate/stop' => [AuthImpersonateController::class, 'stop', true],
+
+    // URLs for air conditioning
+    'dashboard/ac' => [ClimateController::class, 'ac', true],
+    'climate/toggle' => [ClimateController::class, 'toggle', true],
+    'climate/keeper' => [ClimateController::class, 'setKeeperMode', true],
+
+    // Climate preconditioning: schedule CRUD and address geocoding
+    'dashboard/ac/precondition/create' => [PreconditioningController::class, 'create', true],
+    'dashboard/ac/precondition/update' => [PreconditioningController::class, 'update', true],
+    'dashboard/ac/precondition/delete' => [PreconditioningController::class, 'delete', true],
+    'dashboard/ac/precondition/toggle' => [PreconditioningController::class, 'toggle', true],
+    'geocode' => [GeocodingController::class, 'geocode', true],
+    'geocode/reverse' => [GeocodingController::class, 'reverse', true],
 ];
