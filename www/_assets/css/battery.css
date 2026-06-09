@@ -261,6 +261,7 @@
 }
 
 .precond-input {
+  width: 100%;
   padding: 10px 12px;
   font-size: 14px;
   color: var(--color-text);
@@ -312,4 +313,34 @@
   margin: 0;
   font-size: 13px;
   color: var(--color-text-muted);
+}
+
+/* Card forms (charge, limit, amps): stacked controls with full-width buttons. */
+.card-details form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-details .btn-success,
+.card-details .btn-primary {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .precond-form {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .precond-card {
+    padding: 14px 16px;
+  }
+
+  .temp-value {
+    min-width: 64px;
+  }
 }

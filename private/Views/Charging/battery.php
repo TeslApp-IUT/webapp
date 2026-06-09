@@ -59,7 +59,7 @@ ob_start();
                 <input type="hidden" name="action" value="start">
                 <button type="submit" class="btn-success">Démarrer la charge</button>
               </form>
-              <form method="post" action="/charging/toggle" style="margin-top: 8px;">
+              <form method="post" action="/charging/toggle">
                 <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
                 <input type="hidden" name="action" value="stop">
                 <button type="submit" class="btn-primary">Arrêter la charge</button>
@@ -102,7 +102,7 @@ ob_start();
               <form method="post" action="/charging/amps">
                 <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
                 <label class="card-label" for="amps-input">Courant de charge (5 à 48 A)</label>
-                <input class="card-input" type="number" id="amps-input" name="amps" min="5" max="48" step="1"
+                <input class="precond-input" type="number" id="amps-input" name="amps" min="5" max="48" step="1"
                        value="16" required>
                 <button type="submit" class="btn-success">Appliquer</button>
               </form>
