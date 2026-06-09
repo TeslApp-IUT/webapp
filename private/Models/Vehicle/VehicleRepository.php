@@ -45,7 +45,12 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
     {
         try {
             $stmt = $this->pdo->prepare(
-                'INSERT INTO vehicles (vin, user_id, name, model_id) VALUES (:vin, :user_id, :name, :model_id)',
+                'INSERT INTO vehicles (vin, user_id, name, model_id)
+                 VALUES (:vin, :user_id, :name, :model_id)
+                 ON CONFLICT (vin) DO UPDATE SET
+                     user_id  = EXCLUDED.user_id,
+                     name     = EXCLUDED.name,
+                     model_id = EXCLUDED.model_id',
             );
             $stmt->execute([
                 ':vin' => $vehicle->vin->value,
