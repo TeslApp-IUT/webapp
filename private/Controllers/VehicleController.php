@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Teslapp\Controllers;
 
 use Teslapp\Models\Shared\Exceptions\TeslaAppException;
-use Teslapp\Models\Shared\ValueObjects\AccessToken;
 use Teslapp\Models\Shared\ValueObjects\VehicleConnectivityStatus;
 use Teslapp\Models\Vehicle\Vehicle;
 use Teslapp\Models\Vehicle\VehicleService;
@@ -25,17 +24,15 @@ final class VehicleController
      */
     public function select(): void
     {
-        $userId = $this->requireUserId();
-
-        $token = isset($_SESSION['access_token'])
-            ? new AccessToken($_SESSION['access_token'])
-            : null;
+        // The Tesla token is resolved from the session by TeslaHttpClient; we only need to
+        // know whether one is present to decide whether to attempt a live sync.
+        $hasToken = isset($_SESSION['access_token']) && $_SESSION['access_token'] !== '';
 
         $statuses = [];
 
-        if ($token !== null) {
+        if ($hasToken) {
             try {
-                $this->vehicleService->syncUserVehicles($userId, $token);
+                $this->vehicleService->syncUserVehicles($_SESSION['user_id']);
             } catch (TeslaAppException $e) {
                 // Tesla unreachable (no token yet, vehicle offline...): fall back to the stored list.
                 error_log('Vehicle sync failed: ' . $e->getMessage());
@@ -46,7 +43,7 @@ final class VehicleController
             }
 
             try {
-                $statuses = $this->vehicleService->connectivityForUser($token);
+                $statuses = $this->vehicleService->connectivityForUser();
             } catch (TeslaAppException $e) {
                 // Live status is optional: show the cards without a dot if it fails.
                 error_log('Connectivity fetch failed: ' . $e->getMessage());
@@ -55,7 +52,7 @@ final class VehicleController
 
         $selectedVin = $_SESSION['selected_vin'] ?? null;
         $cards = [];
-        foreach ($this->vehicleService->listForUser($userId) as $vehicle) {
+        foreach ($this->vehicleService->listForUser($_SESSION['user_id']) as $vehicle) {
             $model = $this->vehicleService->modelNameForVin($vehicle->vin);
             $cards[] = [
                 'vehicle' => $vehicle,
@@ -86,14 +83,12 @@ final class VehicleController
     {
         Csrf::requireValid('/vehicle/select');
 
-        $userId = $this->requireUserId();
-
         $vin = filter_input(INPUT_POST, 'vin', FILTER_UNSAFE_RAW);
         $vin = is_string($vin) ? trim($vin) : '';
 
         // Only a VIN the user actually owns can be selected (do not trust the POST).
         $owned = array_filter(
-            $this->vehicleService->listForUser($userId),
+            $this->vehicleService->listForUser($_SESSION['user_id']),
             static fn(Vehicle $v): bool => $v->vin->value === $vin,
         );
 
@@ -105,19 +100,5 @@ final class VehicleController
         $_SESSION['selected_vin'] = $vin;
         Flash::set('success', 'Véhicule sélectionné.');
         Http::redirect('/dashboard/overview');
-    }
-
-    /**
-     * Returns the logged-in user id, or redirects home when the session lacks it.
-     * The router does not enforce the auth flag, so each action guards itself.
-     */
-    private function requireUserId(): string
-    {
-        $userId = $_SESSION['user_id'] ?? '';
-        if (!is_string($userId) || $userId === '') {
-            Http::redirect('/site/home');
-        }
-
-        return $userId;
     }
 }

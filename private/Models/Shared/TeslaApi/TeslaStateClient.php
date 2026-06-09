@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Teslapp\Models\Shared\TeslaApi;
 
-use Teslapp\Models\Shared\ValueObjects\AccessToken;
 use Teslapp\Models\Shared\ValueObjects\VehicleConnectivityStatus;
 use Teslapp\Models\Vehicle\Vehicle;
 

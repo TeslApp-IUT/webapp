@@ -26,6 +26,8 @@ use Teslapp\Models\Shared\TeslaApi\TeslaCommandClient;
 use Teslapp\Models\Shared\TeslaApi\TeslaStateClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleTelemetryRepositoryInterface;
+use Teslapp\Models\Shared\VehicleTelemetryRepository;
 use Teslapp\Models\Vehicle\TeslaModelRepository;
 use Teslapp\Models\Vehicle\TeslaModelRepositoryInterface;
 use Teslapp\Models\Vehicle\VehicleCommandService;
@@ -69,8 +71,17 @@ $container->set(
     ),
 );
 $container->set(
+    VehicleTelemetryRepositoryInterface::class,
+    static fn(): VehicleTelemetryRepositoryInterface => new VehicleTelemetryRepository(
+        Database::pdo(),
+    ),
+);
+$container->set(
     DashboardController::class,
-    static fn(): DashboardController => new DashboardController(Database::pdo()),
+    static fn(Container $c): DashboardController => new DashboardController(
+        $c->get(VehicleTelemetryRepositoryInterface::class),
+        $c->get(VehicleRepositoryInterface::class),
+    ),
 );
 $container->set(AuthController::class, static fn(): AuthController => new AuthController());
 

@@ -80,24 +80,6 @@ define('DB_NAME', getenv('DB_NAME') ?: '');
 define('DB_SSLMODE', getenv('DB_SSLMODE') ?: 'prefer');
 
 /**
- * Tesla API mode: 'simulated' (dev/CI — reads the documented fixtures) or 'real'
- * (live Fleet API). Defaults to 'simulated' so the app runs out of the box.
- */
-define('TESLA_API_MODE', getenv('TESLA_API_MODE') ?: 'simulated');
-
-/**
- * Filesystem path to the Tesla fixtures (documented API responses) consumed by
- * SimulatedTeslaApiClient.
- */
-define('TESLA_FIXTURES_PATH', getenv('TESLA_FIXTURES_PATH') ?: BASE_PATH . 'tests/fixtures/tesla');
-
-/**
- * Development user id, used while there is no real login. Must match the user
- * seeded by db/script_insertion_dev.sql.
- */
-define('DEV_USER_ID', getenv('DEV_USER_ID') ?: '00000000-0000-0000-0000-000000000001');
-
-/**
  * Safety guard for vehicle commands (issue #26). When true (the default),
  * TeslaCommandClient does NOT send commands to the Fleet API / proxy — it logs
  * and simulates success. Set to false ONLY once the virtual key is paired on the

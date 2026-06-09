@@ -31,9 +31,11 @@ function initVehicleActions() {
       try {
         const response = await fetch('/vehicle/' + action, {
           method: 'POST',
+          redirect: 'manual',
           headers: {
             'X-CSRF-Token': csrfToken,
             Accept: 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
           },
         });
 
