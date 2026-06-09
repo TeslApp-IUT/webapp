@@ -16,10 +16,8 @@ final readonly class DashboardController
 {
     public function __construct(
         private VehicleTelemetryRepositoryInterface $telemetry,
-        private VehicleRepositoryInterface          $vehicles,
-    )
-    {
-    }
+        private VehicleRepositoryInterface $vehicles,
+    ) {}
 
     /**
      * Requires an authenticated user with a selected vehicle, then renders the dashboard.
