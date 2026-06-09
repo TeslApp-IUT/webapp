@@ -58,7 +58,6 @@ return [
     'climate/keeper' => [ClimateController::class, 'setKeeperMode', true],
 
     // Climate preconditioning: schedule CRUD and address geocoding
-    'dashboard/ac/precondition' => [PreconditioningController::class, 'index', true],
     'dashboard/ac/precondition/create' => [PreconditioningController::class, 'create', true],
     'dashboard/ac/precondition/update' => [PreconditioningController::class, 'update', true],
     'dashboard/ac/precondition/delete' => [PreconditioningController::class, 'delete', true],
