@@ -189,16 +189,39 @@ final class TeslaHttpClient
             formEncoded: true,
         );
 
-        return self::persistTokenResponse($res);
+        // A refresh only happens for an already-authenticated user, so the `users` row
+        // exists: cache the new tokens in the session AND persist them to the database.
+        $identity = self::processTokenResponse($res);
+        if ($identity['sub'] !== '') {
+            self::persistUserCredentials(
+                $identity['sub'],
+                $identity['claims'],
+                $identity['accessToken'],
+                $identity['accessExpiresAt'],
+                $identity['refreshToken'],
+                $identity['refreshExpiresAt'],
+            );
+            $_SESSION['user_id'] = $identity['sub'];
+        }
+
+        return new AccessToken($identity['accessToken']);
     }
 
     /**
      * Exchanges the OAuth authorization code (from the /auth/callback redirect) for the initial
-     * user tokens, persists them (session + DB), and returns the access token.
+     * user tokens and caches them in the session (NOT the database — see below).
+     *
+     * Unlike the refresh flow, this does NOT write the `jwt`/`oauth2_token` rows and does NOT
+     * set `$_SESSION['user_id']`: those tables FK onto `users.id`, and a brand-new user has no
+     * `users` row yet. The caller (AuthCallbackController) decides — existing user: log in and
+     * persist via persistUserCredentials(); new user: route through the signup flow first.
+     *
+     * @return array{sub: string, claims: array<string, mixed>|null, accessToken: string,
+     *               accessExpiresAt: int, refreshToken: string, refreshExpiresAt: int}
      *
      * @throws TeslaApiException
      */
-    public static function exchangeCodeForUserToken(string $code): AccessToken
+    public static function exchangeCodeForUserToken(string $code): array
     {
         $appUrl = rtrim(getenv('APP_URL') ?: 'http://localhost', '/');
         $redirectUri = $appUrl . '/auth/callback';
@@ -227,26 +250,30 @@ final class TeslaHttpClient
             formEncoded: true,
         );
 
-        return self::persistTokenResponse($res, is_string($expectedNonce) ? $expectedNonce : null);
+        return self::processTokenResponse($res, is_string($expectedNonce) ? $expectedNonce : null);
     }
 
     /**
-     * Stores freshly fetched token material in the session and the database, then returns the
-     * access token. Shared by the code-exchange and refresh flows.
+     * Validates a token endpoint response, decodes the id_token claims, enforces the replay
+     * nonce, caches the tokens in the session, and returns the resolved identity. It does NOT
+     * touch the database and does NOT set `$_SESSION['user_id']` — persistence is the caller's
+     * decision (see exchangeCodeForUserToken() and getUserAccessToken()).
      *
      * The user identity is the Tesla `sub` claim (so `users.id = sub`). The id_token carries that
-     * claim and is decoded into the `jwt` table; it is present on the initial exchange and on a
-     * refresh that returns the `openid` scope. On a refresh without an id_token the `sub` is taken
-     * from the session so the tokens can still be persisted.
+     * claim; it is present on the initial exchange and on a refresh that returns the `openid`
+     * scope. On a refresh without an id_token the `sub` falls back to the session.
      *
      * @param array<string, mixed> $res The decoded token endpoint response.
      *
+     * @return array{sub: string, claims: array<string, mixed>|null, accessToken: string,
+     *               accessExpiresAt: int, refreshToken: string, refreshExpiresAt: int}
+     *
      * @throws TeslaApiException
      */
-    private static function persistTokenResponse(
+    private static function processTokenResponse(
         array $res,
         ?string $expectedNonce = null,
-    ): AccessToken {
+    ): array {
         $accessToken = $res['access_token'] ?? null;
         $refreshToken = $res['refresh_token'] ?? null;
         $expiresIn = (int) ($res['expires_in'] ?? 0);
@@ -280,61 +307,79 @@ final class TeslaHttpClient
             ? (string) $claims['sub']
             : (string) ($_SESSION['user_id'] ?? '');
 
-        if ($sub !== '') {
-            $cipher = new TokenCipher(
-                base64_decode(getenv('TESLAPP_TOKEN_ENCRYPTION_KEY'), strict: true),
-            );
-            $accessEnc = $cipher->encrypt($accessToken);
-            $refreshEnc = $cipher->encrypt($refreshToken);
-
-            $repository = new AuthRepository(Database::pdo());
-
-            if ($claims !== null) {
-                $aud = $claims['aud'] ?? '';
-                if (is_array($aud)) {
-                    $aud = (string) ($aud[0] ?? '');
-                }
-
-                $_SESSION['tmp_user_email'] = $claims['email'] ?? '';
-
-                //TO-DO: change the database insertion
-                /**
-                $repository->ensureUser(
-                    $sub,
-                    (string) ($claims['email'] ?? ''),
-                    (string) ($claims['given_name'] ?? ''),
-                    (string) ($claims['family_name'] ?? ''),
-                );
-                **/
-                $repository->saveJwt(
-                    $sub,
-                    (string) ($claims['iss'] ?? ''),
-                    (string) $aud,
-                    (int) ($claims['auth_time'] ?? $now),
-                    (int) ($claims['exp'] ?? $accessExpiresAt),
-                    (int) ($claims['iat'] ?? $now),
-                );
-            }
-
-            $repository->saveOAuthToken(
-                $sub,
-                $accessEnc['ciphertext'],
-                $accessEnc['nonce'],
-                $accessExpiresAt,
-                $refreshEnc['ciphertext'],
-                $refreshEnc['nonce'],
-                $refreshExpiresAt,
-            );
-
-            $_SESSION['user_id'] = $sub;
-        }
-
         $_SESSION['access_token'] = $accessToken;
         $_SESSION['refresh_token'] = $refreshToken;
         // Same safety buffer as the partner token so we refresh before the real expiry.
         $_SESSION['access_token_expires_at'] = $accessExpiresAt - (self::TIMEOUT_SECONDS + 60);
 
-        return new AccessToken($accessToken);
+        return [
+            'sub' => $sub,
+            'claims' => $claims,
+            'accessToken' => $accessToken,
+            'accessExpiresAt' => $accessExpiresAt,
+            'refreshToken' => $refreshToken,
+            'refreshExpiresAt' => $refreshExpiresAt,
+        ];
+    }
+
+    /**
+     * Encrypts and persists the user's OAuth credentials (and id_token claims, when present) to
+     * the database. The caller MUST guarantee a `users` row already exists for `$sub`, because
+     * `jwt.sub` and `oauth2_token.user_id` are foreign keys onto `users.id`.
+     *
+     * Used by the existing-user login branch (AuthCallbackController), the signup-completion
+     * branch (AuthSignUpController), and the token-refresh flow (getUserAccessToken()).
+     *
+     * @param array<string, mixed>|null $claims The decoded id_token claims, or null.
+     *
+     * @throws TeslaApiException
+     */
+    public static function persistUserCredentials(
+        string $sub,
+        ?array $claims,
+        string $accessToken,
+        int $accessExpiresAt,
+        string $refreshToken,
+        int $refreshExpiresAt,
+    ): void {
+        if ($sub === '') {
+            return;
+        }
+
+        $cipher = new TokenCipher(
+            base64_decode(getenv('TESLAPP_TOKEN_ENCRYPTION_KEY'), strict: true),
+        );
+        $accessEnc = $cipher->encrypt($accessToken);
+        $refreshEnc = $cipher->encrypt($refreshToken);
+
+        $repository = new AuthRepository(Database::pdo());
+
+        if ($claims !== null) {
+            $aud = $claims['aud'] ?? '';
+            if (is_array($aud)) {
+                $aud = (string) ($aud[0] ?? '');
+            }
+
+            $now = time();
+            $repository->saveJwt(
+                $sub,
+                (string) ($claims['iss'] ?? ''),
+                (string) $aud,
+                (int) ($claims['auth_time'] ?? $now),
+                (int) ($claims['exp'] ?? $accessExpiresAt),
+                (int) ($claims['iat'] ?? $now),
+            );
+        }
+
+        $repository->saveOAuthToken(
+            $sub,
+            $accessEnc['ciphertext'],
+            $accessEnc['nonce'],
+            $accessExpiresAt,
+            $refreshEnc['ciphertext'],
+            $refreshEnc['nonce'],
+            $refreshExpiresAt,
+        );
     }
 
     /**
@@ -381,6 +426,23 @@ final class TeslaHttpClient
     public static function get(string $path): array
     {
         return self::send('GET', $path, self::getUserAccessToken(), null, null);
+    }
+
+    /**
+     * Fetches the authenticated user's Tesla profile (`/api/1/users/me`). Used during signup to
+     * pre-fill the email and name, since the OAuth scopes omit the `email`/profile claims.
+     *
+     * @return array<string, mixed> The `response` object: `email`, `full_name`,
+     *                              `profile_image_url`, `vault_uuid`.
+     *
+     * @throws TeslaApiException on a network, HTTP (>= 400), or JSON error.
+     */
+    public static function getUserProfile(): array
+    {
+        $body = self::get('/api/1/users/me');
+        $response = $body['response'] ?? [];
+
+        return is_array($response) ? $response : [];
     }
 
     /**

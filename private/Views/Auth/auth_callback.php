@@ -4,14 +4,17 @@
  * Sends one postMessage to the opener (auth.php) then closes itself.
  *
  * Expected PHP variables:
- *   $status  string  'success' | 'error'
- *   $error   string  error code, only used when $status === 'error'
+ *   $status    string       'success' | 'error'
+ *   $error     string       error code, only used when $status === 'error'
+ *   $redirect  string|null  where the opener should send the MAIN window on success
+ *                           (defaults to the app once unset; set to /auth/signup for new users)
  */
 $status ??= 'error';
 $error  ??= 'unknown_error';
+$redirect ??= null;
 
 $message = $status === 'success'
-    ? ['success' => true]
+    ? ['success' => true, 'redirect' => $redirect]
     : ['success' => false, 'error' => $error];
 ?>
 <!DOCTYPE html>

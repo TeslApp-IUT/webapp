@@ -1,11 +1,15 @@
 <?php
-$pendingUser = [
-    'firstName' => '',
-    'lastName'  => '',
-    'email'     => $_SESSION['tmp_user_email'],
+// Variables are normally supplied by AuthSignUpController; the `??=` fallbacks keep the view
+// robust (and aligned to the `signup_tmp_*` session keys) if it is reached directly.
+$pendingUser ??= [
+    'firstName' => (string) ($_SESSION['signup_tmp_first_name'] ?? ''),
+    'lastName'  => (string) ($_SESSION['signup_tmp_last_name'] ?? ''),
+    'email'     => (string) ($_SESSION['signup_tmp_email'] ?? ''),
 ];
 
-$profilePicture = $_SESSION['user_profile_picture'] ?? '';
+$profilePicture ??= (string) ($_SESSION['signup_tmp_profile_picture'] ?? '');
+$errors ??= [];
+$csrfToken ??= (string) ($_SESSION['csrf_token'] ?? '');
 
 $title = 'Authentification — TeslApp';
 $description = "Authentification en cours avec Tesla";
@@ -17,11 +21,19 @@ ob_start();
 <div class="w-dvw h-dvh flex flex-col items-center justify-center p-4">
   <form id="form" method="post" class="flex flex-col items-center justify-center bg-[#1A1A1A] border border-[#4A4A4A] p-8 rounded-xl gap-5 w-full max-w-[420px] shadow-2xl transition-all duration-300 hover:border-neutral-500">
 
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+
     <img src="/_assets/images/Logo.svg" width="325" alt="logo TeslApp" class="mb-2 select-none">
 
     <div class="border-l-3 border-l-blue-600/50 bg-blue-600/30 p-2 rounded-lg text-gray-300 text-sm">
       Veuillez compléter vos informations pour finaliser la création de votre compte.
     </div>
+
+    <?php if (!empty($errors['general'])): ?>
+      <div class="border-l-3 border-l-red-600/50 bg-red-600/30 p-2 rounded-lg text-red-200 text-sm w-full">
+        <?= htmlspecialchars($errors['general'], ENT_QUOTES, 'UTF-8') ?>
+      </div>
+    <?php endif; ?>
 
     <div class="relative group my-2">
       <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-[#4A4A4A] group-hover:border-[#3b82f6] transition-all duration-300 shadow-xl bg-[#0d0d0d] flex items-center justify-center">
@@ -56,7 +68,7 @@ ob_start();
             class="w-full bg-[#0d0d0d] border border-[#2a2a2a] hover:border-[#444] focus:border-[#3b82f6] focus:ring-4 focus:ring-[#3b82f6]/10 rounded-lg pl-10 pr-4 py-2.5 text-white placeholder-neutral-600 transition-all duration-200 outline-none text-sm"
           >
         </div>
-        <span class="error-msg text-xs text-red-500 mt-1.5 text-left hidden">Champ requis</span>
+        <span class="error-msg text-xs text-red-500 mt-1.5 text-left <?= isset($errors['firstName']) ? '' : 'hidden' ?>">Champ requis</span>
       </div>
 
       <div class="field flex flex-col" id="field-lastname">
@@ -77,7 +89,7 @@ ob_start();
             class="w-full bg-[#0d0d0d] border border-[#2a2a2a] hover:border-[#444] focus:border-[#3b82f6] focus:ring-4 focus:ring-[#3b82f6]/10 rounded-lg pl-10 pr-4 py-2.5 text-white placeholder-neutral-600 transition-all duration-200 outline-none text-sm"
           >
         </div>
-        <span class="error-msg text-xs text-red-500 mt-1.5 text-left hidden">Champ requis</span>
+        <span class="error-msg text-xs text-red-500 mt-1.5 text-left <?= isset($errors['lastName']) ? '' : 'hidden' ?>">Champ requis</span>
       </div>
 
       <div class="field full flex flex-col sm:col-span-2" id="field-email">
@@ -98,7 +110,7 @@ ob_start();
             class="w-full bg-[#0d0d0d] border border-[#2a2a2a] hover:border-[#444] focus:border-[#3b82f6] focus:ring-4 focus:ring-[#3b82f6]/10 rounded-lg pl-10 pr-4 py-2.5 text-white placeholder-neutral-600 transition-all duration-200 outline-none text-sm"
           >
         </div>
-        <span class="error-msg text-xs text-red-500 mt-1.5 text-left hidden">Adresse e-mail invalide</span>
+        <span class="error-msg text-xs text-red-500 mt-1.5 text-left <?= isset($errors['email']) ? '' : 'hidden' ?>">Adresse e-mail invalide</span>
       </div>
 
       <div class="divider border-t border-[#2a2a2a] w-full my-2 sm:col-span-2"></div>

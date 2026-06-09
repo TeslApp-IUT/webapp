@@ -96,11 +96,17 @@ $container->set(AuthController::class, static fn(): AuthController => new AuthCo
 
 $container->set(
     AuthCallbackController::class,
-    static fn(): AuthCallbackController => new AuthCallbackController(),
+    static fn(Container $c): AuthCallbackController => new AuthCallbackController(
+        $c->get(AuthRepository::class),
+        $c->get(RememberToken::class),
+    ),
 );
 $container->set(
     AuthSignUpController::class,
-    static fn(): AuthSignUpController => new AuthSignUpController(Database::pdo()),
+    static fn(Container $c): AuthSignUpController => new AuthSignUpController(
+        $c->get(AuthRepository::class),
+        $c->get(RememberToken::class),
+    ),
 );
 
 $container->set(
