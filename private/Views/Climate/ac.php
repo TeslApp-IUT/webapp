@@ -1,5 +1,6 @@
 <?php
-$vin = $_SESSION['selected_vin'] ?? null;
+use Teslapp\Models\Climate\PreconditioningPlanner;
+use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
 
 $inside_temp = $data['inside_temp'] ?? 'N/A';
 
@@ -77,11 +78,99 @@ ob_start();
                   <option value="2">Dog</option>
                   <option value="3">Camp</option>
                 </select>
-                <button type="submit" class="btn-enabled">Appliquer</button>
+                <button type="submit" class="btn-success">Appliquer</button>
               </form>
             </div>
           </div>
         </div>
+        <!-- Scheduled Preconditioning Section -->
+        <section class="precond-section">
+          <h2 class="precond-section__title">Préconditionnement programmé</h2>
+          <!-- List Schedules Section -->
+          <h3 class="precond-subtitle">Mes planifications</h3>
+          <?php if (empty($plans)): ?>
+            <p class="precond-empty">Aucune planification pour le moment.</p>
+          <?php else: ?>
+            <ul class="precond-list">
+              <?php foreach ($plans as $plan): ?>
+                <li class="precond-card">
+                  <div class="precond-card__info">
+                    <span class="precond-card__time"><?= e($plan->activationHour) ?></span>
+                    <span class="precond-card__days"><?= e(
+                        implode(', ', array_map(
+                          static fn(DayOfWeek $d): string => $d->labelFr(),
+                          $plan->days,
+                        ))
+                      ) ?></span>
+                    <?php if ($plan->locationLabel !== null): ?>
+                      <span class="precond-card__location"><?= e($plan->locationLabel) ?></span>
+                    <?php endif; ?>
+                  </div>
+                  <div class="precond-card__actions">
+                    <form method="post" action="/dashboard/ac/precondition/toggle">
+                      <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
+                      <input type="hidden" name="plan_id" value="<?= e($plan->id) ?>">
+                      <input type="hidden" name="enabled" value="<?= $plan->enabled ? '0' : '1' ?>">
+                      <button
+                        type="submit"
+                        class="switch-btn <?= $plan->enabled ? 'switch-btn--on' : '' ?>"
+                        aria-label="<?= $plan->enabled ? 'Désactiver' : 'Activer' ?>"
+                        aria-pressed="<?= $plan->enabled ? 'true' : 'false' ?>"
+                      ><span class="switch-btn__knob"></span></button>
+                    </form>
+                    <form method="post" action="/dashboard/ac/precondition/delete">
+                      <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
+                      <input type="hidden" name="plan_id" value="<?= e($plan->id) ?>">
+                      <button type="submit" class="btn-soft btn-danger">Supprimer</button>
+                    </form>
+                  </div>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          <?php endif; ?>
+          <!-- New Scheduling Form -->
+          <h3 class="precond-subtitle">Nouvelle planification</h3>
+          <form class="precond-form" method="post" action="/dashboard/ac/precondition/create">
+            <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
+            <div class="precond-field">
+              <label for="activation_hour">Heure d'activation</label>
+              <input class="precond-input" type="time" id="activation_hour" name="activation_hour" required>
+            </div>
+            <fieldset class="precond-days">
+              <legend>Jours</legend>
+              <div class="precond-days__grid">
+                <?php foreach (DayOfWeek::cases() as $day): ?>
+                  <label class="precond-check">
+                    <input type="checkbox" name="days[]" value="<?= e((string)$day->value) ?>">
+                    <?= e($day->labelFr()) ?>
+                  </label>
+                <?php endforeach; ?>
+              </div>
+            </fieldset>
+            <label class="precond-check">
+              <input type="checkbox" name="memorize" value="1">
+              Mémoriser (planification récurrente)
+            </label>
+            <label class="switch">
+              <input type="checkbox" name="enabled" value="1" checked>
+              <span class="switch__track"><span class="switch__knob"></span></span>
+              Activée
+            </label>
+            <div class="precond-field">
+              <label for="latitude">Latitude <span class="precond-optional">(optionnel)</span></label>
+              <input class="precond-input" type="number" step="any" id="latitude" name="latitude">
+            </div>
+            <div class="precond-field">
+              <label for="longitude">Longitude <span class="precond-optional">(optionnel)</span></label>
+              <input class="precond-input" type="number" step="any" id="longitude" name="longitude">
+            </div>
+            <div class="precond-field">
+              <label for="location_label">Lieu <span class="precond-optional">(optionnel)</span></label>
+              <input class="precond-input" type="text" id="location_label" name="location_label">
+            </div>
+            <button class="btn-success" type="submit">Créer la planification</button>
+          </form>
+        </section>
       </main>
     </div>
   </section>
