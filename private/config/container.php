@@ -6,9 +6,11 @@
 declare(strict_types=1);
 
 use Teslapp\Controllers\Auth\AuthCallbackController;
+use Teslapp\Controllers\Auth\AuthImpersonateController;
 use Teslapp\Controllers\Auth\AuthLogoutController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
 use Teslapp\Controllers\Auth\AuthController;
+use Teslapp\Models\Auth\ImpersonationRepository;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\VehicleCommandController;
@@ -93,6 +95,18 @@ $container->set(
     AuthLogoutController::class,
     static fn(Container $c): AuthLogoutController => new AuthLogoutController(
         $c->get(RememberToken::class),
+    ),
+);
+
+$container->set(
+    ImpersonationRepository::class,
+    static fn(): ImpersonationRepository => new ImpersonationRepository(Database::pdo()),
+);
+
+$container->set(
+    AuthImpersonateController::class,
+    static fn(Container $c): AuthImpersonateController => new AuthImpersonateController(
+        $c->get(ImpersonationRepository::class),
     ),
 );
 

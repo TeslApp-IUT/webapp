@@ -2,6 +2,7 @@
 // www/index.php — TeslApp Front Controller
 declare(strict_types=1);
 
+use Teslapp\Models\Auth\ImpersonationRepository;
 use Teslapp\Utils\Csrf;
 use Teslapp\Utils\Flash;
 use Teslapp\Utils\RememberToken;
@@ -65,6 +66,14 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $_SESSION['LAST_ACTIVITY'] = $now;
+
+// Load the developer flag once per session (keyed on the real user, not an impersonated one).
+if (isset($_SESSION['user_id']) && !array_key_exists('is_developer', $_SESSION)) {
+    $realId = (string) ($_SESSION['real_user_id'] ?? $_SESSION['user_id']);
+    /** @var ImpersonationRepository $impRepo */
+    $impRepo = $container->get(ImpersonationRepository::class);
+    $_SESSION['is_developer'] = $impRepo->isDeveloper($realId);
+}
 
 if (!isset($_SESSION['CREATED'])) {
     $_SESSION['CREATED'] = $now;

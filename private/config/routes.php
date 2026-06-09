@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 use Teslapp\Controllers\Auth\AuthCallbackController;
 use Teslapp\Controllers\Auth\AuthController;
+use Teslapp\Controllers\Auth\AuthImpersonateController;
 use Teslapp\Controllers\Auth\AuthLogoutController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
 use Teslapp\Controllers\DashboardController;
@@ -50,4 +51,7 @@ return [
     'auth/callback' => [AuthCallbackController::class, 'callback', false],
     'auth/signup' => [AuthSignUpController::class, 'signup', false],
     'auth/logout' => [AuthLogoutController::class, 'logout', true],
+    'auth/impersonate' => [AuthImpersonateController::class, 'show', true],
+    'auth/impersonate/start' => [AuthImpersonateController::class, 'start', true],
+    'auth/impersonate/stop' => [AuthImpersonateController::class, 'stop', true],
 ];
