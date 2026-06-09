@@ -7,7 +7,7 @@ namespace Teslapp\Tests\Unit\Models\Climate;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Teslapp\Models\Climate\ClimateService;
+use Teslapp\Models\Climate\PreconditioningService;
 use Teslapp\Models\Climate\PreconditioningPlanner;
 use Teslapp\Models\Climate\PreconditioningPlannerRepositoryInterface;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
@@ -17,8 +17,8 @@ use Teslapp\Models\Shared\ValueObjects\GeoPoint;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 
-#[CoversClass(ClimateService::class)]
-final class ClimateServiceTest extends TestCase
+#[CoversClass(PreconditioningService::class)]
+final class PreconditioningServiceTest extends TestCase
 {
     private const VIN = '5YJ3E1EA7KF000316';
     private const OTHER_VIN = '5YJ3E1EA7KF000999';
@@ -33,7 +33,7 @@ final class ClimateServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(false);
 
-        $service = new ClimateService(
+        $service = new PreconditioningService(
             $planners,
             $vehicles,
             $this->createMock(ClimateCommandClient::class),
@@ -58,7 +58,7 @@ final class ClimateServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->with($vin, self::USER)->willReturn(true);
 
-        $service = new ClimateService(
+        $service = new PreconditioningService(
             $planners,
             $vehicles,
             $this->createMock(ClimateCommandClient::class),
@@ -80,7 +80,7 @@ final class ClimateServiceTest extends TestCase
         $climate = $this->createMock(ClimateCommandClient::class);
         $climate->expects($this->once())->method('addPreconditionSchedule')->willReturn(999);
 
-        $service = new ClimateService($planners, $vehicles, $climate);
+        $service = new PreconditioningService($planners, $vehicles, $climate);
 
         $id = $service->createPlan(
             self::USER,
@@ -108,7 +108,7 @@ final class ClimateServiceTest extends TestCase
         $climate = $this->createMock(ClimateCommandClient::class);
         $climate->expects($this->never())->method('addPreconditionSchedule');
 
-        $service = new ClimateService($planners, $vehicles, $climate);
+        $service = new PreconditioningService($planners, $vehicles, $climate);
 
         $service->createPlan(
             self::USER,
@@ -134,7 +134,7 @@ final class ClimateServiceTest extends TestCase
         $climate = $this->createMock(ClimateCommandClient::class);
         $climate->expects($this->once())->method('addPreconditionSchedule')->willReturn(null);
 
-        $service = new ClimateService($planners, $vehicles, $climate);
+        $service = new PreconditioningService($planners, $vehicles, $climate);
 
         $service->createPlan(
             self::USER,
@@ -163,7 +163,7 @@ final class ClimateServiceTest extends TestCase
         $climate = $this->createMock(ClimateCommandClient::class);
         $climate->expects($this->once())->method('addPreconditionSchedule')->willReturn(555);
 
-        $service = new ClimateService($planners, $vehicles, $climate);
+        $service = new PreconditioningService($planners, $vehicles, $climate);
 
         $service->updatePlan(
             self::USER,
@@ -189,7 +189,7 @@ final class ClimateServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(true);
 
-        $service = new ClimateService(
+        $service = new PreconditioningService(
             $planners,
             $vehicles,
             $this->createMock(ClimateCommandClient::class),
@@ -208,7 +208,7 @@ final class ClimateServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(true);
 
-        $service = new ClimateService(
+        $service = new PreconditioningService(
             $planners,
             $vehicles,
             $this->createMock(ClimateCommandClient::class),
@@ -233,7 +233,7 @@ final class ClimateServiceTest extends TestCase
         $climate = $this->createMock(ClimateCommandClient::class);
         $climate->expects($this->once())->method('removePreconditionSchedule')->with($vin, 777);
 
-        $service = new ClimateService($planners, $vehicles, $climate);
+        $service = new PreconditioningService($planners, $vehicles, $climate);
 
         $service->deletePlan(self::USER, $vin, 'plan-1');
     }
@@ -253,7 +253,7 @@ final class ClimateServiceTest extends TestCase
         $climate = $this->createMock(ClimateCommandClient::class);
         $climate->expects($this->never())->method('removePreconditionSchedule');
 
-        $service = new ClimateService($planners, $vehicles, $climate);
+        $service = new PreconditioningService($planners, $vehicles, $climate);
 
         $service->deletePlan(self::USER, $vin, 'plan-1');
     }
