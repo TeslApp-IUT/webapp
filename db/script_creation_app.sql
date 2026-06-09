@@ -27,10 +27,11 @@ CREATE TABLE app.vehicle_models
 
 CREATE TABLE app.users
 (
-    id         UUID,
-    email      VARCHAR(320) NOT NULL,
-    created_at TIMESTAMP    NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP    NOT NULL DEFAULT now(),
+    id           UUID,
+    email        VARCHAR(320) NOT NULL,
+    created_at   TIMESTAMP    NOT NULL DEFAULT now(),
+    updated_at   TIMESTAMP    NOT NULL DEFAULT now(),
+    is_developer BOOLEAN      NOT NULL DEFAULT false,
 
     CONSTRAINT pk_user PRIMARY KEY (id),
 

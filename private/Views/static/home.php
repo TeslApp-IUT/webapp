@@ -23,9 +23,15 @@ ob_start();
       <p class="hero-description">
         Contrôlez votre véhicule Tesla à distance : climatisation, recharge, verrouillage, localisation et historique de trajets. Une interface intuitive et sécurisée connectée à l'API Fleet.
       </p>
-      <!-- Action: Tesla login -->
+      <!-- Action: Tesla login or Dashboard access -->
       <div class="hero-actions">
-        <?php require __DIR__ . '/../partials/login_with_tesla.php'; ?>
+        <?php
+        if ($_SESSION['logged_in'] === true) {
+          echo '<a href="/vehicle/select" class="btn-primary !bg-white !text-black !font-normal"><span>Tableau de bord</span></a>';
+        } else {
+          require_once __DIR__ . '/../partials/login.php';
+        }
+        ?>
       </div>
     </div>
   </section>
@@ -164,7 +170,7 @@ ob_start();
         Rejoignez TeslApp et pilotez votre véhicule à distance en toute simplicité et sécurité.
       </p>
       <div class="cta-actions">
-        <?php require __DIR__ . '/../partials/login_with_tesla.php'; ?>
+        <?php require __DIR__ . '/../partials/login.php'; ?>
       </div>
     </div>
   </section>

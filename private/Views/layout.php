@@ -46,6 +46,16 @@ use Teslapp\Utils\Flash;
     require_once __DIR__ . '/partials/header_' . $headerVariant . '.php';
   }
   ?>
+  <?php if (isset($_SESSION['real_user_id'])): ?>
+    <div class="fixed top-0 inset-x-0 z-50 flex items-center justify-between bg-amber-500/95 px-4 py-2 text-sm text-black backdrop-blur-sm">
+      <span>Mode délégué — vous naviguez en tant que <strong><?= htmlspecialchars($_SESSION['user_id'] ?? '', ENT_QUOTES, 'UTF-8') ?></strong></span>
+      <form method="post" action="/auth/impersonate/stop" class="inline">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+        <button type="submit" class="ml-4 font-semibold underline underline-offset-2 hover:opacity-75 cursor-pointer">Arrêter</button>
+      </form>
+    </div>
+    <div class="h-10"></div>
+  <?php endif; ?>
   <main id="main">
     <?php
     // Flash messages: displayed once during the session, then deleted.
