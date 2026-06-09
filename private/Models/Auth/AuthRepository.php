@@ -161,7 +161,8 @@ final readonly class AuthRepository
         return $row !== false ? $row : null;
     }
 
-    public function isUserInDatabase(string $sub_id): bool {
+    public function isUserInDatabase(string $sub_id): bool
+    {
         $stmt = $this->pdo->prepare(
             'SELECT 1
                    FROM users
@@ -171,5 +172,4 @@ final readonly class AuthRepository
         $row = $stmt->fetch();
         return $row !== null;
     }
-
 }
