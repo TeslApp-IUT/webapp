@@ -24,14 +24,14 @@ let closedCheckInterval = null;
 let authCompleted = false;
 
 window.addEventListener('message', (event) => {
-  if (event.origin !== window.location.origin) return;
+  if (event.origin !== globalThis.location.origin) return;
   if (typeof event.data?.success !== 'boolean') return;
 
   authCompleted = true;
   clearInterval(closedCheckInterval);
 
   if (event.data.success) {
-    window.location.href = '/vehicle/dashboard';
+    globalThis.location.href = '/vehicle/select';
   } else {
     showError(event.data.error);
     switchTo('button-retry');

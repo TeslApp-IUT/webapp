@@ -2,8 +2,10 @@
 // www/index.php — TeslApp Front Controller
 declare(strict_types=1);
 
+use Teslapp\Models\Auth\ImpersonationRepository;
 use Teslapp\Utils\Csrf;
 use Teslapp\Utils\Flash;
+use Teslapp\Utils\RememberToken;
 
 /**
  * Loading: global configuration, Composer autoload (PSR-4),
@@ -48,9 +50,30 @@ if (isset($_SESSION['LAST_ACTIVITY']) && $now - (int) $_SESSION['LAST_ACTIVITY']
     session_destroy();
     session_start($sessionCookieParams);
     session_regenerate_id(true);
-    Flash::set('info', 'Votre session a expiré.');
 }
+
+// ==================== REMEMBER-ME FALLBACK ====================
+// Only fires when no active session exists (e.g. after idle expiry or browser restart).
+// On success, the token is rotated and the session is re-populated.
+if (!isset($_SESSION['user_id'])) {
+    /** @var RememberToken $rememberToken */
+    $rememberToken = $container->get(RememberToken::class);
+    $rememberedId = $rememberToken->tryReAuth();
+    if ($rememberedId !== null) {
+        $_SESSION['user_id'] = $rememberedId;
+        session_regenerate_id(true);
+    }
+}
+
 $_SESSION['LAST_ACTIVITY'] = $now;
+
+// Load the developer flag once per session (keyed on the real user, not an impersonated one).
+if (isset($_SESSION['user_id']) && !array_key_exists('is_developer', $_SESSION)) {
+    $realId = (string) ($_SESSION['real_user_id'] ?? $_SESSION['user_id']);
+    /** @var ImpersonationRepository $impRepo */
+    $impRepo = $container->get(ImpersonationRepository::class);
+    $_SESSION['is_developer'] = $impRepo->isDeveloper($realId);
+}
 
 if (!isset($_SESSION['CREATED'])) {
     $_SESSION['CREATED'] = $now;

@@ -2,6 +2,7 @@
 --                          VERSION 13                          --
 ------------------------------------------------------------------
 
+DROP TABLE IF EXISTS app.remember_tokens CASCADE;
 DROP TABLE IF EXISTS app.vehicles CASCADE;
 DROP TABLE IF EXISTS app.users CASCADE;
 DROP TABLE IF EXISTS app.oauth2_token CASCADE;
@@ -26,10 +27,11 @@ CREATE TABLE app.vehicle_models
 
 CREATE TABLE app.users
 (
-    id         UUID,
-    email      VARCHAR(320) NOT NULL,
-    created_at TIMESTAMP    NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP    NOT NULL DEFAULT now(),
+    id           UUID,
+    email        VARCHAR(320) NOT NULL,
+    created_at   TIMESTAMP    NOT NULL DEFAULT now(),
+    updated_at   TIMESTAMP    NOT NULL DEFAULT now(),
+    is_developer BOOLEAN      NOT NULL DEFAULT false,
 
     CONSTRAINT pk_user PRIMARY KEY (id),
 
@@ -98,6 +100,27 @@ CREATE TABLE app.oauth2_token
         REFERENCES app.users (id)
         ON DELETE CASCADE
 );
+
+-- =====================================================================
+--  Remember-me tokens  (persistent login)
+-- =====================================================================
+CREATE TABLE app.remember_tokens
+(
+    id         UUID      NOT NULL DEFAULT gen_random_uuid(),
+    user_id    UUID      NOT NULL,
+    token_hash CHAR(64)  NOT NULL,   -- SHA-256 of the raw cookie value
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+
+    CONSTRAINT pk_remember_tokens PRIMARY KEY (id),
+    CONSTRAINT uq_remember_tokens_hash UNIQUE (token_hash),
+
+    CONSTRAINT fk_remember_tokens_users FOREIGN KEY (user_id)
+        REFERENCES app.users (id)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX idx_remember_tokens_user ON app.remember_tokens (user_id);
 
 CREATE TABLE app.paths
 (

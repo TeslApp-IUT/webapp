@@ -7,7 +7,7 @@ ob_start();
 <section class="sitemap-section">
     <div class="sitemap-container">
         <!-- Back link  -->
-        <a href="/site/home" class="back-link">
+        <a href="/" class="back-link">
             <img src="/_assets/images/fleche-gauche.svg" alt="" aria-hidden="true">
             Retour à l'accueil
         </a>
@@ -24,24 +24,24 @@ ob_start();
 
             <!-- List of publicly accessible pages -->
             <div class="sitemap-list">
-                <a class="sitemap-item" href="/site/home">
+                <a class="sitemap-item" href="/">
                     <span class="sitemap-page-name">Accueil</span>
-                    <span class="sitemap-page-url">/site/home</span>
+                    <span class="sitemap-page-url">/</span>
                 </a>
 
-                <a class="sitemap-item" href="/site/legal">
+                <a class="sitemap-item" href="/legal">
                     <span class="sitemap-page-name">Mentions légales</span>
-                    <span class="sitemap-page-url">/site/legal</span>
+                    <span class="sitemap-page-url">/legal</span>
                 </a>
 
-                <a class="sitemap-item" href="/site/privacy">
+                <a class="sitemap-item" href="/privacy">
                     <span class="sitemap-page-name">Politique de confidentialité</span>
-                    <span class="sitemap-page-url">/site/privacy</span>
+                    <span class="sitemap-page-url">/privacy</span>
                 </a>
 
-                <a class="sitemap-item" href="/site/sitemap">
+                <a class="sitemap-item" href="/sitemap">
                     <span class="sitemap-page-name">Plan du site</span>
-                    <span class="sitemap-page-url">/site/sitemap</span>
+                    <span class="sitemap-page-url">/sitemap</span>
                 </a>
             </div>
         </div>

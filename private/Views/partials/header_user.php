@@ -23,15 +23,15 @@ $userInitial = $userEmail !== '' ? mb_strtoupper(mb_substr($userEmail, 0, 1)) : 
 <header class="header">
     <div class="container">
         <!-- TeslApp Logo -->
-        <a href="/site/home" class="logo">
+        <a href="/" class="logo">
             <img src="/_assets/images/Logo.svg" alt="TeslApp">
         </a>
 
         <!-- Main navigation -->
         <nav class="nav" aria-label="navigation principale">
-            <a href="/site/home" class="nav-link">Accueil</a>
-            <a href="/site/sitemap" class="nav-link">Plan du site</a>
-            <a href="/site/legal" class="nav-link">Mentions légales</a>
+            <a href="/" class="nav-link">Accueil</a>
+            <a href="/sitemap" class="nav-link">Plan du site</a>
+            <a href="/legal" class="nav-link">Mentions légales</a>
             <a href="/vehicle/select" class="nav-link">Tableau de bord</a>
         </nav>
 
@@ -69,7 +69,7 @@ $userInitial = $userEmail !== '' ? mb_strtoupper(mb_substr($userEmail, 0, 1)) : 
 <!-- Mobile menu -->
 <div class="mobile-menu" id="mobileMenu">
     <div class="mobile-menu-header">
-        <a href="/site/home" class="logo">
+        <a href="/" class="logo">
             <img src="/_assets/images/Logo.svg" alt="TeslApp">
         </a>
         <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Fermer le menu">
@@ -80,10 +80,10 @@ $userInitial = $userEmail !== '' ? mb_strtoupper(mb_substr($userEmail, 0, 1)) : 
     <div class="mobile-menu-content">
         <div class="mobile-menu-section-title">NAVIGATION</div>
         <nav class="mobile-menu-nav" aria-label="navigation">
-            <a href="/site/home" class="mobile-menu-link">Accueil</a>
-            <a href="/site/sitemap" class="mobile-menu-link">Plan du site</a>
-            <a href="/site/legal" class="mobile-menu-link">Mentions légales</a>
-            <a href="/vehicle/select" class="nav-link">Tableau de bord</a>
+            <a href="/" class="mobile-menu-link">Accueil</a>
+            <a href="/sitemap" class="mobile-menu-link">Plan du site</a>
+            <a href="/legal" class="mobile-menu-link">Mentions légales</a>
+          <a href="/vehicle/select" class="nav-link">Tableau de bord</a>
         </nav>
 
         <div class="mobile-menu-actions">

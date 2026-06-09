@@ -6,17 +6,16 @@
 declare(strict_types=1);
 
 use Teslapp\Controllers\Auth\AuthCallbackController;
-use Teslapp\Controllers\Auth\AuthController;
+use Teslapp\Controllers\Auth\AuthImpersonateController;
+use Teslapp\Controllers\Auth\AuthLogoutController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
-use Teslapp\Controllers\GeocodingController;
-use Teslapp\Controllers\Climate\PreconditioningController;
+use Teslapp\Controllers\Auth\AuthController;
+use Teslapp\Models\Auth\ImpersonationRepository;
+use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\VehicleCommandController;
 use Teslapp\Controllers\VehicleController;
-use Teslapp\Models\Climate\PreconditioningService;
-use Teslapp\Models\Climate\PreconditioningPlannerRepository;
-use Teslapp\Models\Climate\PreconditioningPlannerRepositoryInterface;
 use Teslapp\Models\Database;
 use Teslapp\Models\Shared\Geocoding\GeocoderInterface;
 use Teslapp\Models\Shared\Geocoding\NominatimGeocoder;
@@ -38,6 +37,7 @@ use Teslapp\Utils\Container;
 use Teslapp\Controllers\Climate\ClimateController;
 use Teslapp\Models\Climate\ClimateService;
 use Teslapp\Models\Shared\TeslaApi\ClimateClient;
+use Teslapp\Utils\RememberToken;
 
 $container = new Container();
 
@@ -93,7 +93,38 @@ $container->set(
 );
 $container->set(
     AuthSignUpController::class,
-    static fn(): AuthSignUpController => new AuthSignUpController(),
+    static fn(): AuthSignUpController => new AuthSignUpController(Database::pdo()),
+);
+
+$container->set(
+    AuthLogoutController::class,
+    static fn(Container $c): AuthLogoutController => new AuthLogoutController(
+        $c->get(RememberToken::class),
+    ),
+);
+
+$container->set(
+    ImpersonationRepository::class,
+    static fn(): ImpersonationRepository => new ImpersonationRepository(Database::pdo()),
+);
+
+$container->set(
+    AuthImpersonateController::class,
+    static fn(Container $c): AuthImpersonateController => new AuthImpersonateController(
+        $c->get(ImpersonationRepository::class),
+    ),
+);
+
+// Remember-me
+$container->set(
+    RememberTokenRepository::class,
+    static fn(): RememberTokenRepository => new RememberTokenRepository(Database::pdo()),
+);
+$container->set(
+    RememberToken::class,
+    static fn(Container $c): RememberToken => new RememberToken(
+        $c->get(RememberTokenRepository::class),
+    ),
 );
 $container->set(
     ClimateClient::class,
