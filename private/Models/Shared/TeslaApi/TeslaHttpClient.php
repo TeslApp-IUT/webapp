@@ -77,8 +77,7 @@ final class TeslaHttpClient
                     // Tesla (and the signing proxy) parse the request body as a JSON OBJECT.
                     // PHP's json_encode([]) yields "[]" (a JSON array), which the proxy rejects
                     // for parameterless commands (door_lock, door_unlock, honk_horn, flash_lights,
-                    // charge_port_door_open/close, wake_up) — only actuate_trunk sends a payload,
-                    // which is why it was the sole command that worked on the real vehicle.
+                    // charge_port_door_open/close, wake_up)
                     // Force "{}" when there is no payload so every command carries a valid object.
                     $options[CURLOPT_POSTFIELDS] = $body
                         ? json_encode($body, JSON_THROW_ON_ERROR)
