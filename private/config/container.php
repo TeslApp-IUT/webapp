@@ -110,6 +110,7 @@ $container->set(
     ClimateController::class,
     static fn(Container $c): ClimateController => new ClimateController(
         $c->get(ClimateService::class),
+        $c->get(PreconditioningService::class),
     ),
 );
 
