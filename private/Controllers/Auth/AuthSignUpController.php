@@ -57,7 +57,12 @@ final readonly class AuthSignUpController
         }
 
         $errors = array_filter([
-            'firstName' => Inputs::validateLength($firstName, min: 1, max: 100, label: 'First name'),
+            'firstName' => Inputs::validateLength(
+                $firstName,
+                min: 1,
+                max: 100,
+                label: 'First name',
+            ),
             'lastName' => Inputs::validateLength($lastName, min: 1, max: 100, label: 'Last name'),
             'email' => Inputs::validateEmail($email),
         ]);

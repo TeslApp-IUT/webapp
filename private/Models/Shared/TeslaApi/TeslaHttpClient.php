@@ -270,10 +270,8 @@ final class TeslaHttpClient
      *
      * @throws TeslaApiException
      */
-    private static function processTokenResponse(
-        array $res,
-        ?string $expectedNonce = null,
-    ): array {
+    private static function processTokenResponse(array $res, ?string $expectedNonce = null): array
+    {
         $accessToken = $res['access_token'] ?? null;
         $refreshToken = $res['refresh_token'] ?? null;
         $expiresIn = (int) ($res['expires_in'] ?? 0);
