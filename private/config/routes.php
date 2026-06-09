@@ -21,9 +21,10 @@ use Teslapp\Controllers\VehicleCommandController;
 return [
     // URLs for static pages accessible to everyone
     'site/home' => [StaticPagesController::class, 'home', false],
-    'site/sitemap' => [StaticPagesController::class, 'sitemap', false],
-    'site/legal' => [StaticPagesController::class, 'legal', false],
-    'site/privacy' => [StaticPagesController::class, 'privacy', false],
+    'home' => [StaticPagesController::class, 'home', false],
+    'sitemap' => [StaticPagesController::class, 'sitemap', false],
+    'legal' => [StaticPagesController::class, 'legal', false],
+    'privacy' => [StaticPagesController::class, 'privacy', false],
     'error/404' => [StaticPagesController::class, 'notFound', false],
 
     // URLs for the post authentification

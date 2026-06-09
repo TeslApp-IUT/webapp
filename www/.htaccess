@@ -20,9 +20,15 @@ Header always unset Server
 ServerSignature Off
 Options -Indexes
 
-# ─── Canonicalisation de l'accueil : /site/home -> / ───
+# ─── Canonicalisation : /site/* -> /* ───
 RewriteCond %{REQUEST_URI} ^/site/home/?$
 RewriteRule ^site/home/?$ %{REQUEST_SCHEME}://%{HTTP_HOST}/ [R=301,L]
+RewriteCond %{REQUEST_URI} ^/site/sitemap/?$
+RewriteRule ^site/sitemap/?$ %{REQUEST_SCHEME}://%{HTTP_HOST}/sitemap [R=301,L]
+RewriteCond %{REQUEST_URI} ^/site/legal/?$
+RewriteRule ^site/legal/?$ %{REQUEST_SCHEME}://%{HTTP_HOST}/legal [R=301,L]
+RewriteCond %{REQUEST_URI} ^/site/privacy/?$
+RewriteRule ^site/privacy/?$ %{REQUEST_SCHEME}://%{HTTP_HOST}/privacy [R=301,L]
 
 # ─── Front controller : tout vers index.php sauf fichiers/dossiers existants ───
 # index.php dérive la route depuis REQUEST_URI (cf. www/index.php), pas de ?route=.

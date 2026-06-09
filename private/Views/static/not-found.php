@@ -9,7 +9,7 @@ ob_start();
 <div class="error-page">
     <div class="error-container">
         <!-- Link back to the home page -->
-        <a href="/site/home" class="error-top-link">
+        <a href="/" class="error-top-link">
             <img src="/_assets/images/fleche-gauche.svg" alt="" aria-hidden="true">
             Échapper à cette dimension
         </a>

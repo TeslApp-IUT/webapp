@@ -43,7 +43,7 @@ function initCommon() {
     const linkPath = link.getAttribute('href');
     if (
       (linkPath && currentPath === linkPath) ||
-      (linkPath === '/site/home' && (currentPath === '/' || currentPath === '/site/home'))
+      (linkPath === '/' && currentPath === '/')
     ) {
       link.classList.add('active');
     }

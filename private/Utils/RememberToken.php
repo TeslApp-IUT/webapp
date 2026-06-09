@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Teslapp\Utils;
 
+use Random\RandomException;
 use Teslapp\Models\Auth\RememberTokenRepository;
 
 /**
@@ -26,6 +27,7 @@ final readonly class RememberToken
 
     /**
      * Generates a new token, persists its hash, and sets the cookie.
+     * @throws RandomException
      */
     public function issue(string $userId): void
     {
@@ -42,6 +44,8 @@ final readonly class RememberToken
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
+
+        $_SESSION['logged_in'] = true;
     }
 
     /**

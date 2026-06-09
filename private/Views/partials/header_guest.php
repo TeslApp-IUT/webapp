@@ -16,9 +16,9 @@
 
     <!-- Main navigation -->
     <nav class="nav" aria-label="navigation principale">
-      <a href="/site/home" class="nav-link">Accueil</a>
-      <a href="/site/sitemap" class="nav-link">Plan du site</a>
-      <a href="/site/legal" class="nav-link">Mentions légales</a>
+      <a href="/" class="nav-link">Accueil</a>
+      <a href="/sitemap" class="nav-link">Plan du site</a>
+      <a href="/legal" class="nav-link">Mentions légales</a>
     </nav>
 
     <!-- Action: Tesla connection -->
@@ -51,9 +51,9 @@
   <div class="mobile-menu-content">
     <div class="mobile-menu-section-title">NAVIGATION</div>
     <nav class="mobile-menu-nav" aria-label="navigation">
-      <a href="/site/home" class="mobile-menu-link">Accueil</a>
-      <a href="/site/sitemap" class="mobile-menu-link">Plan du site</a>
-      <a href="/site/legal" class="mobile-menu-link">Mentions légales</a>
+      <a href="/" class="mobile-menu-link">Accueil</a>
+      <a href="/sitemap" class="mobile-menu-link">Plan du site</a>
+      <a href="/legal" class="mobile-menu-link">Mentions légales</a>
     </nav>
 
     <div class="mobile-menu-actions">

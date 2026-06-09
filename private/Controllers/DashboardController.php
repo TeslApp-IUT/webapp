@@ -32,7 +32,7 @@ class DashboardController
 
         /* Redirect to the home page if no user is found in session */
         if (!$userId) {
-            header('Location: /site/home');
+            header('Location: /');
             exit();
         }
         $vin = $this->getSelectedVin();
