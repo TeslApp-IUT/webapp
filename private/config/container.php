@@ -42,8 +42,6 @@ use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleTelemetryRepositoryInterface;
 use Teslapp\Models\Shared\VehicleTelemetryRepository;
-use Teslapp\Models\Vehicle\TeslaModelRepository;
-use Teslapp\Models\Vehicle\TeslaModelRepositoryInterface;
 use Teslapp\Models\Vehicle\VehicleCommandService;
 use Teslapp\Models\Vehicle\VehicleRepository;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
@@ -66,10 +64,6 @@ $container->set(
     static fn(): VehicleRepositoryInterface => new VehicleRepository(Database::pdo()),
 );
 $container->set(
-    TeslaModelRepositoryInterface::class,
-    static fn(): TeslaModelRepositoryInterface => new TeslaModelRepository(Database::pdo()),
-);
-$container->set(
     VehicleStateClient::class,
     static fn(): VehicleStateClient => new TeslaStateClient(),
 );
@@ -78,7 +72,6 @@ $container->set(
     static fn(Container $c): VehicleService => new VehicleService(
         $c->get(VehicleStateClient::class),
         $c->get(VehicleRepositoryInterface::class),
-        $c->get(TeslaModelRepositoryInterface::class),
     ),
 );
 $container->set(

@@ -16,7 +16,6 @@ final class VehicleService
     public function __construct(
         private readonly VehicleStateClient $teslaApi,
         private readonly VehicleRepositoryInterface $vehicleRepository,
-        private readonly TeslaModelRepositoryInterface $modelRepository,
     ) {}
 
     /**
@@ -38,14 +37,13 @@ final class VehicleService
         );
 
         if ($newVehicles !== []) {
-            $modelIdsByName = $this->modelIdsByName();
             foreach ($newVehicles as $apiVehicle) {
                 $this->vehicleRepository->save(
                     new Vehicle(
                         vin: $apiVehicle->vin,
                         userId: $userId,
                         name: $apiVehicle->name,
-                        modelId: $this->resolveModelId($apiVehicle->vin, $modelIdsByName),
+                        modelCode: $this->modelCodeForVin($apiVehicle->vin),
                     ),
                 );
             }
@@ -76,28 +74,17 @@ final class VehicleService
         return $this->modelLineFromVin($vin) ?? 'Tesla';
     }
 
-    /** @return array<string, string> Model name => model id. */
-    private function modelIdsByName(): array
+    /**
+     * The model code persisted on the vehicle: the 4th VIN character itself
+     * (matches vehicle_models.vin_code). Throws on an unknown Tesla model line.
+     */
+    private function modelCodeForVin(Vin $vin): string
     {
-        $map = [];
-        foreach ($this->modelRepository->findAll() as $model) {
-            $map[$model->name] = $model->id;
+        if ($this->modelLineFromVin($vin) === null) {
+            throw new \InvalidArgumentException("Unknown Tesla model for VIN {$vin->value}");
         }
 
-        return $map;
-    }
-
-    /** @param array<string, string> $modelIdsByName */
-    private function resolveModelId(Vin $vin, array $modelIdsByName): string
-    {
-        $name =
-            $this->modelLineFromVin($vin) ??
-            throw new \InvalidArgumentException("Unknown Tesla model for VIN {$vin->value}");
-
-        return $modelIdsByName[$name] ??
-            throw new \RuntimeException(
-                "Model '{$name}' is missing from vehicle_models (database seed?)",
-            );
+        return $vin->value[3];
     }
 
     /** The 4th VIN character encodes the Tesla model line. */

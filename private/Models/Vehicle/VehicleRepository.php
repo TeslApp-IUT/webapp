@@ -19,7 +19,7 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
     public function findByVin(Vin $vin): ?Vehicle
     {
         $stmt = $this->pdo->prepare(
-            'SELECT vin, user_id, name, model_id FROM vehicles WHERE vin = :vin',
+            'SELECT vin, user_id, name, model_code FROM vehicles WHERE vin = :vin',
         );
         $stmt->execute([':vin' => $vin->value]);
         $row = $stmt->fetch();
@@ -31,7 +31,7 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
     public function findByUser(string $userId): array
     {
         $stmt = $this->pdo->prepare(
-            'SELECT vin, user_id, name, model_id FROM vehicles WHERE user_id = :user_id ORDER BY name',
+            'SELECT vin, user_id, name, model_code FROM vehicles WHERE user_id = :user_id ORDER BY name',
         );
         $stmt->execute([':user_id' => $userId]);
 
@@ -45,18 +45,18 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
     {
         try {
             $stmt = $this->pdo->prepare(
-                'INSERT INTO vehicles (vin, user_id, name, model_id)
-                 VALUES (:vin, :user_id, :name, :model_id)
+                'INSERT INTO vehicles (vin, user_id, name, model_code)
+                 VALUES (:vin, :user_id, :name, :model_code)
                  ON CONFLICT (vin) DO UPDATE SET
-                     user_id  = EXCLUDED.user_id,
-                     name     = EXCLUDED.name,
-                     model_id = EXCLUDED.model_id',
+                     user_id    = EXCLUDED.user_id,
+                     name       = EXCLUDED.name,
+                     model_code = EXCLUDED.model_code',
             );
             $stmt->execute([
                 ':vin' => $vehicle->vin->value,
                 ':user_id' => $vehicle->userId,
                 ':name' => $vehicle->name,
-                ':model_id' => $vehicle->modelId,
+                ':model_code' => $vehicle->modelCode,
             ]);
         } catch (PDOException $e) {
             throw new DatabaseException(
