@@ -20,7 +20,7 @@ ob_start();
       <?php $activeNav = 'battery';
       require __DIR__ . '/../partials/dashboard_nav.php'; ?>
       <!-- Right Section -->
-      <main class="dashboard-content">
+      <div class="dashboard-content">
         <h1 class="dashboard-title">Batterie</h1>
         <div class="dashboard-grid">
           <!-- Battery state -->
@@ -206,7 +206,7 @@ ob_start();
             <button class="btn-success" type="submit">Créer la planification</button>
           </form>
         </section>
-      </main>
+      </div>
     </div>
   </section>
 <?php
