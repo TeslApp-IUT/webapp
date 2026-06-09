@@ -2,6 +2,7 @@
 
 namespace Teslapp\Controllers\Auth;
 
+use Random\RandomException;
 use Teslapp\Models\Auth\RememberTokenRepository;
 use Teslapp\Models\Database;
 use Teslapp\Models\Shared\Exceptions\TeslaApiException;
@@ -10,6 +11,9 @@ use Teslapp\Utils\RememberToken;
 
 final class AuthCallbackController
 {
+    /**
+     * @throws RandomException
+     */
     public function callback(): void
     {
         parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY) ?? '', $p);
