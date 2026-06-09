@@ -236,8 +236,10 @@ final class TeslaHttpClient
      *
      * @throws TeslaApiException
      */
-    private static function persistTokenResponse(array $res, ?string $expectedNonce = null): AccessToken
-    {
+    private static function persistTokenResponse(
+        array $res,
+        ?string $expectedNonce = null,
+    ): AccessToken {
         $accessToken = $res['access_token'] ?? null;
         $refreshToken = $res['refresh_token'] ?? null;
         $expiresIn = (int) ($res['expires_in'] ?? 0);

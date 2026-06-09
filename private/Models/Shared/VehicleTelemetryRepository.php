@@ -25,7 +25,11 @@ final class VehicleTelemetryRepository implements VehicleTelemetryRepositoryInte
     {
         return [
             'battery_level' => $this->latest('charge_level', 'battery_level', $vin),
-            'charge_enable_request' => $this->latest('charge_enable', 'charge_enable_request', $vin),
+            'charge_enable_request' => $this->latest(
+                'charge_enable',
+                'charge_enable_request',
+                $vin,
+            ),
             'scheduled_charging_start_time' => $this->latest(
                 'charge_scheduled',
                 'scheduled_charging_start_time',
@@ -55,6 +59,6 @@ final class VehicleTelemetryRepository implements VehicleTelemetryRepositoryInte
         $stmt->execute([':vin' => $vin->value]);
         $row = $stmt->fetch();
 
-        return is_array($row) ? ($row[$column] ?? null) : null;
+        return is_array($row) ? $row[$column] ?? null : null;
     }
 }
