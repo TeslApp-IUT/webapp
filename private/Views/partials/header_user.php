@@ -23,7 +23,7 @@ $userInitial = $userEmail !== '' ? mb_strtoupper(mb_substr($userEmail, 0, 1)) : 
 <header class="header">
     <div class="container">
         <!-- TeslApp Logo -->
-        <a href="/site/home" class="logo">
+        <a href="/" class="logo">
             <img src="/_assets/images/Logo.svg" alt="TeslApp">
         </a>
 
@@ -69,7 +69,7 @@ $userInitial = $userEmail !== '' ? mb_strtoupper(mb_substr($userEmail, 0, 1)) : 
 <!-- Mobile menu -->
 <div class="mobile-menu" id="mobileMenu">
     <div class="mobile-menu-header">
-        <a href="/site/home" class="logo">
+        <a href="/" class="logo">
             <img src="/_assets/images/Logo.svg" alt="TeslApp">
         </a>
         <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Fermer le menu">

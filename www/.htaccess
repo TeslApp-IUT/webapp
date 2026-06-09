@@ -22,7 +22,7 @@ Options -Indexes
 
 # ─── Canonicalisation de l'accueil : /site/home -> / ───
 RewriteCond %{REQUEST_URI} ^/site/home/?$
-RewriteRule ^site/home/?$ / [R=301,L]
+RewriteRule ^site/home/?$ %{REQUEST_SCHEME}://%{HTTP_HOST}/ [R=301,L]
 
 # ─── Front controller : tout vers index.php sauf fichiers/dossiers existants ───
 # index.php dérive la route depuis REQUEST_URI (cf. www/index.php), pas de ?route=.

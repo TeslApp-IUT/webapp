@@ -10,7 +10,7 @@
 <header class="header">
   <div class="container">
     <!-- TeslApp Logo -->
-    <a href="/site/home" class="logo">
+    <a href="/" class="logo">
       <img src="/_assets/images/Logo.svg" alt="TeslApp">
     </a>
 
@@ -40,7 +40,7 @@
 <!-- Mobile menu -->
 <div class="mobile-menu" id="mobileMenu">
   <div class="mobile-menu-header">
-    <a href="/site/home" class="logo">
+    <a href="/" class="logo">
       <img src="/_assets/images/Logo.svg" alt="TeslApp">
     </a>
     <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Fermer le menu">
