@@ -14,9 +14,7 @@ final readonly class ImpersonationRepository
 
     public function isDeveloper(string $userId): bool
     {
-        $stmt = $this->pdo->prepare(
-            'SELECT is_developer FROM app.users WHERE id = :id',
-        );
+        $stmt = $this->pdo->prepare('SELECT is_developer FROM app.users WHERE id = :id');
         $stmt->execute([':id' => $userId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
