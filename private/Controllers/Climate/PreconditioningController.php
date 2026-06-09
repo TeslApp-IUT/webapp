@@ -16,9 +16,12 @@ use Teslapp\Utils\Flash;
 use Teslapp\Utils\Http;
 
 /**
- * Preconditioning schedules CRUD on the climate page (dashboard/ac/precondition).
- * Autonomous and separate from the AC on/off controller: reads the form, calls
- * ClimateService, then redirects back with a flash message.
+ * Preconditioning schedules on the climate page (dashboard/ac/precondition).
+ *
+ * index() lists the selected vehicle's schedules. create/update/delete/toggle are
+ * POST actions that all share the same shape: check the CSRF token, resolve the
+ * session context, call ClimateService, set a flash message, then redirect back.
+ * This class is pure HTTP orchestration: no business rule and no SQL live here.
  */
 final class PreconditioningController
 {
@@ -26,6 +29,7 @@ final class PreconditioningController
 
     public function __construct(private readonly ClimateService $service) {}
 
+    // Shows the schedules of the vehicle currently selected in the session.
     public function index(): void
     {
         [$userId, $vin] = $this->context();
@@ -33,89 +37,66 @@ final class PreconditioningController
         try {
             $plans = $this->service->listPlansForVehicle($userId, new Vin($vin));
         } catch (InvalidArgumentException | VehicleUnauthorizedException) {
+            // Missing, malformed or foreign VIN in the session: go back to vehicle selection.
             Flash::set('errors', ['Véhicule invalide ou inaccessible.']);
             Http::redirect('/vehicle/select');
         }
 
+        // $plans is read by the view below.
         require_once __DIR__ . '/../../Views/Climate/preconditioning.php';
     }
 
-    public function create(): never
-    {
-        $this->handle(
-            fn(string $userId, Vin $vin): string => $this->service->createPlan(
-                $userId,
-                $vin,
-                $this->readActivationHour(),
-                $this->readDays(),
-                $this->boolField('memorize'),
-                $this->boolField('enabled'),
-                $this->readLocation(),
-                $this->post('location_label') ?: null,
-            ),
-            'Planification créée.',
-        );
-    }
-
-    public function update(): never
-    {
-        $this->handle(
-            fn(string $userId, Vin $vin) => $this->service->updatePlan(
-                $userId,
-                $vin,
-                $this->post('plan_id'),
-                $this->readActivationHour(),
-                $this->readDays(),
-                $this->boolField('memorize'),
-                $this->boolField('enabled'),
-                $this->readLocation(),
-                $this->post('location_label') ?: null,
-            ),
-            'Planification mise à jour.',
-        );
-    }
-
-    public function delete(): never
-    {
-        $this->handle(
-            fn(string $userId, Vin $vin) => $this->service->deletePlan(
-                $userId,
-                $vin,
-                $this->post('plan_id'),
-            ),
-            'Planification supprimée.',
-        );
-    }
-
-    public function toggle(): never
-    {
-        $this->handle(
-            fn(string $userId, Vin $vin) => $this->service->setPlanEnabled(
-                $userId,
-                $vin,
-                $this->post('plan_id'),
-                $this->boolField('enabled'),
-            ),
-            null,
-        );
-    }
-
-    /**
-     * Shared flow for the write actions: CSRF, session context, run the action,
-     * map known failures to a flash, then redirect back to the page.
-     *
-     * @param callable(string, Vin): mixed $action
-     */
-    private function handle(callable $action, ?string $success): never
+    // Creates a schedule from the submitted form.
+    public function create(): void
     {
         Csrf::requireValid(self::PAGE);
         [$userId, $vin] = $this->context();
 
         try {
-            $action($userId, new Vin($vin));
-            if ($success !== null) {
-                Flash::set('success', $success);
-            }
+            $this->service->createPlan(
+                $userId,
+                new Vin($vin),
+                $this->readActivationHour(),
+                $this->readDays(),
+                $this->boolField('memorize'),
+                $this->boolField('enabled'),
+                $this->readLocation(),
+                $this->post('location_label') ?: null, // empty label stays null
+            );
+            Flash::set('success', 'Planification créée.');
+        } catch (InvalidArgumentException) {
+            // Invalid hour or coordinates in the form.
+            Flash::set('errors', ['Saisie invalide (heure ou coordonnées).']);
+        } catch (VehicleUnauthorizedException) {
+            // The vehicle is not the logged-in user's.
+            Flash::set('errors', ['Vous n\'avez pas accès à ce véhicule.']);
+        } catch (TeslaApiException) {
+            // The schedule push to the Tesla API failed.
+            Flash::set('errors', ['La commande Tesla a échoué.']);
+        }
+
+        Http::redirect(self::PAGE);
+    }
+
+    // Updates the schedule identified by plan_id from the submitted form.
+    public function update(): void
+    {
+        Csrf::requireValid(self::PAGE);
+        [$userId, $vin] = $this->context();
+
+        try {
+            $this->service->updatePlan(
+                $userId,
+                new Vin($vin),
+                $this->post('plan_id'),
+                $this->readActivationHour(),
+                $this->readDays(),
+                $this->boolField('memorize'),
+                $this->boolField('enabled'),
+                $this->readLocation(),
+                $this->post('location_label') ?: null,
+            );
+            Flash::set('success', 'Planification mise à jour.');
         } catch (InvalidArgumentException) {
             Flash::set('errors', ['Saisie invalide (heure ou coordonnées).']);
         } catch (VehicleUnauthorizedException) {
@@ -127,7 +108,55 @@ final class PreconditioningController
         Http::redirect(self::PAGE);
     }
 
-    /** @return array{string, string} the user id and the selected VIN */
+    // Deletes the schedule identified by plan_id (also removes it on the Tesla side).
+    public function delete(): void
+    {
+        Csrf::requireValid(self::PAGE);
+        [$userId, $vin] = $this->context();
+
+        try {
+            $this->service->deletePlan($userId, new Vin($vin), $this->post('plan_id'));
+            Flash::set('success', 'Planification supprimée.');
+        } catch (InvalidArgumentException) {
+            Flash::set('errors', ['Saisie invalide.']);
+        } catch (VehicleUnauthorizedException) {
+            Flash::set('errors', ['Vous n\'avez pas accès à ce véhicule.']);
+        } catch (TeslaApiException) {
+            Flash::set('errors', ['La commande Tesla a échoué.']);
+        }
+
+        Http::redirect(self::PAGE);
+    }
+
+    // Enables or disables a schedule straight from the list (the list switch posts here).
+    public function toggle(): void
+    {
+        Csrf::requireValid(self::PAGE);
+        [$userId, $vin] = $this->context();
+
+        try {
+            $this->service->setPlanEnabled(
+                $userId,
+                new Vin($vin),
+                $this->post('plan_id'),
+                $this->boolField('enabled'),
+            );
+        } catch (InvalidArgumentException) {
+            Flash::set('errors', ['Saisie invalide.']);
+        } catch (VehicleUnauthorizedException) {
+            Flash::set('errors', ['Vous n\'avez pas accès à ce véhicule.']);
+        }
+        // No TeslaApiException catch: toggling only writes our database, it never calls Tesla.
+
+        Http::redirect(self::PAGE);
+    }
+
+    /**
+     * Reads the user id and selected VIN from the session, redirecting out when either is
+     * missing. The router does not enforce the auth flag, so each action guards itself here.
+     *
+     * @return array{string, string} the user id and the selected VIN
+     */
     private function context(): array
     {
         $userId = $_SESSION['user_id'] ?? '';
@@ -143,6 +172,7 @@ final class PreconditioningController
         return [$userId, $vin];
     }
 
+    // Validates the "HH:MM" field so a malformed value never reaches the TIME column.
     private function readActivationHour(): string
     {
         $hour = $this->post('activation_hour');
@@ -153,7 +183,11 @@ final class PreconditioningController
         return $hour;
     }
 
-    /** @return list<DayOfWeek> */
+    /**
+     * Maps the checked day boxes to a DayOfWeek list, dropping any unknown value.
+     *
+     * @return list<DayOfWeek>
+     */
     private function readDays(): array
     {
         $raw = $_POST['days'] ?? [];
@@ -172,6 +206,8 @@ final class PreconditioningController
         return $days;
     }
 
+    // Optional geofence: both fields empty stays null, a partial or non-numeric pair is
+    // rejected, and a valid pair builds a range-checked GeoPoint.
     private function readLocation(): ?GeoPoint
     {
         $lat = $this->post('latitude');
@@ -187,6 +223,7 @@ final class PreconditioningController
         return new GeoPoint((float) $lat, (float) $lon);
     }
 
+    // Trimmed POST string, or '' when the field is absent.
     private function post(string $name): string
     {
         $value = filter_input(INPUT_POST, $name, FILTER_DEFAULT);
@@ -194,6 +231,7 @@ final class PreconditioningController
         return is_string($value) ? trim($value) : '';
     }
 
+    // Reads a checkbox: present and truthy means true, absent means false.
     private function boolField(string $name): bool
     {
         return filter_input(INPUT_POST, $name, FILTER_VALIDATE_BOOLEAN) === true;
