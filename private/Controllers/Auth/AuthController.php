@@ -49,6 +49,19 @@ final class AuthController
         $state = bin2hex(random_bytes(32));
         $_SESSION['oauth_state'] = $state;
 
+        // PKCE (RFC 7636): keep the verifier server-side, send only the S256 challenge.
+        // Protects the authorization code as it transits the browser/redirect.
+        $codeVerifier = rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
+        $_SESSION['oauth_code_verifier'] = $codeVerifier;
+        $codeChallenge = rtrim(
+            strtr(base64_encode(hash('sha256', $codeVerifier, true)), '+/', '-_'),
+            '=',
+        );
+
+        // Nonce: echoed back inside the id_token and checked at the callback (anti-replay).
+        $nonce = bin2hex(random_bytes(16));
+        $_SESSION['oauth_nonce'] = $nonce;
+
         require_once __DIR__ . '/../../Views/Auth/auth.php';
     }
 
