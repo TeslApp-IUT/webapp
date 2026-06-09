@@ -71,17 +71,12 @@ final class VehicleServiceTest extends TestCase
     #[Test]
     public function listForUserReturnsTheUsersVehicles(): void
     {
-        $vehicles = [
-            new Vehicle(new Vin('5YJ3E1EA7KF000316'), 'user-1', 'Ma Model 3', '3'),
-        ];
+        $vehicles = [new Vehicle(new Vin('5YJ3E1EA7KF000316'), 'user-1', 'Ma Model 3', '3')];
 
         $vehicleRepo = $this->createMock(VehicleRepositoryInterface::class);
         $vehicleRepo->method('findByUser')->with('user-1')->willReturn($vehicles);
 
-        $service = $this->makeService(
-            $this->createMock(VehicleStateClient::class),
-            $vehicleRepo,
-        );
+        $service = $this->makeService($this->createMock(VehicleStateClient::class), $vehicleRepo);
 
         self::assertSame($vehicles, $service->listForUser('user-1'));
     }
@@ -96,10 +91,7 @@ final class VehicleServiceTest extends TestCase
                 '5YJ3E1EA7KF000316' => VehicleConnectivityStatus::Online,
             ]);
 
-        $service = $this->makeService(
-            $api,
-            $this->createMock(VehicleRepositoryInterface::class),
-        );
+        $service = $this->makeService($api, $this->createMock(VehicleRepositoryInterface::class));
 
         self::assertSame(
             ['5YJ3E1EA7KF000316' => VehicleConnectivityStatus::Online],
