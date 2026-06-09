@@ -101,7 +101,10 @@ $container->set(
 );
 $container->set(
     ClimateService::class,
-    static fn(Container $c): ClimateService => new ClimateService($c->get(ClimateClient::class)),
+    static fn(Container $c): ClimateService => new ClimateService(
+        $c->get(ClimateClient::class),
+        $c->get(VehicleRepositoryInterface::class)
+    ),
 );
 $container->set(
     ClimateController::class,
