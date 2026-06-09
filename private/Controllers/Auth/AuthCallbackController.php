@@ -14,6 +14,23 @@ final class AuthCallbackController
     {
         parse_str(parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY) ?? '', $p);
         $code = $p['code'] ?? null;
+        $state = $p['state'] ?? null;
+
+        // Anti-CSRF: the state echoed back by Tesla must match the one stored at /auth.
+        // Consume it (single use) before touching the authorization code.
+        $expectedState = $_SESSION['oauth_state'] ?? null;
+        unset($_SESSION['oauth_state']);
+
+        if (
+            !is_string($state) ||
+            !is_string($expectedState) ||
+            !hash_equals($expectedState, $state)
+        ) {
+            $status = 'error';
+            $error = 'invalid_state';
+            require __DIR__ . '/../../Views/Auth/auth_callback.php';
+            return;
+        }
 
         if (!is_string($code) || $code === '') {
             $status = 'error';

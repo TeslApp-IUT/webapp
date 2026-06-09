@@ -196,6 +196,12 @@ final class TeslaHttpClient
         $appUrl = rtrim(getenv('APP_URL') ?: 'http://localhost', '/');
         $redirectUri = $appUrl . '/auth/callback';
 
+        // PKCE verifier + replay nonce stored by AuthController::handleGet(); consume them.
+        $codeVerifier = $_SESSION['oauth_code_verifier'] ?? '';
+        unset($_SESSION['oauth_code_verifier']);
+        $expectedNonce = $_SESSION['oauth_nonce'] ?? null;
+        unset($_SESSION['oauth_nonce']);
+
         $body = [
             'grant_type' => 'authorization_code',
             'client_id' => getenv('CLIENT_ID'),
@@ -203,13 +209,8 @@ final class TeslaHttpClient
             'code' => $code,
             'audience' => 'https://fleet-api.prd.eu.vn.cloud.tesla.com',
             'redirect_uri' => $redirectUri,
+            'code_verifier' => is_string($codeVerifier) ? $codeVerifier : '',
         ];
-        error_log($body['grant_type']);
-        error_log($body['client_id']);
-        error_log($body['client_secret']);
-        error_log($body['code']);
-        error_log($body['audience']);
-        error_log($body['redirect_uri']);
         $res = self::send(
             'POST',
             self::TOKEN_PATH,
@@ -219,7 +220,7 @@ final class TeslaHttpClient
             formEncoded: true,
         );
 
-        return self::persistTokenResponse($res);
+        return self::persistTokenResponse($res, is_string($expectedNonce) ? $expectedNonce : null);
     }
 
     /**
@@ -235,8 +236,10 @@ final class TeslaHttpClient
      *
      * @throws TeslaApiException
      */
-    private static function persistTokenResponse(array $res): AccessToken
-    {
+    private static function persistTokenResponse(
+        array $res,
+        ?string $expectedNonce = null,
+    ): AccessToken {
         $accessToken = $res['access_token'] ?? null;
         $refreshToken = $res['refresh_token'] ?? null;
         $expiresIn = (int) ($res['expires_in'] ?? 0);
@@ -256,6 +259,14 @@ final class TeslaHttpClient
         $idToken = $res['id_token'] ?? null;
         if (is_string($idToken) && $idToken !== '') {
             $claims = self::decodeJwtPayload($idToken);
+        }
+
+        // Replay protection: when a nonce was sent at /authorize, the id_token must echo it.
+        if ($expectedNonce !== null) {
+            $tokenNonce = isset($claims['nonce']) ? (string) $claims['nonce'] : '';
+            if ($tokenNonce === '' || !hash_equals($expectedNonce, $tokenNonce)) {
+                throw new TeslaApiException('OAuth id_token nonce mismatch.');
+            }
         }
 
         $sub = isset($claims['sub'])
