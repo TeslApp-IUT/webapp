@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 use Teslapp\Controllers\Auth\AuthCallbackController;
 use Teslapp\Controllers\Auth\AuthController;
+use Teslapp\Controllers\Auth\AuthLogoutController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
@@ -48,4 +49,5 @@ return [
     'auth' => [AuthController::class, 'auth', false],
     'auth/callback' => [AuthCallbackController::class, 'callback', false],
     'auth/signup' => [AuthSignUpController::class, 'signup', false],
+    'auth/logout' => [AuthLogoutController::class, 'logout', true],
 ];
