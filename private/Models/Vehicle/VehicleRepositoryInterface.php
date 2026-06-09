@@ -15,7 +15,7 @@ interface VehicleRepositoryInterface
 
     public function save(Vehicle $vehicle): void;
 
-    public function deleteByVin(Vin $vin): void;
+    public function detachByVin(Vin $vin): void;
 
     public function isAccessibleBy(Vin $vin, string $userId): bool;
 }

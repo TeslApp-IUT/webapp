@@ -61,13 +61,13 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
         }
     }
 
-    public function deleteByVin(Vin $vin): void
+    public function detachByVin(Vin $vin): void
     {
         try {
-            $stmt = $this->pdo->prepare('DELETE FROM vehicles WHERE vin = :vin');
+            $stmt = $this->pdo->prepare('UPDATE vehicles SET user_id = NULL WHERE vin = :vin');
             $stmt->execute([':vin' => $vin->value]);
         } catch (PDOException $e) {
-            throw new DatabaseException("Failed to delete vehicle {$vin->value}", previous: $e);
+            throw new DatabaseException("Failed to detach vehicle {$vin->value}", previous: $e);
         }
     }
 
