@@ -25,6 +25,8 @@ final class VehicleController
      */
     public function select(): void
     {
+        $userId = $this->requireUserId();
+
         $token = isset($_SESSION['access_token'])
             ? new AccessToken($_SESSION['access_token'])
             : null;
@@ -33,7 +35,7 @@ final class VehicleController
 
         if ($token !== null) {
             try {
-                $this->vehicleService->syncUserVehicles($_SESSION['user_id'], $token);
+                $this->vehicleService->syncUserVehicles($userId, $token);
             } catch (TeslaAppException $e) {
                 // Tesla unreachable (no token yet, vehicle offline...): fall back to the stored list.
                 error_log('Vehicle sync failed: ' . $e->getMessage());
@@ -53,7 +55,7 @@ final class VehicleController
 
         $selectedVin = $_SESSION['selected_vin'] ?? null;
         $cards = [];
-        foreach ($this->vehicleService->listForUser($_SESSION['user_id']) as $vehicle) {
+        foreach ($this->vehicleService->listForUser($userId) as $vehicle) {
             $model = $this->vehicleService->modelNameForVin($vehicle->vin);
             $cards[] = [
                 'vehicle' => $vehicle,
@@ -84,12 +86,14 @@ final class VehicleController
     {
         Csrf::requireValid('/vehicle/select');
 
+        $userId = $this->requireUserId();
+
         $vin = filter_input(INPUT_POST, 'vin', FILTER_UNSAFE_RAW);
         $vin = is_string($vin) ? trim($vin) : '';
 
         // Only a VIN the user actually owns can be selected (do not trust the POST).
         $owned = array_filter(
-            $this->vehicleService->listForUser($_SESSION['user_id']),
+            $this->vehicleService->listForUser($userId),
             static fn(Vehicle $v): bool => $v->vin->value === $vin,
         );
 
@@ -101,5 +105,19 @@ final class VehicleController
         $_SESSION['selected_vin'] = $vin;
         Flash::set('success', 'Véhicule sélectionné.');
         Http::redirect('/dashboard/overview');
+    }
+
+    /**
+     * Returns the logged-in user id, or redirects home when the session lacks it.
+     * The router does not enforce the auth flag, so each action guards itself.
+     */
+    private function requireUserId(): string
+    {
+        $userId = $_SESSION['user_id'] ?? '';
+        if (!is_string($userId) || $userId === '') {
+            Http::redirect('/site/home');
+        }
+
+        return $userId;
     }
 }
