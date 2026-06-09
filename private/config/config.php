@@ -96,3 +96,10 @@ define(
         ? true
         : filter_var($dryRunRaw, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? true,
 );
+
+// Nominatim geocoder: resolves a schedule's address to coordinates and back.
+define('NOMINATIM_BASE_URL', getenv('NOMINATIM_BASE_URL') ?: 'https://nominatim.openstreetmap.org');
+define(
+    'NOMINATIM_USER_AGENT',
+    getenv('NOMINATIM_USER_AGENT') ?: 'TeslApp/1.0 (+https://teslapp.feyli.dev)',
+);
