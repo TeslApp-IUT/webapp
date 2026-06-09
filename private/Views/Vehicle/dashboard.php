@@ -1,14 +1,14 @@
 <?php
 $vehicleName = $vehicleName ?? 'Mon véhicule';
 
-/* Telemetry value */
+/* Telemetry values — keys match the app.overview columns read by VehicleTelemetryRepository */
 $battery_level = $data['battery_level'] ?? 'N/A';
-$charge_enable_request = $data['charge_enable_request'] ?? false;
+$charge_enable = $data['charge_enable'] ?? false;
 $scheduled_charging_start_time = $data['scheduled_charging_start_time'] ?? null;
 
 $inside_temp = $data['inside_temp'] ?? 'N/A';
 $climate_keeper_mode = $data['climate_keeper_mode'] ?? 0;
-$hvac_ac_enabled = $data['hvac_ac_enabled'] ?? false;
+$ac_enabled = $data['ac_enabled'] ?? false;
 
 $keeper_modes = [
   0 => 'Inconnu',
@@ -51,7 +51,7 @@ ob_start();
             </div>
             <div class="card-details">
               <p>Charge activée <span
-                  class="<?= $charge_enable_request ? 'status-on' : 'status-off' ?>"><?= $charge_enable_request ? 'Oui' : 'Non' ?></span>
+                  class="<?= $charge_enable ? 'status-on' : 'status-off' ?>"><?= $charge_enable ? 'Oui' : 'Non' ?></span>
               </p>
               <p>Charge programmée <span><?= e($scheduled_charging_start_time ?? 'Non programmée') ?></span></p>
             </div>
@@ -71,7 +71,7 @@ ob_start();
             </div>
             <div class="card-details">
               <p>AC activée <span
-                  class="<?= $hvac_ac_enabled ? 'status-on' : 'status-off' ?>"><?= $hvac_ac_enabled ? 'Oui' : 'Non' ?></span>
+                  class="<?= $ac_enabled ? 'status-on' : 'status-off' ?>"><?= $ac_enabled ? 'Oui' : 'Non' ?></span>
               </p>
               <p>Mode keeper <span><?= e($keeper_modes[$climate_keeper_mode] ?? 'Inconnu') ?></span></p>
             </div>
