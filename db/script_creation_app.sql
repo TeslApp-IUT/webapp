@@ -41,7 +41,7 @@ CREATE TABLE app.users
 CREATE TABLE app.vehicles
 (
     vin      VARCHAR(17),
-    user_id  UUID        NOT NULL,
+    user_id  UUID,
     name     VARCHAR(100) NOT NULL,
     model_id UUID        NOT NULL,
 
@@ -53,7 +53,7 @@ CREATE TABLE app.vehicles
 
     CONSTRAINT fk_vehicles_users FOREIGN KEY (user_id)
         REFERENCES app.users (id)
-        ON DELETE CASCADE
+        ON DELETE SET NULL
 );
 
 CREATE TABLE app.jwt
