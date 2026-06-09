@@ -31,7 +31,15 @@ final class DashboardController
             exit();
         }
 
-        $vin = new Vin($selectedVin);
+        try {
+            $vin = new Vin($selectedVin);
+        } catch (\InvalidArgumentException) {
+            // A corrupted/stale selected_vin must not 500 the dashboard.
+            unset($_SESSION['selected_vin']);
+            header('Location: /vehicle/select');
+            exit();
+        }
+
         $data = $this->telemetry->getLatestTelemetry($vin);
         $vehicleName = $this->vehicles->findByVin($vin)?->name ?? 'Mon véhicule';
 
