@@ -58,7 +58,8 @@ final class AuthImpersonateController
         if (!array_key_exists('real_access_token', $_SESSION)) {
             $_SESSION['real_access_token'] = $_SESSION['access_token'] ?? null;
             $_SESSION['real_refresh_token'] = $_SESSION['refresh_token'] ?? null;
-            $_SESSION['real_access_token_expires_at'] = $_SESSION['access_token_expires_at'] ?? null;
+            $_SESSION['real_access_token_expires_at'] =
+                $_SESSION['access_token_expires_at'] ?? null;
         }
 
         // Swap in the target user's decrypted tokens
