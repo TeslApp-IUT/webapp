@@ -288,7 +288,14 @@ final class TeslaHttpClient
                     $aud = (string) ($aud[0] ?? '');
                 }
 
-                $repository->ensureUser($sub, (string) ($claims['email'] ?? ''));
+                $_SESSION['tmp_user_email'] = $claims['email'] ?? '';
+
+                $repository->ensureUser(
+                    $sub,
+                    (string) ($claims['email'] ?? ''),
+                    (string) ($claims['given_name'] ?? ''),
+                    (string) ($claims['family_name'] ?? ''),
+                );
                 $repository->saveJwt(
                     $sub,
                     (string) ($claims['iss'] ?? ''),

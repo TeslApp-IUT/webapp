@@ -6,12 +6,14 @@
 declare(strict_types=1);
 
 use Teslapp\Controllers\Auth\AuthCallbackController;
+use Teslapp\Controllers\Auth\AuthLogoutController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
 use Teslapp\Controllers\Auth\AuthController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\VehicleCommandController;
 use Teslapp\Controllers\VehicleController;
+use Teslapp\Models\Auth\RememberTokenRepository;
 use Teslapp\Models\Database;
 use Teslapp\Models\Shared\TeslaApi\TeslaCommandClient;
 use Teslapp\Models\Shared\TeslaApi\TeslaStateClient;
@@ -26,6 +28,7 @@ use Teslapp\Models\Vehicle\VehicleRepository;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 use Teslapp\Models\Vehicle\VehicleService;
 use Teslapp\Utils\Container;
+use Teslapp\Utils\RememberToken;
 
 $container = new Container();
 
@@ -83,7 +86,26 @@ $container->set(
 
 $container->set(
     AuthSignUpController::class,
-    static fn(): AuthSignUpController => new AuthSignUpController(),
+    static fn(): AuthSignUpController => new AuthSignUpController(Database::pdo()),
+);
+
+$container->set(
+    AuthLogoutController::class,
+    static fn(Container $c): AuthLogoutController => new AuthLogoutController(
+        $c->get(RememberToken::class),
+    ),
+);
+
+// Remember-me
+$container->set(
+    RememberTokenRepository::class,
+    static fn(): RememberTokenRepository => new RememberTokenRepository(Database::pdo()),
+);
+$container->set(
+    RememberToken::class,
+    static fn(Container $c): RememberToken => new RememberToken(
+        $c->get(RememberTokenRepository::class),
+    ),
 );
 
 // Vehicle commands (issue #26): command port -> adapter, then service and controller.

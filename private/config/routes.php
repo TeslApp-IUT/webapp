@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 use Teslapp\Controllers\Auth\AuthCallbackController;
 use Teslapp\Controllers\Auth\AuthController;
+use Teslapp\Controllers\Auth\AuthLogoutController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
@@ -21,9 +22,10 @@ use Teslapp\Controllers\VehicleCommandController;
 return [
     // URLs for static pages accessible to everyone
     'site/home' => [StaticPagesController::class, 'home', false],
-    'site/sitemap' => [StaticPagesController::class, 'sitemap', false],
-    'site/legal' => [StaticPagesController::class, 'legal', false],
-    'site/privacy' => [StaticPagesController::class, 'privacy', false],
+    'home' => [StaticPagesController::class, 'home', false],
+    'sitemap' => [StaticPagesController::class, 'sitemap', false],
+    'legal' => [StaticPagesController::class, 'legal', false],
+    'privacy' => [StaticPagesController::class, 'privacy', false],
     'error/404' => [StaticPagesController::class, 'notFound', false],
 
     // URLs for the post authentification
@@ -47,5 +49,5 @@ return [
     'auth' => [AuthController::class, 'auth', false],
     'auth/callback' => [AuthCallbackController::class, 'callback', false],
     'auth/signup' => [AuthSignUpController::class, 'signup', false],
-    'auth/logout' => [AuthController::class, 'logout', false],
+    'auth/logout' => [AuthLogoutController::class, 'logout', true],
 ];

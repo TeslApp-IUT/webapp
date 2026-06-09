@@ -28,6 +28,11 @@ final class DashboardController
         $selectedVin = $_SESSION['selected_vin'] ?? null;
         if (!is_string($selectedVin) || $selectedVin === '') {
             header('Location: /vehicle/select');
+        $userId = $_SESSION['user_id'] ?? null;
+
+        /* Redirect to the home page if no user is found in session */
+        if (!$userId) {
+            header('Location: /');
             exit();
         }
 

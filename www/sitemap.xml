@@ -6,17 +6,17 @@
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://teslapp.feyli.dev/site/sitemap</loc>
+        <loc>https://teslapp.feyli.dev/sitemap</loc>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://teslapp.feyli.dev/site/legal</loc>
+        <loc>https://teslapp.feyli.dev/legal</loc>
         <changefreq>yearly</changefreq>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://teslapp.feyli.dev/site/privacy</loc>
+        <loc>https://teslapp.feyli.dev/privacy</loc>
         <changefreq>yearly</changefreq>
         <priority>0.5</priority>
     </url>

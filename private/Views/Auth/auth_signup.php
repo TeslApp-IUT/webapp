@@ -2,8 +2,10 @@
 $pendingUser = [
     'firstName' => '',
     'lastName'  => '',
-    'email'     => '',
+    'email'     => $_SESSION['tmp_user_email'],
 ];
+
+$profilePicture = $_SESSION['user_profile_picture'] ?? '';
 
 $title = 'Authentification — TeslApp';
 $description = "Authentification en cours avec Tesla";
@@ -14,22 +16,28 @@ ob_start();
 
 <div class="w-dvw h-dvh flex flex-col items-center justify-center p-4">
   <form id="form" method="post" class="flex flex-col items-center justify-center bg-[#1A1A1A] border border-[#4A4A4A] p-8 rounded-xl gap-5 w-full max-w-[420px] shadow-2xl transition-all duration-300 hover:border-neutral-500">
-    
-    <!-- Logo -->
+
     <img src="/_assets/images/Logo.svg" width="325" alt="logo TeslApp" class="mb-2 select-none">
 
-    <!-- Info Banner -->
-    <div class="flex gap-3 border-l-2 border-[#3b82f6]/80 bg-[#3b82f6]/10 p-3.5 rounded-r-lg text-neutral-300 text-xs leading-relaxed w-full text-left">
-      <svg class="w-4 h-4 text-[#3b82f6] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-      <span>Veuillez compléter vos informations pour finaliser la création de votre compte.</span>
+    <div class="border-l-3 border-l-blue-600/50 bg-blue-600/30 p-2 rounded-lg text-gray-300 text-sm">
+      Veuillez compléter vos informations pour finaliser la création de votre compte.
     </div>
 
-    <!-- Form Fields Container -->
+    <div class="relative group my-2">
+      <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-[#4A4A4A] group-hover:border-[#3b82f6] transition-all duration-300 shadow-xl bg-[#0d0d0d] flex items-center justify-center">
+        <?php if (!empty($profilePicture)): ?>
+          <img src="<?= htmlspecialchars($profilePicture, ENT_QUOTES, 'UTF-8') ?>" alt="Photo de profil" class="w-full h-full object-cover">
+        <?php else: ?>
+          <svg class="w-12 h-12 text-neutral-500 group-hover:text-[#3b82f6] transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+        <?php endif; ?>
+      </div>
+      <div class="absolute -inset-1 rounded-full border border-[#3b82f6]/0 scale-95 pointer-events-none group-hover:scale-100 group-hover:border-[#3b82f6]/30 transition-all duration-300"></div>
+    </div>
+
     <div class="form-class grid grid-cols-1 sm:grid-cols-2 gap-5 w-full mt-2">
 
-      <!-- First Name -->
       <div class="field flex flex-col" id="field-firstname">
         <label for="firstname" class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5 text-left">Prénom</label>
         <div class="relative flex items-center text-neutral-500 focus-within:text-[#3b82f6] transition-colors duration-200">
@@ -51,7 +59,6 @@ ob_start();
         <span class="error-msg text-xs text-red-500 mt-1.5 text-left hidden">Champ requis</span>
       </div>
 
-      <!-- Last Name -->
       <div class="field flex flex-col" id="field-lastname">
         <label for="lastname" class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5 text-left">Nom</label>
         <div class="relative flex items-center text-neutral-500 focus-within:text-[#3b82f6] transition-colors duration-200">
@@ -73,7 +80,6 @@ ob_start();
         <span class="error-msg text-xs text-red-500 mt-1.5 text-left hidden">Champ requis</span>
       </div>
 
-      <!-- Email Address -->
       <div class="field full flex flex-col sm:col-span-2" id="field-email">
         <label for="email" class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5 text-left">Adresse e-mail</label>
         <div class="relative flex items-center text-neutral-500 focus-within:text-[#3b82f6] transition-colors duration-200">
@@ -95,10 +101,8 @@ ob_start();
         <span class="error-msg text-xs text-red-500 mt-1.5 text-left hidden">Adresse e-mail invalide</span>
       </div>
 
-      <!-- Divider -->
       <div class="divider border-t border-[#2a2a2a] w-full my-2 sm:col-span-2"></div>
 
-      <!-- Submit button wrapper -->
       <div class="submit-wrap w-full sm:col-span-2 mt-1">
         <button type="submit" id="submit-btn" class="group w-full btn-primary hover:bg-gray-300! active:scale-95 transition-all! bg-white! text-black! font-normal! py-2.5 rounded-lg justify-center text-center flex items-center gap-2 cursor-pointer">
           <span id="btn-label">Finaliser mon compte</span>

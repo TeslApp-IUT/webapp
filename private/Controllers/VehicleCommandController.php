@@ -38,7 +38,7 @@ final class VehicleCommandController
             !is_string($_SESSION['user_id']) ||
             $_SESSION['user_id'] === ''
         ) {
-            Http::redirect('/site/home');
+            Http::redirect('/');
         }
 
         if (

@@ -42,10 +42,7 @@ use Teslapp\Utils\Flash;
      * Header variant: 'guest' (default) or 'user' (a view sets $header before include).
      * Strict whitelist -> prevents any arbitrary file inclusion through $header.
      **/
-    $headerVariant = $header ?? 'guest';
-    if (!in_array($headerVariant, ['guest', 'user'], true)) {
-      $headerVariant = 'guest';
-    }
+    $headerVariant = $_SESSION['logged_in'] === true ? 'user' : 'guest';
     require_once __DIR__ . '/partials/header_' . $headerVariant . '.php';
   }
   ?>
