@@ -31,7 +31,8 @@ window.addEventListener('message', (event) => {
   clearInterval(closedCheckInterval);
 
   if (event.data.success) {
-    globalThis.location.href = '/vehicle/select';
+    // New users are sent to the signup form (event.data.redirect); returning users to the app.
+    globalThis.location.href = event.data.redirect ?? '/vehicle/select';
   } else {
     showError(event.data.error);
     switchTo('button-retry');

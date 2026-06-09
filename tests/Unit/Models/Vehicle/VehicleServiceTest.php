@@ -43,13 +43,13 @@ final class VehicleServiceTest extends TestCase
                         $v->name === 'Ma Model 3',
                 ),
             );
-        $vehicleRepo->expects($this->never())->method('deleteByVin');
+        $vehicleRepo->expects($this->never())->method('detachByVin');
 
         $this->makeService($api, $vehicleRepo)->syncUserVehicles('user-1');
     }
 
     #[Test]
-    public function deletesVehiclesInDatabaseButGoneFromTheApi(): void
+    public function detachesVehiclesInDatabaseButGoneFromTheApi(): void
     {
         $api = $this->createMock(VehicleStateClient::class);
         $api->method('listVehicles')->willReturn([]); // API empty
@@ -59,7 +59,7 @@ final class VehicleServiceTest extends TestCase
         $vehicleRepo->method('findByUser')->willReturn([$existing]);
         $vehicleRepo
             ->expects($this->once())
-            ->method('deleteByVin')
+            ->method('detachByVin')
             ->with(
                 $this->callback(static fn(Vin $vin): bool => $vin->value === '5YJ3E1EA7KF000316'),
             );

@@ -45,7 +45,12 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
     {
         try {
             $stmt = $this->pdo->prepare(
-                'INSERT INTO vehicles (vin, user_id, name, model_code) VALUES (:vin, :user_id, :name, :model_code)',
+                'INSERT INTO vehicles (vin, user_id, name, model_code)
+                 VALUES (:vin, :user_id, :name, :model_code)
+                 ON CONFLICT (vin) DO UPDATE SET
+                     user_id    = EXCLUDED.user_id,
+                     name       = EXCLUDED.name,
+                     model_code = EXCLUDED.model_code',
             );
             $stmt->execute([
                 ':vin' => $vehicle->vin->value,
@@ -61,13 +66,13 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
         }
     }
 
-    public function deleteByVin(Vin $vin): void
+    public function detachByVin(Vin $vin): void
     {
         try {
-            $stmt = $this->pdo->prepare('DELETE FROM vehicles WHERE vin = :vin');
+            $stmt = $this->pdo->prepare('UPDATE vehicles SET user_id = NULL WHERE vin = :vin');
             $stmt->execute([':vin' => $vin->value]);
         } catch (PDOException $e) {
-            throw new DatabaseException("Failed to delete vehicle {$vin->value}", previous: $e);
+            throw new DatabaseException("Failed to detach vehicle {$vin->value}", previous: $e);
         }
     }
 

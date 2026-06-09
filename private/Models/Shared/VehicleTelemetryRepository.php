@@ -8,13 +8,7 @@ use PDO;
 use Teslapp\Models\Shared\TeslaApi\VehicleTelemetryRepositoryInterface;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 
-/**
- * Reads the latest telemetry signals for a vehicle from the fleet_telemetry schema.
- *
- * Each signal lives in its own table (one row per emission); we keep the most recent
- * row per VIN. Table and column names are internal constants — never user input.
- */
-final class VehicleTelemetryRepository implements VehicleTelemetryRepositoryInterface
+final readonly class VehicleTelemetryRepository implements VehicleTelemetryRepositoryInterface
 {
     public function __construct(private readonly PDO $pdo) {}
 
@@ -23,22 +17,17 @@ final class VehicleTelemetryRepository implements VehicleTelemetryRepositoryInte
      */
     public function getLatestTelemetry(Vin $vin): array
     {
-        return [
-            'battery_level' => $this->latest('charge_level', 'battery_level', $vin),
-            'charge_enable_request' => $this->latest(
-                'charge_enable',
-                'charge_enable_request',
-                $vin,
-            ),
-            'scheduled_charging_start_time' => $this->latest(
-                'charge_scheduled',
-                'scheduled_charging_start_time',
-                $vin,
-            ),
-            'inside_temp' => $this->latest('temp_int', 'inside_temp', $vin),
-            'climate_keeper_mode' => $this->latest('keeper_mode', 'climate_keeper_mode', $vin),
-            'hvac_ac_enabled' => $this->latest('ac_enabled', 'hvac_ac_enabled', $vin),
-        ];
+        $stmt = $this->pdo->prepare(
+            'SELECT inside_temp, ac_enabled, charge_enable, battery_level,
+                    scheduled_charging_start_time, climate_keeper_mode,
+                    latitude, longitude, last_seen_at
+             FROM app.overview
+             WHERE vin = :vin',
+        );
+        $stmt->execute([':vin' => $vin->value]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return is_array($row) ? $row : [];
     }
 
     /**

@@ -51,7 +51,7 @@ final class VehicleService
 
         foreach ($dbVehicles as $dbVehicle) {
             if (!in_array($dbVehicle->vin->value, $apiVins, true)) {
-                $this->vehicleRepository->deleteByVin($dbVehicle->vin);
+                $this->vehicleRepository->detachByVin($dbVehicle->vin);
             }
         }
     }

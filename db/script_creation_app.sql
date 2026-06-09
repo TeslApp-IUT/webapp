@@ -1,5 +1,5 @@
 ------------------------------------------------------------------
---                          VERSION 14                          --
+--                          VERSION 15                          --
 ------------------------------------------------------------------
 
 DROP TABLE IF EXISTS app.remember_tokens CASCADE;
@@ -41,7 +41,7 @@ CREATE TABLE app.users
 CREATE TABLE app.vehicles
 (
     vin        VARCHAR(17),
-    user_id    UUID         NOT NULL,
+    user_id    UUID,                   -- NULL = detached vehicle (gone from the Tesla account)
     name       VARCHAR(100) NOT NULL,
     model_code CHAR(1)      NOT NULL,  -- 4th VIN character, FK to vehicle_models
 
@@ -53,7 +53,7 @@ CREATE TABLE app.vehicles
 
     CONSTRAINT fk_vehicles_users FOREIGN KEY (user_id)
         REFERENCES app.users (id)
-        ON DELETE CASCADE
+        ON DELETE SET NULL
 );
 
 CREATE TABLE app.jwt

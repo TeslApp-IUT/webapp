@@ -10,7 +10,15 @@ use Teslapp\Controllers\Auth\AuthImpersonateController;
 use Teslapp\Controllers\Auth\AuthLogoutController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
 use Teslapp\Controllers\Auth\AuthController;
+use Teslapp\Controllers\Climate\PreconditioningController;
+use Teslapp\Controllers\GeocodingController;
+use Teslapp\Models\Auth\AuthRepository;
 use Teslapp\Models\Auth\ImpersonationRepository;
+use Teslapp\Models\Auth\RememberTokenRepository;
+use Teslapp\Models\Climate\PreconditioningPlannerRepository;
+use Teslapp\Models\Climate\PreconditioningPlannerRepositoryInterface;
+use Teslapp\Models\Climate\PreconditioningService;
+use Teslapp\Models\Shared\TokenCipher;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\VehicleCommandController;
@@ -81,11 +89,17 @@ $container->set(AuthController::class, static fn(): AuthController => new AuthCo
 
 $container->set(
     AuthCallbackController::class,
-    static fn(): AuthCallbackController => new AuthCallbackController(),
+    static fn(Container $c): AuthCallbackController => new AuthCallbackController(
+        $c->get(AuthRepository::class),
+        $c->get(RememberToken::class),
+    ),
 );
 $container->set(
     AuthSignUpController::class,
-    static fn(): AuthSignUpController => new AuthSignUpController(Database::pdo()),
+    static fn(Container $c): AuthSignUpController => new AuthSignUpController(
+        $c->get(AuthRepository::class),
+        $c->get(RememberToken::class),
+    ),
 );
 
 $container->set(
@@ -101,9 +115,23 @@ $container->set(
 );
 
 $container->set(
+    AuthRepository::class,
+    static fn(): AuthRepository => new AuthRepository(Database::pdo()),
+);
+
+$container->set(
+    TokenCipher::class,
+    static fn(): TokenCipher => new TokenCipher(
+        base64_decode(getenv('TESLAPP_TOKEN_ENCRYPTION_KEY'), strict: true),
+    ),
+);
+
+$container->set(
     AuthImpersonateController::class,
     static fn(Container $c): AuthImpersonateController => new AuthImpersonateController(
         $c->get(ImpersonationRepository::class),
+        $c->get(AuthRepository::class),
+        $c->get(TokenCipher::class),
     ),
 );
 
