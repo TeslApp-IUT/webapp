@@ -95,7 +95,10 @@ $container->set(
     AuthSignUpController::class,
     static fn(): AuthSignUpController => new AuthSignUpController(),
 );
-$container->set(ClimateClient::class, static fn(): ClimateClient => new ClimateClient(TESLA_COMMANDS_DRY_RUN));
+$container->set(
+    ClimateClient::class,
+    static fn(): ClimateClient => new ClimateClient(TESLA_COMMANDS_DRY_RUN),
+);
 $container->set(
     ClimateService::class,
     static fn(Container $c): ClimateService => new ClimateService($c->get(ClimateClient::class)),
