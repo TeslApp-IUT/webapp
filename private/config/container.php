@@ -25,6 +25,8 @@ use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 use Teslapp\Models\Vehicle\VehicleService;
 use Teslapp\Utils\Container;
 use Teslapp\Controllers\Climate\ClimateController;
+use Teslapp\Models\Climate\ClimateService;
+use Teslapp\Models\Shared\TeslaApi\ClimateClient;
 
 $container = new Container();
 
@@ -74,8 +76,20 @@ $container->set(
     static fn(): AuthSignUpController => new AuthSignUpController(),
 );
 $container->set(
+    ClimateClient::class,
+    static fn(): ClimateClient => new ClimateClient(),
+);
+$container->set(
+    ClimateService::class,
+    static fn(Container $c): ClimateService => new ClimateService(
+        $c->get(ClimateClient::class),
+    ),
+);
+$container->set(
     ClimateController::class,
-    static fn(): ClimateController => new ClimateController(Database::pdo()),
+    static fn(Container $c): ClimateController => new ClimateController(
+        $c->get(ClimateService::class),
+    ),
 );
 
 // Vehicle commands (issue #26): command port -> adapter, then service and controller.
