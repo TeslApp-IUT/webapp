@@ -206,7 +206,9 @@
   border: 1px solid var(--color-border);
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .btn-soft:hover {
@@ -237,7 +239,7 @@
 .precond-form .precond-days,
 .precond-form .precond-check,
 .precond-form .switch,
-.precond-form button[type="submit"] {
+.precond-form button[type='submit'] {
   grid-column: 1 / -1;
 }
 

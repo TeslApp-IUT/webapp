@@ -18,9 +18,10 @@ use Teslapp\Utils\Http;
 
 final class ClimateController
 {
-    public function __construct(private readonly ClimateService $climateService,
-                                private readonly PreconditioningService $preconditioningService,
-    ) { }
+    public function __construct(
+        private readonly ClimateService $climateService,
+        private readonly PreconditioningService $preconditioningService,
+    ) {}
 
     public function ac(): void
     {
@@ -28,7 +29,7 @@ final class ClimateController
 
         try {
             $plans = $this->preconditioningService->listPlansForVehicle($userId, $vin);
-        } catch (InvalidArgumentException|VehicleUnauthorizedException) {
+        } catch (InvalidArgumentException | VehicleUnauthorizedException) {
             Flash::set('error', 'Véhicule invalide ou inaccessible.');
             Http::redirect('/vehicle/select');
         }
@@ -100,7 +101,7 @@ final class ClimateController
         }
 
         return [
-            'userId' => (string)($_SESSION['user_id'] ?? ''),
+            'userId' => (string) ($_SESSION['user_id'] ?? ''),
             'vin' => new Vin($_SESSION['selected_vin']),
         ];
     }
