@@ -13,18 +13,18 @@ final readonly class ClimateService
 {
     public function __construct(private ClimateClient $client) {}
 
-    public function activate(Vin $vin, AccessToken $token, ?Temperature $temp = null): void
+    public function activate(Vin $vin, ?Temperature $temp = null): void
     {
-        $this->client->startClimate($vin, $token, $temp);
+        $this->client->startClimate($vin, $temp);
     }
 
-    public function deactivate(Vin $vin, AccessToken $token): void
+    public function deactivate(Vin $vin): void
     {
-        $this->client->stopClimate($vin, $token);
+        $this->client->stopClimate($vin);
     }
 
-    public function applyKeeperMode(Vin $vin, AccessToken $token, KeeperMode $mode): void
+    public function applyKeeperMode(Vin $vin, KeeperMode $mode): void
     {
-        $this->client->setKeeperMode($vin, $token, $mode);
+        $this->client->setKeeperMode($vin, $mode);
     }
 }
