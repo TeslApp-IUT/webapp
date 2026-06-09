@@ -11,8 +11,6 @@ use PHPUnit\Framework\TestCase;
 use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
 use Teslapp\Models\Shared\ValueObjects\VehicleConnectivityStatus;
 use Teslapp\Models\Shared\ValueObjects\Vin;
-use Teslapp\Models\Vehicle\TeslaModel;
-use Teslapp\Models\Vehicle\TeslaModelRepositoryInterface;
 use Teslapp\Models\Vehicle\Vehicle;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 use Teslapp\Models\Vehicle\VehicleService;
@@ -38,18 +36,16 @@ final class VehicleServiceTest extends TestCase
             ->method('save')
             ->with(
                 $this->callback(
+                    // model_code is the 4th VIN character ('3' for a Model 3).
                     static fn(Vehicle $v): bool => $v->vin->value === '5YJ3E1EA7KF000316' &&
                         $v->userId === 'user-1' &&
-                        $v->modelId === 'model-3-id' &&
+                        $v->modelCode === '3' &&
                         $v->name === 'Ma Model 3',
                 ),
             );
         $vehicleRepo->expects($this->never())->method('deleteByVin');
 
-        $modelRepo = $this->createMock(TeslaModelRepositoryInterface::class);
-        $modelRepo->method('findAll')->willReturn([new TeslaModel('model-3-id', 'Model 3')]);
-
-        $this->makeService($api, $vehicleRepo, $modelRepo)->syncUserVehicles('user-1');
+        $this->makeService($api, $vehicleRepo)->syncUserVehicles('user-1');
     }
 
     #[Test]
@@ -58,7 +54,7 @@ final class VehicleServiceTest extends TestCase
         $api = $this->createMock(VehicleStateClient::class);
         $api->method('listVehicles')->willReturn([]); // API empty
 
-        $existing = new Vehicle(new Vin('5YJ3E1EA7KF000316'), 'user-1', 'Ma Model 3', 'model-3-id');
+        $existing = new Vehicle(new Vin('5YJ3E1EA7KF000316'), 'user-1', 'Ma Model 3', '3');
         $vehicleRepo = $this->createMock(VehicleRepositoryInterface::class);
         $vehicleRepo->method('findByUser')->willReturn([$existing]);
         $vehicleRepo
@@ -69,16 +65,14 @@ final class VehicleServiceTest extends TestCase
             );
         $vehicleRepo->expects($this->never())->method('save');
 
-        $modelRepo = $this->createMock(TeslaModelRepositoryInterface::class);
-
-        $this->makeService($api, $vehicleRepo, $modelRepo)->syncUserVehicles('user-1');
+        $this->makeService($api, $vehicleRepo)->syncUserVehicles('user-1');
     }
 
     #[Test]
     public function listForUserReturnsTheUsersVehicles(): void
     {
         $vehicles = [
-            new Vehicle(new Vin('5YJ3E1EA7KF000316'), 'user-1', 'Ma Model 3', 'model-3-id'),
+            new Vehicle(new Vin('5YJ3E1EA7KF000316'), 'user-1', 'Ma Model 3', '3'),
         ];
 
         $vehicleRepo = $this->createMock(VehicleRepositoryInterface::class);
@@ -87,7 +81,6 @@ final class VehicleServiceTest extends TestCase
         $service = $this->makeService(
             $this->createMock(VehicleStateClient::class),
             $vehicleRepo,
-            $this->createMock(TeslaModelRepositoryInterface::class),
         );
 
         self::assertSame($vehicles, $service->listForUser('user-1'));
@@ -106,7 +99,6 @@ final class VehicleServiceTest extends TestCase
         $service = $this->makeService(
             $api,
             $this->createMock(VehicleRepositoryInterface::class),
-            $this->createMock(TeslaModelRepositoryInterface::class),
         );
 
         self::assertSame(
@@ -122,7 +114,6 @@ final class VehicleServiceTest extends TestCase
         $service = $this->makeService(
             $this->createMock(VehicleStateClient::class),
             $this->createMock(VehicleRepositoryInterface::class),
-            $this->createMock(TeslaModelRepositoryInterface::class),
         );
 
         self::assertSame($expected, $service->modelNameForVin(new Vin($vin)));
@@ -144,8 +135,7 @@ final class VehicleServiceTest extends TestCase
     private function makeService(
         VehicleStateClient $api,
         VehicleRepositoryInterface $vehicleRepo,
-        TeslaModelRepositoryInterface $modelRepo,
     ): VehicleService {
-        return new VehicleService($api, $vehicleRepo, $modelRepo);
+        return new VehicleService($api, $vehicleRepo);
     }
 }
