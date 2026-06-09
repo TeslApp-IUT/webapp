@@ -145,6 +145,10 @@ final class VehicleCommandController
 
         try {
             $command($userId, new Vin($vin));
+        } catch (\InvalidArgumentException) {
+            // A corrupted/stale selected_vin must not 500 a command endpoint (mirrors DashboardController).
+            unset($_SESSION['selected_vin']);
+            Http::json(['error' => 'No vehicle selected'], 400);
         } catch (VehicleUnauthorizedException) {
             Http::json(['error' => 'You do not have access to this vehicle'], 403);
         } catch (TeslaApiException) {

@@ -1,5 +1,6 @@
 const ERRORS = {
   missing_code: "Code d'autorisation manquant.",
+  invalid_state: 'Échec de la vérification de sécurité. Veuillez réessayer.',
   token_exchange_failed: "L'échange du token a échoué. Veuillez réessayer.",
 };
 

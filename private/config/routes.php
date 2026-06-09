@@ -48,6 +48,7 @@ return [
     'auth' => [AuthController::class, 'auth', false],
     'auth/callback' => [AuthCallbackController::class, 'callback', false],
     'auth/signup' => [AuthSignUpController::class, 'signup', false],
+    'auth/logout' => [AuthController::class, 'logout', false],
 
     // URLs for air conditioning
     'dashboard/ac' => [ClimateController::class, 'ac', true],

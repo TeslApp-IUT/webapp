@@ -9,7 +9,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
-use Teslapp\Models\Shared\ValueObjects\AccessToken;
 use Teslapp\Models\Shared\ValueObjects\VehicleConnectivityStatus;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\TeslaModel;
@@ -50,10 +49,7 @@ final class VehicleServiceTest extends TestCase
         $modelRepo = $this->createMock(TeslaModelRepositoryInterface::class);
         $modelRepo->method('findAll')->willReturn([new TeslaModel('model-3-id', 'Model 3')]);
 
-        $this->makeService($api, $vehicleRepo, $modelRepo)->syncUserVehicles(
-            'user-1',
-            new AccessToken('tok'),
-        );
+        $this->makeService($api, $vehicleRepo, $modelRepo)->syncUserVehicles('user-1');
     }
 
     #[Test]
@@ -75,10 +71,7 @@ final class VehicleServiceTest extends TestCase
 
         $modelRepo = $this->createMock(TeslaModelRepositoryInterface::class);
 
-        $this->makeService($api, $vehicleRepo, $modelRepo)->syncUserVehicles(
-            'user-1',
-            new AccessToken('tok'),
-        );
+        $this->makeService($api, $vehicleRepo, $modelRepo)->syncUserVehicles('user-1');
     }
 
     #[Test]
@@ -106,7 +99,6 @@ final class VehicleServiceTest extends TestCase
         $api = $this->createMock(VehicleStateClient::class);
         $api->expects($this->once())
             ->method('fetchConnectivity')
-            ->with(new AccessToken('tok'))
             ->willReturn([
                 '5YJ3E1EA7KF000316' => VehicleConnectivityStatus::Online,
             ]);
@@ -119,7 +111,7 @@ final class VehicleServiceTest extends TestCase
 
         self::assertSame(
             ['5YJ3E1EA7KF000316' => VehicleConnectivityStatus::Online],
-            $service->connectivityForUser(new AccessToken('tok')),
+            $service->connectivityForUser(),
         );
     }
 
