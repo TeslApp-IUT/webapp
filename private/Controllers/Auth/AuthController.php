@@ -2,6 +2,9 @@
 
 namespace Teslapp\Controllers\Auth;
 
+use Teslapp\Utils\Csrf;
+use Teslapp\Utils\Http;
+
 /**
  * Authentification Controller
  *
@@ -17,6 +20,26 @@ final class AuthController
             'POST' => $this->handlePost(),
             default => $this->methodNotAllowed(),
         };
+    }
+
+    /**
+     * Logs the user out: clears the local session and tells the browser to drop its
+     * site data. The Tesla token is NOT revoked (partial logout — the user can log
+     * back in without MFA while the refresh token is still valid).
+     */
+    public function logout(): never
+    {
+        // Logout changes state → require a valid CSRF token (the header forms POST it).
+        Csrf::requireValid('/site/home');
+
+        // Clear the local session (the Tesla token is intentionally left intact).
+        $_SESSION = [];
+        session_destroy();
+
+        // OWASP Session Management: have the browser drop cookies/storage/cache too.
+        header('Clear-Site-Data: "cookies", "storage", "cache"');
+
+        Http::redirect('/site/home');
     }
 
     private function handleGet(): void
