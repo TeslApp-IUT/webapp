@@ -45,9 +45,9 @@ final readonly class PreconditioningPlanner
     /** Minutes after midnight, for Tesla's `precondition_time` parameter. */
     public function preconditionTimeMinutes(): int
     {
-        [$hours, $minutes] = array_map(intval(...), explode(':', $this->activationHour));
+        [$hours, $minutes] = explode(':', $this->activationHour);
 
-        return $hours * 60 + $minutes;
+        return (int) $hours * 60 + (int) $minutes;
     }
 
     /** Sorted day ids (1-7), for the preconditioning_plans rows. */
