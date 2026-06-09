@@ -4,7 +4,7 @@ $vin = $_SESSION['selected_vin'] ?? null;
 $title = 'Climatisation — TeslApp';
 $description = 'Gérez la climatisation de votre Tesla à distance.';
 $header = 'user';
-$extraCss = ['dashboard', 'air-conditioning'];
+//$extraCss = ['dashboard', 'ac'];
 $extraJs = ['ac'];
 
 ob_start();
@@ -37,10 +37,13 @@ ob_start();
               </form>
               <!-- Temperature Section -->
               <div id="volet-temp" style="display:none; margin-top: 16px;">
-                <label for="temp-slider" class="card-label">Température : <span id="temp-display">23</span> °C</label>
-                <input type="range" id="temp-slider" min="15" max="28" step="0.5" value="23"
-                       style="width:100%; margin: 8px 0;">
-                <button type="submit" form="form-start" class="btn-success">Confirmer</button>
+                <label class="card-label">Température</label>
+                <div class="temp-controls">
+                  <button type="button" class="btn-temp" id="btn-minus">−</button>
+                  <span class="temp-value"><span id="temp-display">23</span> °C</span>
+                  <button type="button" class="btn-temp" id="btn-plus">+</button>
+                </div>
+                <button type="submit" form="form-start" class="btn-success" style="margin-top: 12px;">Confirmer</button>
               </div>
               <!-- Disable Button -->
               <form method="post" action="/climate/toggle" style="margin-top: 8px;">
