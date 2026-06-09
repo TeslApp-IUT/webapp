@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Teslapp\Controllers\Climate;
 
 use InvalidArgumentException;
-use Teslapp\Models\Climate\ClimateService;
+use Teslapp\Models\Climate\PreconditioningService;
 use Teslapp\Models\Shared\Exceptions\TeslaApiException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
@@ -27,7 +27,7 @@ final class PreconditioningController
 {
     private const PAGE = '/dashboard/ac/precondition';
 
-    public function __construct(private readonly ClimateService $service) {}
+    public function __construct(private readonly PreconditioningService $service) {}
 
     // Shows the schedules of the vehicle currently selected in the session.
     public function index(): void

@@ -14,7 +14,7 @@ use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\VehicleCommandController;
 use Teslapp\Controllers\VehicleController;
-use Teslapp\Models\Climate\ClimateService;
+use Teslapp\Models\Climate\PreconditioningService;
 use Teslapp\Models\Climate\PreconditioningPlannerRepository;
 use Teslapp\Models\Climate\PreconditioningPlannerRepositoryInterface;
 use Teslapp\Models\Database;
@@ -121,8 +121,8 @@ $container->set(
     ),
 );
 $container->set(
-    ClimateService::class,
-    static fn(Container $c): ClimateService => new ClimateService(
+    PreconditioningService::class,
+    static fn(Container $c): PreconditioningService => new PreconditioningService(
         $c->get(PreconditioningPlannerRepositoryInterface::class),
         $c->get(VehicleRepositoryInterface::class),
         $c->get(ClimateCommandClient::class),
@@ -137,7 +137,7 @@ $container->set(
 $container->set(
     PreconditioningController::class,
     static fn(Container $c): PreconditioningController => new PreconditioningController(
-        $c->get(ClimateService::class),
+        $c->get(PreconditioningService::class),
     ),
 );
 

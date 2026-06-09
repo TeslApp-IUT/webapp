@@ -12,9 +12,9 @@ use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 
 /**
- * Climate use cases: CRUD on a vehicle's preconditioning schedules.
+ * Preconditioning use cases: CRUD on a vehicle's schedules.
  */
-final class ClimateService
+final class PreconditioningService
 {
     public function __construct(
         private readonly PreconditioningPlannerRepositoryInterface $plannerRepository,
