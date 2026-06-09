@@ -24,31 +24,23 @@ final readonly class DashboardController
      */
     public function index(): void
     {
-        // Authentication is enforced centrally by the front controller (requiresAuth route flag).
         $selectedVin = $_SESSION['selected_vin'] ?? null;
         if (!is_string($selectedVin) || $selectedVin === '') {
-            header('Location: /vehicle/select');
-            $userId = $_SESSION['user_id'] ?? null;
-
-            /* Redirect to the home page if no user is found in session */
-            if (!$userId) {
-                header('Location: /');
-                exit();
-            }
-
-            try {
-                $vin = new Vin($selectedVin);
-            } catch (\InvalidArgumentException) {
-                // A corrupted/stale selected_vin must not 500 the dashboard.
-                unset($_SESSION['selected_vin']);
-                header('Location: /vehicle/select');
-                exit();
-            }
-
-            $data = $this->telemetry->getLatestTelemetry($vin);
-            $vehicleName = $this->vehicles->findByVin($vin)?->name ?? 'Mon véhicule';
-
-            require_once __DIR__ . '/../Views/Vehicle/dashboard.php';
+            header('Location: /vehicle/select', true, 302);
+            exit();
         }
+
+        try {
+            $vin = new Vin($selectedVin);
+        } catch (\InvalidArgumentException) {
+            unset($_SESSION['selected_vin']);
+            header('Location: /vehicle/select', true, 302);
+            exit();
+        }
+
+        $data = $this->telemetry->getLatestTelemetry($vin);
+        $vehicleName = $this->vehicles->findByVin($vin)?->name ?? 'Mon véhicule';
+
+        require_once __DIR__ . '/../Views/Vehicle/dashboard.php';
     }
 }
