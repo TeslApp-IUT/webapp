@@ -204,12 +204,6 @@ final class TeslaHttpClient
             'audience' => 'https://fleet-api.prd.eu.vn.cloud.tesla.com',
             'redirect_uri' => $redirectUri,
         ];
-        error_log($body['grant_type']);
-        error_log($body['client_id']);
-        error_log($body['client_secret']);
-        error_log($body['code']);
-        error_log($body['audience']);
-        error_log($body['redirect_uri']);
         $res = self::send(
             'POST',
             self::TOKEN_PATH,
