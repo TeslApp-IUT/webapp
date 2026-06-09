@@ -68,7 +68,7 @@ final class AuthController
     private function handlePost(): void
     {
         http_response_code(401);
-        if ($_SESSION['access_token']) {
+        if (!empty($_SESSION['access_token'])) {
             http_response_code(200);
         }
     }
