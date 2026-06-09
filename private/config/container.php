@@ -63,7 +63,9 @@ $container->set(
 );
 $container->set(
     VehicleTelemetryRepositoryInterface::class,
-    static fn(): VehicleTelemetryRepositoryInterface => new VehicleTelemetryRepository(Database::pdo()),
+    static fn(): VehicleTelemetryRepositoryInterface => new VehicleTelemetryRepository(
+        Database::pdo(),
+    ),
 );
 $container->set(
     DashboardController::class,
