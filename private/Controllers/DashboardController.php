@@ -12,12 +12,14 @@ use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
  * Displays the vehicle dashboard: pulls the latest telemetry for the selected
  * vehicle and hands it to the view. All persistence lives in the repositories.
  */
-final class DashboardController
+final readonly class DashboardController
 {
     public function __construct(
-        private readonly VehicleTelemetryRepositoryInterface $telemetry,
-        private readonly VehicleRepositoryInterface $vehicles,
-    ) {}
+        private VehicleTelemetryRepositoryInterface $telemetry,
+        private VehicleRepositoryInterface          $vehicles,
+    )
+    {
+    }
 
     /**
      * Requires an authenticated user with a selected vehicle, then renders the dashboard.
@@ -28,26 +30,27 @@ final class DashboardController
         $selectedVin = $_SESSION['selected_vin'] ?? null;
         if (!is_string($selectedVin) || $selectedVin === '') {
             header('Location: /vehicle/select');
-        $userId = $_SESSION['user_id'] ?? null;
+            $userId = $_SESSION['user_id'] ?? null;
 
-        /* Redirect to the home page if no user is found in session */
-        if (!$userId) {
-            header('Location: /');
-            exit();
+            /* Redirect to the home page if no user is found in session */
+            if (!$userId) {
+                header('Location: /');
+                exit();
+            }
+
+            try {
+                $vin = new Vin($selectedVin);
+            } catch (\InvalidArgumentException) {
+                // A corrupted/stale selected_vin must not 500 the dashboard.
+                unset($_SESSION['selected_vin']);
+                header('Location: /vehicle/select');
+                exit();
+            }
+
+            $data = $this->telemetry->getLatestTelemetry($vin);
+            $vehicleName = $this->vehicles->findByVin($vin)?->name ?? 'Mon véhicule';
+
+            require_once __DIR__ . '/../Views/Vehicle/dashboard.php';
         }
-
-        try {
-            $vin = new Vin($selectedVin);
-        } catch (\InvalidArgumentException) {
-            // A corrupted/stale selected_vin must not 500 the dashboard.
-            unset($_SESSION['selected_vin']);
-            header('Location: /vehicle/select');
-            exit();
-        }
-
-        $data = $this->telemetry->getLatestTelemetry($vin);
-        $vehicleName = $this->vehicles->findByVin($vin)?->name ?? 'Mon véhicule';
-
-        require_once __DIR__ . '/../Views/Vehicle/dashboard.php';
     }
 }
