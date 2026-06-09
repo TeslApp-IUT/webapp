@@ -170,6 +170,6 @@ final readonly class AuthRepository
         );
         $stmt->execute([':sub_id' => $sub_id]);
         $row = $stmt->fetch();
-        return $row !== null;
+        return $row !== false;
     }
 }
