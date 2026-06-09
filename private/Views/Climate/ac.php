@@ -3,7 +3,7 @@ use Teslapp\Models\Climate\PreconditioningPlanner;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
 
 $inside_temp = $data['inside_temp'] ?? 'N/A';
-
+$csrf = $_SESSION['csrf_token'] ?? '';
 $title = 'Climatisation — TeslApp';
 $description = 'Gérez la climatisation de votre Tesla à distance.';
 $header = 'user';
