@@ -22,14 +22,23 @@ final readonly class AuthRepository
     /**
      * Inserts the user keyed by the Tesla `sub`, or refreshes its email on conflict.
      */
-    public function ensureUser(string $userId, string $email): void
-    {
+    public function ensureUser(
+        string $userId,
+        string $email,
+        string $firstName,
+        string $lastName,
+    ): void {
         try {
             $stmt = $this->pdo->prepare(
-                'INSERT INTO users (id, email) VALUES (:id, :email)
-                 ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email, updated_at = now()',
+                'INSERT INTO users (id, email, first_name, last_name) VALUES (:id, :email, :first_name, :last_name)
+                 ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email, updated_at = now(), first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name',
             );
-            $stmt->execute([':id' => $userId, ':email' => $email]);
+            $stmt->execute([
+                ':id' => $userId,
+                ':email' => $email,
+                ':first_name' => $firstName,
+                ':last_name' => $lastName,
+            ]);
         } catch (PDOException $e) {
             throw new DatabaseException("Failed to upsert user $userId", previous: $e);
         }
@@ -150,5 +159,17 @@ final readonly class AuthRepository
         $row = $stmt->fetch();
 
         return $row !== false ? $row : null;
+    }
+
+    public function isUserInDatabase(string $sub_id): bool
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT 1
+                   FROM users
+                   WHERE id = :sub_id',
+        );
+        $stmt->execute([':sub_id' => $sub_id]);
+        $row = $stmt->fetch();
+        return $row !== false;
     }
 }

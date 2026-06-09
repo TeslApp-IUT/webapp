@@ -1,5 +1,6 @@
 const ERRORS = {
   missing_code: "Code d'autorisation manquant.",
+  invalid_state: 'Échec de la vérification de sécurité. Veuillez réessayer.',
   token_exchange_failed: "L'échange du token a échoué. Veuillez réessayer.",
 };
 
@@ -23,14 +24,15 @@ let closedCheckInterval = null;
 let authCompleted = false;
 
 window.addEventListener('message', (event) => {
-  if (event.origin !== window.location.origin) return;
+  if (event.origin !== globalThis.location.origin) return;
   if (typeof event.data?.success !== 'boolean') return;
 
   authCompleted = true;
   clearInterval(closedCheckInterval);
 
   if (event.data.success) {
-    window.location.href = '/vehicle/dashboard';
+    // New users are sent to the signup form (event.data.redirect); returning users to the app.
+    globalThis.location.href = event.data.redirect ?? '/vehicle/select';
   } else {
     showError(event.data.error);
     switchTo('button-retry');

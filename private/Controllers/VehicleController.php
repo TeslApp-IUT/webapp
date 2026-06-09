@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Teslapp\Controllers;
 
 use Teslapp\Models\Shared\Exceptions\TeslaAppException;
-use Teslapp\Models\Shared\ValueObjects\AccessToken;
 use Teslapp\Models\Shared\ValueObjects\VehicleConnectivityStatus;
 use Teslapp\Models\Vehicle\Vehicle;
 use Teslapp\Models\Vehicle\VehicleService;
@@ -25,15 +24,15 @@ final class VehicleController
      */
     public function select(): void
     {
-        $token = isset($_SESSION['access_token'])
-            ? new AccessToken($_SESSION['access_token'])
-            : null;
+        // The Tesla token is resolved from the session by TeslaHttpClient; we only need to
+        // know whether one is present to decide whether to attempt a live sync.
+        $hasToken = isset($_SESSION['access_token']) && $_SESSION['access_token'] !== '';
 
         $statuses = [];
 
-        if ($token !== null) {
+        if ($hasToken) {
             try {
-                $this->vehicleService->syncUserVehicles($_SESSION['user_id'], $token);
+                $this->vehicleService->syncUserVehicles($_SESSION['user_id']);
             } catch (TeslaAppException $e) {
                 // Tesla unreachable (no token yet, vehicle offline...): fall back to the stored list.
                 error_log('Vehicle sync failed: ' . $e->getMessage());
@@ -44,7 +43,7 @@ final class VehicleController
             }
 
             try {
-                $statuses = $this->vehicleService->connectivityForUser($token);
+                $statuses = $this->vehicleService->connectivityForUser();
             } catch (TeslaAppException $e) {
                 // Live status is optional: show the cards without a dot if it fails.
                 error_log('Connectivity fetch failed: ' . $e->getMessage());
@@ -100,6 +99,6 @@ final class VehicleController
 
         $_SESSION['selected_vin'] = $vin;
         Flash::set('success', 'Véhicule sélectionné.');
-        Http::redirect('/vehicle/dashboard');
+        Http::redirect('/dashboard/overview');
     }
 }

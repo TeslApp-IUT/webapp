@@ -7,7 +7,7 @@ ob_start();
 <section class="legal-section">
     <div class="legal-container">
         <!-- Back Link -->
-        <a href="/site/home" class="back-link">
+        <a href="/" class="back-link">
             <img src="/_assets/images/fleche-gauche.svg" alt="" aria-hidden="true">
             Retour à l'accueil
         </a>

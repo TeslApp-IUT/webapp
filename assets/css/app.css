@@ -126,7 +126,7 @@
   gap: 8px;
   padding: 8px 16px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: #ffffff;
   background-color: var(--color-primary);
   border-radius: 8px;
@@ -142,6 +142,47 @@
   flex-shrink: 0;
 }
 
+/* ----- Success Button ----- */
+.btn-success {
+  background-color: #13803b;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-success:hover {
+  background-color: #16a34a;
+}
+
+.btn-success:active {
+  background-color: #15803d;
+}
+
+/* ----- Enabled Button ----- */
+.btn-enabled {
+  background-color: #ffffff;
+  color: #111111;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-enabled:hover {
+  background-color: #e5e5e5;
+}
+
+.btn-enabled:active {
+  background-color: #d4d4d4;
+}
 /* ===================================================================================================
    5. HELPERS (accessibility & navigation)
    =================================================================================================== */
@@ -551,7 +592,7 @@ input:focus-visible {
 
 .footer {
   padding: 48px 0 0;
-  background-color: var(--color-bg-card);
+  background-color: var(--color-bg);
   border-top: 0.667px solid var(--color-border);
 }
 
@@ -1515,6 +1556,10 @@ input:focus-visible {
 }
 
 .vehicle-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
   padding: 40px;
   color: var(--color-text-secondary);
   text-align: center;

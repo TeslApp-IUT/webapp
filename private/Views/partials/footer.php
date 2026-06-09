@@ -8,7 +8,7 @@
         <div class="footer-content">
             <!-- Column: Logo and description -->
             <div class="footer-col">
-                <a href="/site/home" class="logo">
+                <a href="/" class="logo">
                     <img src="/_assets/images/Logo.svg" alt="TeslApp">
                 </a>
                 <p class="footer-description">
@@ -33,10 +33,10 @@
             <div class="footer-col">
                 <h3 class="footer-heading">Navigation</h3>
                 <ul class="footer-list">
-                    <li><a href="/site/home">Accueil</a></li>
-                    <li><a href="/site/sitemap">Plan du site</a></li>
-                    <li><a href="/site/legal">Mentions légales</a></li>
-                    <li><a href="/site/privacy">Politique de confidentialité</a></li>
+                    <li><a href="/">Accueil</a></li>
+                    <li><a href="/sitemap">Plan du site</a></li>
+                    <li><a href="/legal">Mentions légales</a></li>
+                    <li><a href="/privacy">Politique de confidentialité</a></li>
                 </ul>
             </div>
 

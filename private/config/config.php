@@ -80,26 +80,26 @@ define('DB_NAME', getenv('DB_NAME') ?: '');
 define('DB_SSLMODE', getenv('DB_SSLMODE') ?: 'prefer');
 
 /**
- * Tesla API mode: 'simulated' (dev/CI — reads the documented fixtures) or 'real'
- * (live Fleet API). Defaults to 'simulated' so the app runs out of the box.
+ * Safety guard for vehicle commands (issue #26). When true (the default),
+ * TeslaCommandClient does NOT send commands to the Fleet API / proxy — it logs
+ * and simulates success. Set to false ONLY once the virtual key is paired on the
+ * real vehicle (in-person test). Prevents accidental real commands on the
+ * professor's Tesla from a deployed environment.
+ *
+ * Fail-safe: a missing, empty or invalid value falls back to true (blocked).
+ * Only an explicit falsy value (false/0/off/no) turns the guard off.
  */
-define('TESLA_API_MODE', getenv('TESLA_API_MODE') ?: 'simulated');
+$dryRunRaw = getenv('TESLA_COMMANDS_DRY_RUN');
+define(
+    'TESLA_COMMANDS_DRY_RUN',
+    $dryRunRaw === false || $dryRunRaw === ''
+        ? true
+        : filter_var($dryRunRaw, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? true,
+);
 
-/**
- * Filesystem path to the Tesla fixtures (documented API responses) consumed by
- * SimulatedTeslaApiClient.
- */
-define('TESLA_FIXTURES_PATH', getenv('TESLA_FIXTURES_PATH') ?: BASE_PATH . 'tests/fixtures/tesla');
-
-/**
- * Development access token placeholder, used while the OAuth login is not wired
- * yet. The simulated client ignores its content; the real client will use the
- * OAuth token provided by AuthService instead (see oauth2-tesla.md).
- */
-define('DEV_ACCESS_TOKEN', getenv('DEV_ACCESS_TOKEN') ?: 'dev-placeholder-token');
-
-/**
- * Development user id, used while there is no real login. Must match the user
- * seeded by db/script_insertion_dev.sql.
- */
-define('DEV_USER_ID', getenv('DEV_USER_ID') ?: '00000000-0000-0000-0000-000000000001');
+// Nominatim geocoder: resolves a schedule's address to coordinates and back.
+define('NOMINATIM_BASE_URL', getenv('NOMINATIM_BASE_URL') ?: 'https://nominatim.openstreetmap.org');
+define(
+    'NOMINATIM_USER_AGENT',
+    getenv('NOMINATIM_USER_AGENT') ?: 'TeslApp/1.0 (+https://teslapp.feyli.dev)',
+);
