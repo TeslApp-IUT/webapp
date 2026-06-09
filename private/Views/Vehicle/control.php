@@ -20,7 +20,7 @@ ob_start();
     <div class="dashboard-layout">
       <?php $activeNav = 'vehicle'; require __DIR__ . '/../partials/dashboard_nav.php'; ?>
 
-      <main class="dashboard-content">
+      <div class="dashboard-content">
         <header class="commands-header">
           <h1 class="dashboard-title">Commandes du véhicule</h1>
           <a href="/vehicle/select" class="btn-switch-vehicle">
@@ -140,7 +140,7 @@ ob_start();
             </div>
           </section>
         </div>
-      </main>
+      </div>
     </div>
   </section>
 <?php

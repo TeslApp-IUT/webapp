@@ -32,7 +32,7 @@ ob_start();
       <?php $activeNav = 'overview';
       require __DIR__ . '/../partials/dashboard_nav.php'; ?>
       <!-- Right Section -->
-      <main class="dashboard-content">
+      <div class="dashboard-content">
         <h1 class="dashboard-title">Tableau de bord — <?= e($vehicleName) ?></h1>
         <div class="dashboard-grid">
           <!-- Battery -->
@@ -78,7 +78,7 @@ ob_start();
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   </section>
 <?php
