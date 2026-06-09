@@ -16,35 +16,18 @@ use Teslapp\Utils\Flash;
 use Teslapp\Utils\Http;
 
 /**
- * Preconditioning schedules on the climate page (dashboard/ac/precondition).
+ * Preconditioning schedule write actions on the climate page (dashboard/ac).
  *
- * index() lists the selected vehicle's schedules. create/update/delete/toggle are
- * POST actions that all share the same shape: check the CSRF token, resolve the
- * session context, call ClimateService, set a flash message, then redirect back.
- * This class is pure HTTP orchestration: no business rule and no SQL live here.
+ * create/update/delete/toggle are POST actions sharing the same shape: check the CSRF
+ * token, resolve the session context, call PreconditioningService, set a flash message,
+ * then redirect back. The schedules are listed by ClimateController on dashboard/ac.
+ * Pure HTTP orchestration: no business rule and no SQL here.
  */
 final class PreconditioningController
 {
-    private const PAGE = '/dashboard/ac/precondition';
+    private const PAGE = '/dashboard/ac';
 
     public function __construct(private readonly PreconditioningService $service) {}
-
-    // Shows the schedules of the vehicle currently selected in the session.
-    public function index(): void
-    {
-        [$userId, $vin] = $this->context();
-
-        try {
-            $plans = $this->service->listPlansForVehicle($userId, new Vin($vin));
-        } catch (InvalidArgumentException | VehicleUnauthorizedException) {
-            // Missing, malformed or foreign VIN in the session: go back to vehicle selection.
-            Flash::set('errors', ['Véhicule invalide ou inaccessible.']);
-            Http::redirect('/vehicle/select');
-        }
-
-        // $plans is read by the view below.
-        require_once __DIR__ . '/../../Views/Climate/preconditioning.php';
-    }
 
     // Creates a schedule from the submitted form.
     public function create(): void
