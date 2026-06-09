@@ -13,7 +13,6 @@ use Teslapp\Controllers\Auth\AuthController;
 use Teslapp\Models\Auth\ImpersonationRepository;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\DashboardController;
-use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\VehicleCommandController;
 use Teslapp\Controllers\VehicleController;
 use Teslapp\Models\Database;
