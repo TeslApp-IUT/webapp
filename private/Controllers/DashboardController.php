@@ -6,6 +6,8 @@ namespace Teslapp\Controllers;
 
 use Teslapp\Models\Shared\TeslaApi\VehicleTelemetryRepositoryInterface;
 use Teslapp\Models\Shared\ValueObjects\Vin;
+use Teslapp\Models\Shared\VehicleTelemetryRepository;
+use Teslapp\Models\Vehicle\VehicleRepository;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 
 /**
@@ -15,8 +17,8 @@ use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 final readonly class DashboardController
 {
     public function __construct(
-        private VehicleTelemetryRepositoryInterface $telemetry,
-        private VehicleRepositoryInterface $vehicles,
+        private VehicleTelemetryRepository $telemetry,
+        private VehicleRepository $vehicles,
     ) {}
 
     /**
