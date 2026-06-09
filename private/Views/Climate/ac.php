@@ -18,7 +18,7 @@ ob_start();
       <?php $activeNav = 'ac';
       require __DIR__ . '/../partials/dashboard_nav.php'; ?>
       <!-- Right Section -->
-      <main class="dashboard-content">
+      <div class="dashboard-content">
         <h1 class="dashboard-title">Climatisation</h1>
         <div class="dashboard-grid">
           <!-- Enable / Disable -->
@@ -171,7 +171,7 @@ ob_start();
             <button class="btn-success" type="submit">Créer la planification</button>
           </form>
         </section>
-      </main>
+      </div>
     </div>
   </section>
 <?php

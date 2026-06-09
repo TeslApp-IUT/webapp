@@ -1,5 +1,5 @@
 ------------------------------------------------------------------
---                          VERSION 15                          --
+--                          VERSION 16                          --
 ------------------------------------------------------------------
 
 DROP TABLE IF EXISTS app.remember_tokens CASCADE;
@@ -183,6 +183,8 @@ CREATE TABLE app.charging_planner
     activation_longitude     NUMERIC(9, 6),
     location_label           VARCHAR(255),
     deactivate_after_success BOOLEAN,
+    enabled                  BOOLEAN     NOT NULL DEFAULT TRUE,
+    tesla_schedule_id        BIGINT,
 
     CONSTRAINT pk_charging_planner PRIMARY KEY (id),
 

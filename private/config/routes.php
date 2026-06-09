@@ -15,6 +15,8 @@ use Teslapp\Controllers\Auth\AuthController;
 use Teslapp\Controllers\Auth\AuthImpersonateController;
 use Teslapp\Controllers\Auth\AuthLogoutController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
+use Teslapp\Controllers\Charging\ChargingController;
+use Teslapp\Controllers\Charging\ChargingPlannerController;
 use Teslapp\Controllers\Climate\ClimateController;
 use Teslapp\Controllers\GeocodingController;
 use Teslapp\Controllers\Climate\PreconditioningController;
@@ -70,4 +72,16 @@ return [
     'dashboard/ac/precondition/toggle' => [PreconditioningController::class, 'toggle', true],
     'geocode' => [GeocodingController::class, 'geocode', true],
     'geocode/reverse' => [GeocodingController::class, 'reverse', true],
+
+    // URLs for the battery page and immediate charging commands (issue #30)
+    'dashboard/battery' => [ChargingController::class, 'battery', true],
+    'charging/toggle' => [ChargingController::class, 'toggle', true],
+    'charging/limit' => [ChargingController::class, 'setLimit', true],
+    'charging/amps' => [ChargingController::class, 'setAmps', true],
+
+    // Charging schedule CRUD (off-peak charging windows)
+    'dashboard/battery/plan/create' => [ChargingPlannerController::class, 'create', true],
+    'dashboard/battery/plan/update' => [ChargingPlannerController::class, 'update', true],
+    'dashboard/battery/plan/delete' => [ChargingPlannerController::class, 'delete', true],
+    'dashboard/battery/plan/toggle' => [ChargingPlannerController::class, 'toggle', true],
 ];
