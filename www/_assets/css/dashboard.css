@@ -261,11 +261,23 @@
 
   .dashboard-navigation .nav-item {
     padding: 6px 4px;
+    /* The desktop width: 100% gives each item the intrinsic width of its label,
+       which pushes the row nav past small viewports. Share the row instead. */
+    width: auto;
+    flex: 1 1 0;
+    min-width: 0;
   }
 
   .dashboard-navigation .nav-item__icon {
     width: 34px;
     height: 34px;
+  }
+
+  .dashboard-navigation .nav-item__label {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .dashboard-content {
@@ -287,5 +299,18 @@
 
   .card-value {
     font-size: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Icons only: the labels do not fit five tabs on a phone.
+     Each .nav-item keeps its aria-label, so the nav stays accessible. */
+  .dashboard-navigation .nav-item__label {
+    display: none;
+  }
+
+  .dashboard-navigation .nav-item__icon {
+    width: 38px;
+    height: 38px;
   }
 }
