@@ -10,7 +10,9 @@ use Teslapp\Controllers\Auth\AuthImpersonateController;
 use Teslapp\Controllers\Auth\AuthLogoutController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
 use Teslapp\Controllers\Auth\AuthController;
+use Teslapp\Models\Auth\AuthRepository;
 use Teslapp\Models\Auth\ImpersonationRepository;
+use Teslapp\Models\Shared\TokenCipher;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\VehicleCommandController;
@@ -104,9 +106,23 @@ $container->set(
 );
 
 $container->set(
+    AuthRepository::class,
+    static fn(): AuthRepository => new AuthRepository(Database::pdo()),
+);
+
+$container->set(
+    TokenCipher::class,
+    static fn(): TokenCipher => new TokenCipher(
+        base64_decode(getenv('TESLAPP_TOKEN_ENCRYPTION_KEY'), strict: true),
+    ),
+);
+
+$container->set(
     AuthImpersonateController::class,
     static fn(Container $c): AuthImpersonateController => new AuthImpersonateController(
         $c->get(ImpersonationRepository::class),
+        $c->get(AuthRepository::class),
+        $c->get(TokenCipher::class),
     ),
 );
 
