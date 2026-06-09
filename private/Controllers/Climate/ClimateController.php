@@ -3,21 +3,20 @@ declare(strict_types=1);
 
 namespace Teslapp\Controllers\Climate;
 
-use PDO;
+use Teslapp\Models\Climate\ClimateService;
+use Teslapp\Models\Climate\ValueObjects\ClimateAction;
+use Teslapp\Models\Climate\ValueObjects\KeeperMode;
+use Teslapp\Models\Climate\ValueObjects\Temperature;
+use Teslapp\Models\Shared\Exceptions\TeslaAppException;
+use Teslapp\Models\Shared\ValueObjects\AccessToken;
+use Teslapp\Models\Shared\ValueObjects\Vin;
+use Teslapp\Utils\Csrf;
+use Teslapp\Utils\Flash;
+use Teslapp\Utils\Http;
 
-/**
- * Controller responsible for climate-related commands
- * Sends climate commands to the Tesla Fleet API
- **/
-class ClimateController
+final class ClimateController
 {
-    private PDO $db;
-    private string $baseUrl = 'https://fleet-api.prd.eu.vn.cloud.tesla.com';
-
-    public function __construct(PDO $db)
-    {
-        $this->db = $db;
-    }
+    public function __construct(private readonly ClimateService $climateService) {}
 
     /**
      * GET dashboard/ac
@@ -25,11 +24,9 @@ class ClimateController
      **/
     public function ac(): void
     {
-        $vin = $_SESSION['selected_vin'] ?? null;
-
-        if (!$vin) {
-            header('Location: /vehicle/select');
-            exit();
+        if (!isset($_SESSION['selected_vin']))
+        {
+            Http::redirect('/vehicle/select');
         }
 
         require_once __DIR__ . '/../Views/Climate/ac.php';
@@ -43,62 +40,41 @@ class ClimateController
      **/
     public function toggle(): void
     {
-        $vin = $_SESSION['selected_vin'] ?? null;
-        $token = $_SESSION['access_token'] ?? null;
+        Csrf::requireValid('/dashboard/ac');
 
-        if (!$vin || !$token) {
-            header('Location: /vehicle/select');
-            exit();
+        ['vin' => $vin, 'token' => $token] = $this->requireSession();
+
+        $action = ClimateAction::tryFrom(
+            filter_input(INPUT_POST, 'action', FILTER_UNSAFE_RAW) ?? ''
+        );
+
+        if ($action === null)
+        {
+            Http::redirect('/dashboard/ac');
         }
 
-        $action = filter_input(INPUT_POST, 'action', FILTER_UNSAFE_RAW);
-
-        if ($action === 'start') {
-            $this->sendCommand($vin, $token, 'auto_conditioning_start');
-
-            $temp = filter_input(INPUT_POST, 'temperature', FILTER_VALIDATE_FLOAT);
-            if ($temp !== false && $temp >= 15.0 && $temp <= 28.0) {
-                $this->sendCommand($vin, $token, 'set_temps', [
-                    'driver_temp' => $temp,
-                    'passenger_temp' => $temp,
-                ]);
+        try
+        {
+            if ($action === ClimateAction::Start)
+            {
+                $raw  = filter_input(INPUT_POST, 'temperature', FILTER_VALIDATE_FLOAT);
+                $temp = $raw !== false ? new Temperature($raw) : null;
+                $this->climateService->activate($vin, $token, $temp);
             }
-        } elseif ($action === 'stop') {
-            $this->sendCommand($vin, $token, 'auto_conditioning_stop');
+            else
+            {
+                $this->climateService->deactivate($vin, $token);
+            }
+
+            Flash::set('success', 'Commande envoyée.');
+        }
+        catch (TeslaAppException $e)
+        {
+            error_log('Climate toggle failed: ' . $e->getMessage());
+            Flash::set('error', 'Impossible d\'envoyer la commande à Tesla.');
         }
 
-        header('Location: /dashboard/ac');
-        exit();
-    }
-
-    /**
-     * Sends a POST command to the Tesla Fleet API
-     * Returns true if the command was accepted, false otherwise
-     **/
-    private function sendCommand(
-        string $vin,
-        string $token,
-        string $command,
-        array $body = [],
-    ): bool {
-        $url = "{$this->baseUrl}/api/1/vehicles/{$vin}/command/{$command}";
-        $ch = curl_init($url);
-
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_HTTPHEADER => [
-                "Authorization: Bearer {$token}",
-                'Content-Type: application/json',
-            ],
-            CURLOPT_POSTFIELDS => json_encode($body),
-        ]);
-
-        curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        return $httpCode === 200;
+        Http::redirect('/dashboard/ac');
     }
 
     /**
@@ -107,26 +83,43 @@ class ClimateController
      **/
     public function setKeeperMode(): void
     {
-        $vin = $_SESSION['selected_vin'] ?? null;
-        $token = $_SESSION['access_token'] ?? null;
+        Csrf::requireValid('/dashboard/ac');
 
-        if (!$vin || !$token) {
-            header('Location: /vehicle/select');
-            exit();
+        ['vin' => $vin, 'token' => $token] = $this->requireSession();
+
+        $raw  = filter_input(INPUT_POST, 'climate_keeper_mode', FILTER_VALIDATE_INT);
+        $mode = $raw !== false ? KeeperMode::tryFrom($raw) : null;
+
+        if ($mode === null)
+        {
+            Flash::set('error', 'Mode invalide.');
+            Http::redirect('/dashboard/ac');
         }
 
-        $mode = filter_input(INPUT_POST, 'climate_keeper_mode', FILTER_VALIDATE_INT);
-
-        if ($mode === false || $mode < 0 || $mode > 3) {
-            header('Location: /dashboard/ac');
-            exit();
+        try
+        {
+            $this->climateService->applyKeeperMode($vin, $token, $mode);
+            Flash::set('success', 'Mode keeper appliqué.');
+        }
+        catch (TeslaAppException $e)
+        {
+            error_log('Keeper mode failed: ' . $e->getMessage());
+            Flash::set('error', 'Impossible d\'appliquer le mode keeper.');
         }
 
-        $this->sendCommand($vin, $token, 'set_climate_keeper_mode', [
-            'climate_keeper_mode' => $mode,
-        ]);
+        Http::redirect('/dashboard/ac');
+    }
 
-        header('Location: /dashboard/ac');
-        exit();
+    private function requireSession(): array
+    {
+        if (!isset($_SESSION['selected_vin'], $_SESSION['access_token']))
+        {
+            Http::redirect('/vehicle/select');
+        }
+
+        return [
+            'vin'   => new Vin($_SESSION['selected_vin']),
+            'token' => new AccessToken($_SESSION['access_token']),
+        ];
     }
 }
