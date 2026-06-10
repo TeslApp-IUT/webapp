@@ -11,9 +11,7 @@ use Teslapp\Models\Shared\ValueObjects\Vin;
  */
 final readonly class NavigationService
 {
-    public function __construct(
-        private NavigationRepositoryInterface $repository,
-    ) {}
+    public function __construct(private NavigationRepositoryInterface $repository) {}
 
     /**
      * Retrieves navigation data for a vehicle.
