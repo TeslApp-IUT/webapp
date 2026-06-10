@@ -5,7 +5,7 @@ const RELATIVE_TIME_OFFSET_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const locale = new Intl.Locale('fr-FR');
 const absoluteFormat = new Intl.DateTimeFormat(locale, {
   dateStyle: 'long',
-  timeStyle: 'short'
+  timeStyle: 'short',
 });
 const relativeFormat = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
 
@@ -14,7 +14,7 @@ const RELATIVE_UNITS = [
   ['day', 24 * 60 * 60 * 1000],
   ['hour', 60 * 60 * 1000],
   ['minute', 60 * 1000],
-  ['second', 1000]
+  ['second', 1000],
 ];
 
 function formatRelative(date) {
@@ -30,9 +30,7 @@ function formatRelative(date) {
 function formatTimestamp(seconds) {
   const date = new Date(seconds * 1000);
   const elapsed = Date.now() - date.getTime();
-  return elapsed <= RELATIVE_TIME_OFFSET_MS
-    ? formatRelative(date)
-    : absoluteFormat.format(date);
+  return elapsed <= RELATIVE_TIME_OFFSET_MS ? formatRelative(date) : absoluteFormat.format(date);
 }
 
 // Render the trip start times in the list.
@@ -87,7 +85,7 @@ if (tripsList && detailsPanel) {
     let request = detailsCache.get(tripId);
     if (request === undefined) {
       request = fetch(`${endpoint}?id=${encodeURIComponent(tripId)}`, {
-        headers: { Accept: 'application/json' }
+        headers: { Accept: 'application/json' },
       }).then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
@@ -106,7 +104,7 @@ if (tripsList && detailsPanel) {
       ['Début', formatTimestamp(trip.startTimestamp)],
       ['Fin', trip.running ? 'En cours' : formatTimestamp(trip.endTimestamp)],
       ['Distance', `${trip.distanceKm} km`],
-      ['Durée', `${trip.durationMinutes} min`]
+      ['Durée', `${trip.durationMinutes} min`],
     ];
 
     detailsPanel.replaceChildren(
@@ -124,7 +122,7 @@ if (tripsList && detailsPanel) {
 
         row.append(labelEl, valueEl);
         return row;
-      })
+      }),
     );
   }
 
@@ -143,7 +141,7 @@ if (tripsList && detailsPanel) {
       leaflet
         .tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19,
-          attribution: '© OpenStreetMap'
+          attribution: '© OpenStreetMap',
         })
         .addTo(map);
       markers = leaflet.layerGroup().addTo(map);
@@ -154,17 +152,18 @@ if (tripsList && detailsPanel) {
 
     const start = [trip.startLat, trip.startLon];
     const end = [trip.endLat, trip.endLon];
-    const route = Array.isArray(trip.route) && trip.route.length > 0
-      ? trip.route
-      : (Array.isArray(trip.points) ? trip.points : []);
+    const route =
+      Array.isArray(trip.route) && trip.route.length > 0
+        ? trip.route
+        : Array.isArray(trip.points)
+          ? trip.points
+          : [];
 
     markers.clearLayers();
 
     // Trace the route taken, then draw the endpoint markers on top of it.
     if (route.length > 1) {
-      leaflet
-        .polyline(route, { color: '#3b82f6', weight: 4, opacity: 0.8 })
-        .addTo(markers);
+      leaflet.polyline(route, { color: '#3b82f6', weight: 4, opacity: 0.8 }).addTo(markers);
     }
     addMarker(leaflet, start, '#22c55e', trip.startAddress); // green = départ
     addMarker(leaflet, end, '#ef4444', trip.endAddress); // red = arrivée
@@ -180,7 +179,7 @@ if (tripsList && detailsPanel) {
       color: '#ffffff',
       weight: 2,
       fillColor: color,
-      fillOpacity: 1
+      fillOpacity: 1,
     });
 
     if (typeof address === 'string' && address !== '') {

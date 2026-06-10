@@ -110,9 +110,15 @@ final readonly class NavigationController
         // separated by semicolons.
         $route = null;
         if (count($trip->points ?? []) > 1) {
-            $coords = array_map(static fn(GeoPoint $p): string => $p->longitude . ',' . $p->latitude, $trip->points);
+            $coords = array_map(
+                static fn(GeoPoint $p): string => $p->longitude . ',' . $p->latitude,
+                $trip->points,
+            );
             $coordStr = implode(';', $coords);
-            $osrmUrl = 'https://osrm.feyli.dev/route/v1/driving/' . $coordStr . '?overview=full&geometries=geojson';
+            $osrmUrl =
+                'https://osrm.feyli.dev/route/v1/driving/' .
+                $coordStr .
+                '?overview=full&geometries=geojson';
 
             $ch = curl_init($osrmUrl);
             if ($ch !== false) {
@@ -128,11 +134,14 @@ final readonly class NavigationController
 
                 if (is_string($body) && $status < 400) {
                     $data = json_decode($body, true);
-                    if (isset($data['routes'][0]['geometry']['coordinates']) && is_array($data['routes'][0]['geometry']['coordinates'])) {
+                    if (
+                        isset($data['routes'][0]['geometry']['coordinates']) &&
+                        is_array($data['routes'][0]['geometry']['coordinates'])
+                    ) {
                         // Convert OSRM geojson coordinates ([lon, lat]) to [lat, lon]
                         $route = array_map(
                             static fn(array $c): array => [(float) $c[1], (float) $c[0]],
-                            $data['routes'][0]['geometry']['coordinates']
+                            $data['routes'][0]['geometry']['coordinates'],
                         );
                     }
                 }
