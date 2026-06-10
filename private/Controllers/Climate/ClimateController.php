@@ -19,6 +19,7 @@ use Teslapp\Utils\Csrf;
 use Teslapp\Utils\Flash;
 use Teslapp\Utils\Http;
 use Teslapp\Utils\Route;
+use Teslapp\Models\Climate\ValueObjects\CopTemp;
 
 /**
  * Controller responsible for climate-related commands.
@@ -123,6 +124,19 @@ final class ClimateController
         } catch (TeslaAppException $e) {
             error_log('Keeper mode failed: ' . $e->getMessage());
             Flash::set('error', 'Impossible d\'appliquer le mode keeper.');
+        }
+
+        if ($mode === KeeperMode::Keep) {
+            $rawCop = filter_input(INPUT_POST, 'cop_temp', FILTER_VALIDATE_INT);
+            $copTemp = $rawCop !== false ? CopTemp::tryFrom($rawCop) : null;
+
+            if ($copTemp !== null) {
+                try {
+                    $this->climateService->applyCopTemp($userId, $vin, $copTemp);
+                } catch (TeslaAppException $e) {
+                    error_log('COP temp failed: ' . $e->getMessage());
+                }
+            }
         }
 
         Http::redirect($page);

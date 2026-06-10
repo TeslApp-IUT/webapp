@@ -8,6 +8,7 @@ use JsonException;
 use Teslapp\Models\Auth\AuthRepository;
 use Teslapp\Models\Database;
 use Teslapp\Models\Shared\Exceptions\TeslaApiException;
+use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\TokenCipher;
 use Teslapp\Models\Shared\ValueObjects\AccessToken;
 
@@ -103,6 +104,11 @@ final class TeslaHttpClient
 
         if ($status >= 400) {
             error_log("Tesla API error $status on $method $path: $response");
+            // Fleet API answers 408 "vehicle unavailable" when the vehicle is offline or
+            // asleep — a dedicated exception lets command services wake it up and retry.
+            if ($status === 408) {
+                throw new VehicleAsleepException("Vehicle is asleep or offline ($method $path).");
+            }
             throw new TeslaApiException("Tesla API returned HTTP $status on $method $path.");
         }
 

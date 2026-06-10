@@ -4,6 +4,8 @@ const tempDisplay = document.getElementById('temp-display');
 const tempHidden = document.getElementById('temp-hidden');
 const btnMinus = document.getElementById('btn-minus');
 const btnPlus = document.getElementById('btn-plus');
+const keeperRadios = document.querySelectorAll('input[name="climate_keeper_mode"]');
+const copModes = document.getElementById('cop-modes');
 
 /* Displays the pane when you click “Enable” */
 btnActiver.addEventListener('click', () => {
@@ -26,6 +28,17 @@ btnPlus.addEventListener('click', () => {
     tempDisplay.textContent = val;
   }
 });
+
+function updateCopVisibility() {
+  const selected = document.querySelector('input[name="climate_keeper_mode"]:checked');
+  copModes.style.display = selected?.value === '1' ? 'flex' : 'none';
+}
+
+keeperRadios.forEach((radio) => {
+  radio.addEventListener('change', updateCopVisibility);
+});
+
+updateCopVisibility();
 
 /* ---- Preconditioning schedules: create/edit dialog + Leaflet location picker ---- */
 

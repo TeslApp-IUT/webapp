@@ -528,6 +528,47 @@
   color: var(--color-error);
 }
 
+.keeper-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.keeper-mode__pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.keeper-mode__pill input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.keeper-mode__pill:has(input:checked) {
+  background-color: #ffffff;
+  border-color: #6c6c6c;
+  color: #000000;
+}
+
+.cop-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
 /* Same mobile breakpoint as dashboard.css, so the dialog collapses with its page layout. */
 @media (max-width: 768px) {
   .precond-form--dialog {

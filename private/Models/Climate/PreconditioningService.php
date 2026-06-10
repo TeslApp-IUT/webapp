@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Teslapp\Models\Climate;
 
+use InvalidArgumentException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\ClimateCommandClient;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
@@ -177,6 +178,16 @@ final class PreconditioningService
         string $planId,
     ): PreconditioningPlanner {
         $this->assertOwnership($vin, $userId);
+
+        // Reject non-UUID ids before they reach PostgreSQL (uuid cast error -> 500).
+        if (
+            preg_match(
+                '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i',
+                $planId,
+            ) !== 1
+        ) {
+            throw new InvalidArgumentException('Invalid plan id');
+        }
 
         $planner = $this->plannerRepository->findById($planId);
         if ($planner === null || $planner->vin->value !== $vin->value) {

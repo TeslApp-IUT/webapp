@@ -19,7 +19,7 @@ final readonly class Temperature
     public function __construct(float $value)
     {
         if ($value < 15.0 || $value > 28.0) {
-            throw new InvalidArgumentException("Temperature $value");
+            throw new InvalidArgumentException("Temperature $value is out of range [15, 28].");
         }
         $this->value = $value;
     }

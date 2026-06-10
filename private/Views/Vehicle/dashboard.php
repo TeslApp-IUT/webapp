@@ -13,11 +13,10 @@ $climate_keeper_mode = $data['climate_keeper_mode'] ?? 0;
 $ac_enabled = $data['ac_enabled'] ?? false;
 
 $keeper_modes = [
-    0 => 'Inconnu',
-    1 => 'Off',
-    2 => 'On',
-    3 => 'Dog',
-    4 => 'Party',
+    1 => 'Désactivé',
+    2 => 'Conserver',
+    3 => 'Chien',
+    4 => 'Feu de camp',
 ];
 
 $title = 'Dashboard TeslApp';

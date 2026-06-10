@@ -26,7 +26,7 @@ ob_start();
       <!-- Action: Tesla login or Dashboard access -->
       <div class="hero-actions">
         <?php
-        if ($_SESSION['logged_in'] === true) {
+        if (($_SESSION['logged_in'] ?? false) === true) {
           echo '<a href="/dashboard" class="btn-primary !bg-white !text-black !font-normal"><span>Tableau de bord</span></a>';
         } else {
           require_once __DIR__ . '/../partials/login.php';

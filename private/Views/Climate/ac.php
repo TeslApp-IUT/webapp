@@ -1,6 +1,7 @@
 <?php
 use Teslapp\Models\Climate\PreconditioningPlanner;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
+use \Teslapp\Models\Climate\ValueObjects\KeeperMode;
 
 /** @var string $vehicleId Vehicle public id, set by the rendering controller. */
 
@@ -11,6 +12,7 @@ $description = 'Gérez la climatisation de votre Tesla à distance.';
 $header = 'user';
 $extraCss = ['dashboard', 'ac'];
 $extraJs = ['ac'];
+
 // Leaflet (self-hosted vendor) powers the schedule location picker in the dialog.
 // `defer` keeps document order, so it executes before ac.js (also deferred).
 $headExtra =
@@ -79,18 +81,46 @@ ob_start();
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
             </div>
-            <h2 class="card-title">Climate Keeper Mode</h2>
+            <h2 class="card-title">Mode Keeper</h2>
             <div class="card-details">
               <form method="post" action="/climate/keeper">
                 <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
                 <input type="hidden" name="vehicle_id" value="<?= e($vehicleId) ?>">
-                <select name="climate_keeper_mode" class="card-input">
-                  <option value="0">Off</option>
-                  <option value="1">Keep</option>
-                  <option value="2">Dog</option>
-                  <option value="3">Camp</option>
-                </select>
-                <button type="submit" class="btn-success">Appliquer</button>
+                <div class="keeper-modes">
+                    <?php
+                    $modes = [
+                        0 => 'Désactivé',
+                        1 => 'Anti-surchauffe',
+                        2 => 'Chien',
+                        3 => 'Feu de camp',
+                    ];
+                    $current = (int)($data['climate_keeper_mode'] ?? 0);
+                    foreach ($modes as $value => $label): ?>
+                      <label class="keeper-mode__pill <?= $current === $value ? : '' ?>">
+                        <input type="radio" name="climate_keeper_mode" value="<?= $value ?>"
+                            <?= $current === $value ? 'checked' : '' ?>>
+                          <?= e($label) ?>
+                      </label>
+                    <?php endforeach; ?>
+                </div>
+                <!-- COP temperature -->
+                <div class="cop-modes" id="cop-modes" style="display:none; margin-top: 12px;">
+                    <?php
+                    $copLevels = [
+                        0 => 'Bas (30°C)',
+                        1 => 'Moyen (35°C)',
+                        2 => 'Haut (40°C)',
+                    ];
+                    $currentCop = (int)($data['cop_temp'] ?? 0);
+                    foreach ($copLevels as $value => $label): ?>
+                      <label class="keeper-mode__pill <?= $currentCop === $value ? : '' ?>">
+                        <input type="radio" name="cop_temp" value="<?= $value ?>"
+                            <?= $currentCop === $value ? 'checked' : '' ?>>
+                          <?= e($label) ?>
+                      </label>
+                    <?php endforeach; ?>
+                </div>
+                <button type="submit" class="btn-success" style="margin-top: 12px;">Appliquer</button>
               </form>
             </div>
           </div>

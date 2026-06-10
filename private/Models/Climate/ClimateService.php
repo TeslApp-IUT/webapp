@@ -9,6 +9,7 @@ use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\ClimateClient;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
+use Teslapp\Models\Climate\ValueObjects\CopTemp;
 
 /**
  * Climate use cases : activating, deactivating and configuring the climate system
@@ -53,6 +54,17 @@ final readonly class ClimateService
     {
         $this->assertOwnership($vin, $userId);
         $this->client->setKeeperMode($vin, $mode);
+    }
+
+    /**
+     * Sets the Cabin Overheat Protection temperature for the vehicle
+     *
+     * @throws VehicleUnauthorizedException if the user does not own the vehicle.
+     **/
+    public function applyCopTemp(string $userId, Vin $vin, CopTemp $level): void
+    {
+        $this->assertOwnership($vin, $userId);
+        $this->client->setCopTemp($vin, $level);
     }
 
     /**
