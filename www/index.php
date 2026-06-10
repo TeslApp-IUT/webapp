@@ -26,6 +26,9 @@ $routes = require_once __DIR__ . '/../private/config/routes.php';
 // Custom DI container: resolves controllers and their dependencies (see private/config/container.php)
 $container = require_once __DIR__ . '/../private/config/container.php';
 
+// Enable strict mode to reduce attack surface
+ini_set('session.use_strict_mode', '1');
+
 session_name('TESLAPP_SESSION');
 
 // Session cookie settings. SameSite=Lax (not Strict) so that the cookie
@@ -35,7 +38,6 @@ $sessionCookieParams = [
     'cookie_secure' => true,
     'cookie_httponly' => true,
     'cookie_samesite' => 'Lax',
-    'use_strict_mode' => true,
     'use_only_cookies' => true,
     'cookie_lifetime' => 0,
 ];
@@ -130,7 +132,8 @@ if ($requiresAuth && empty($_SESSION['user_id'])) {
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode(['error' => 'Authentication required']);
     } else {
-        header('Location: /auth', true, 302);
+        $redirectUri = $_SERVER['REQUEST_URI'] ?? '/';
+        header('Location: /auth?redirectURI=' . urlencode($redirectUri), true, 302);
     }
     exit();
 }

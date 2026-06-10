@@ -31,8 +31,13 @@ window.addEventListener('message', (event) => {
   clearInterval(closedCheckInterval);
 
   if (event.data.success) {
-    // New users are sent to the signup form (event.data.redirect); returning users to the app.
-    globalThis.location.href = event.data.redirect ?? '/vehicle/select';
+    // New users are sent to the signup form (event.data.redirect).
+    // Returning users go back to the page they came from (redirectURI query param),
+    // or fall back to /vehicle/select.
+    const raw = new URLSearchParams(globalThis.location.search).get('redirectURI') ?? '';
+    const redirectUri =
+      raw.startsWith('/') && !raw.startsWith('//') ? raw : '/vehicle/select';
+    globalThis.location.href = event.data.redirect ?? redirectUri;
   } else {
     showError(event.data.error);
     switchTo('button-retry');

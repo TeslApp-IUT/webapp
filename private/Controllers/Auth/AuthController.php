@@ -15,6 +15,11 @@ final class AuthController
 {
     public function auth(): void
     {
+        if ($_SESSION['logged_in'] === true) {
+            header('Location: /dashboard', true, 302);
+            exit();
+        }
+
         match ($_SERVER['REQUEST_METHOD']) {
             'GET' => $this->handleGet(),
             'POST' => $this->handlePost(),
