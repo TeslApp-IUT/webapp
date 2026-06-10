@@ -38,33 +38,73 @@ return [
     'dashboard' => [VehicleController::class, 'select', true],
 
     // Dashboard pages — vehicle identified by its public_id UUID in the URL
-    'dashboard/{vehicleId}/overview'                => [DashboardController::class, 'index', true],
-    'dashboard/{vehicleId}/vehicle'                 => [VehicleCommandController::class, 'page', true],
-    'dashboard/{vehicleId}/ac'                      => [ClimateController::class, 'ac', true],
-    'dashboard/{vehicleId}/battery'                 => [ChargingController::class, 'battery', true],
+    'dashboard/{vehicleId}/overview' => [DashboardController::class, 'index', true],
+    'dashboard/{vehicleId}/vehicle' => [VehicleCommandController::class, 'page', true],
+    'dashboard/{vehicleId}/ac' => [ClimateController::class, 'ac', true],
+    'dashboard/{vehicleId}/battery' => [ChargingController::class, 'battery', true],
 
     // Vehicle commands (AJAX JSON endpoints) — vehicleId in URL, resolved to VIN server-side
-    'dashboard/{vehicleId}/lock'                    => [VehicleCommandController::class, 'lock', true],
-    'dashboard/{vehicleId}/unlock'                  => [VehicleCommandController::class, 'unlock', true],
-    'dashboard/{vehicleId}/honk'                    => [VehicleCommandController::class, 'honk', true],
-    'dashboard/{vehicleId}/flash'                   => [VehicleCommandController::class, 'flash', true],
-    'dashboard/{vehicleId}/trunk-front'             => [VehicleCommandController::class, 'trunkFront', true],
-    'dashboard/{vehicleId}/trunk-rear'              => [VehicleCommandController::class, 'trunkRear', true],
-    'dashboard/{vehicleId}/charge-port-open'        => [VehicleCommandController::class, 'chargePortOpen', true],
-    'dashboard/{vehicleId}/charge-port-close'       => [VehicleCommandController::class, 'chargePortClose', true],
-    'dashboard/{vehicleId}/wake'                    => [VehicleCommandController::class, 'wake', true],
+    'dashboard/{vehicleId}/lock' => [VehicleCommandController::class, 'lock', true],
+    'dashboard/{vehicleId}/unlock' => [VehicleCommandController::class, 'unlock', true],
+    'dashboard/{vehicleId}/honk' => [VehicleCommandController::class, 'honk', true],
+    'dashboard/{vehicleId}/flash' => [VehicleCommandController::class, 'flash', true],
+    'dashboard/{vehicleId}/trunk-front' => [VehicleCommandController::class, 'trunkFront', true],
+    'dashboard/{vehicleId}/trunk-rear' => [VehicleCommandController::class, 'trunkRear', true],
+    'dashboard/{vehicleId}/charge-port-open' => [
+        VehicleCommandController::class,
+        'chargePortOpen',
+        true,
+    ],
+    'dashboard/{vehicleId}/charge-port-close' => [
+        VehicleCommandController::class,
+        'chargePortClose',
+        true,
+    ],
+    'dashboard/{vehicleId}/wake' => [VehicleCommandController::class, 'wake', true],
 
     // Climate preconditioning: schedule CRUD — vehicleId sent as POST field vehicle_id
-    'dashboard/{vehicleId}/ac/precondition/create'  => [PreconditioningController::class, 'create', true],
-    'dashboard/{vehicleId}/ac/precondition/update'  => [PreconditioningController::class, 'update', true],
-    'dashboard/{vehicleId}/ac/precondition/delete'  => [PreconditioningController::class, 'delete', true],
-    'dashboard/{vehicleId}/ac/precondition/toggle'  => [PreconditioningController::class, 'toggle', true],
+    'dashboard/{vehicleId}/ac/precondition/create' => [
+        PreconditioningController::class,
+        'create',
+        true,
+    ],
+    'dashboard/{vehicleId}/ac/precondition/update' => [
+        PreconditioningController::class,
+        'update',
+        true,
+    ],
+    'dashboard/{vehicleId}/ac/precondition/delete' => [
+        PreconditioningController::class,
+        'delete',
+        true,
+    ],
+    'dashboard/{vehicleId}/ac/precondition/toggle' => [
+        PreconditioningController::class,
+        'toggle',
+        true,
+    ],
 
     // Charging schedule CRUD — vehicleId sent as POST field vehicle_id
-    'dashboard/{vehicleId}/battery/plan/create'     => [ChargingPlannerController::class, 'create', true],
-    'dashboard/{vehicleId}/battery/plan/update'     => [ChargingPlannerController::class, 'update', true],
-    'dashboard/{vehicleId}/battery/plan/delete'     => [ChargingPlannerController::class, 'delete', true],
-    'dashboard/{vehicleId}/battery/plan/toggle'     => [ChargingPlannerController::class, 'toggle', true],
+    'dashboard/{vehicleId}/battery/plan/create' => [
+        ChargingPlannerController::class,
+        'create',
+        true,
+    ],
+    'dashboard/{vehicleId}/battery/plan/update' => [
+        ChargingPlannerController::class,
+        'update',
+        true,
+    ],
+    'dashboard/{vehicleId}/battery/plan/delete' => [
+        ChargingPlannerController::class,
+        'delete',
+        true,
+    ],
+    'dashboard/{vehicleId}/battery/plan/toggle' => [
+        ChargingPlannerController::class,
+        'toggle',
+        true,
+    ],
 
     // URLs for authentification
     'auth' => [AuthController::class, 'auth', false],
