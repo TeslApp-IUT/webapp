@@ -1,14 +1,14 @@
 <?php
 $vehicleName = $vehicleName ?? 'Mon véhicule';
 
-/* Telemetry value */
+/* Telemetry values — keys match the app.overview columns read by VehicleTelemetryRepository */
 $battery_level = $data['battery_level'] ?? 'N/A';
-$charge_enable_request = $data['charge_enable_request'] ?? false;
+$charge_enable = $data['charge_enable'] ?? false;
 $scheduled_charging_start_time = $data['scheduled_charging_start_time'] ?? null;
 
 $inside_temp = $data['inside_temp'] ?? 'N/A';
 $climate_keeper_mode = $data['climate_keeper_mode'] ?? 0;
-$hvac_ac_enabled = $data['hvac_ac_enabled'] ?? false;
+$ac_enabled = $data['ac_enabled'] ?? false;
 
 $keeper_modes = [
   0 => 'Inconnu',
@@ -23,6 +23,7 @@ $description = 'Tableau de bord de votre véhicule Tesla : batterie, climatisati
 $header = 'user';
 $extraCss = ['dashboard', 'vehicle-actions'];
 $extraJs = ['vehicle-actions'];
+$headExtra = '<meta name="vehicle-id" content="' . e($vehicleId) . '">';
 
 ob_start();
 ?>
@@ -32,7 +33,7 @@ ob_start();
       <?php $activeNav = 'overview';
       require __DIR__ . '/../partials/dashboard_nav.php'; ?>
       <!-- Right Section -->
-      <main class="dashboard-content">
+      <div class="dashboard-content">
         <h1 class="dashboard-title">Tableau de bord — <?= e($vehicleName) ?></h1>
         <div class="dashboard-grid">
           <!-- Battery -->
@@ -51,9 +52,10 @@ ob_start();
             </div>
             <div class="card-details">
               <p>Charge activée <span
-                  class="<?= $charge_enable_request ? 'status-on' : 'status-off' ?>"><?= $charge_enable_request ? 'Oui' : 'Non' ?></span>
+                  class="<?= $charge_enable ? 'status-on' : 'status-off' ?>"><?= $charge_enable ? 'Oui' : 'Non' ?></span>
               </p>
               <p>Charge programmée <span><?= e($scheduled_charging_start_time ?? 'Non programmée') ?></span></p>
+              <a class="btn-primary" href="/dashboard/<?= e($vehicleId) ?>/battery" style="margin-top: 8px; display: inline-block; text-decoration: none;">Gérer la recharge</a>
             </div>
           </div>
           <!-- Clim -->
@@ -71,13 +73,13 @@ ob_start();
             </div>
             <div class="card-details">
               <p>AC activée <span
-                  class="<?= $hvac_ac_enabled ? 'status-on' : 'status-off' ?>"><?= $hvac_ac_enabled ? 'Oui' : 'Non' ?></span>
+                  class="<?= $ac_enabled ? 'status-on' : 'status-off' ?>"><?= $ac_enabled ? 'Oui' : 'Non' ?></span>
               </p>
               <p>Mode keeper <span><?= e($keeper_modes[$climate_keeper_mode] ?? 'Inconnu') ?></span></p>
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   </section>
 <?php

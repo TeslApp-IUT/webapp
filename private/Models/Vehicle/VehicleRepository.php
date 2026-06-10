@@ -19,9 +19,20 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
     public function findByVin(Vin $vin): ?Vehicle
     {
         $stmt = $this->pdo->prepare(
-            'SELECT vin, user_id, name, model_id FROM vehicles WHERE vin = :vin',
+            'SELECT vin, user_id, name, model_code, public_id FROM vehicles WHERE vin = :vin',
         );
         $stmt->execute([':vin' => $vin->value]);
+        $row = $stmt->fetch();
+
+        return $row !== false ? Vehicle::fromRow($row) : null;
+    }
+
+    public function findByPublicId(string $publicId): ?Vehicle
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT vin, user_id, name, model_code, public_id FROM vehicles WHERE public_id = :public_id LIMIT 1',
+        );
+        $stmt->execute([':public_id' => $publicId]);
         $row = $stmt->fetch();
 
         return $row !== false ? Vehicle::fromRow($row) : null;
@@ -31,7 +42,7 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
     public function findByUser(string $userId): array
     {
         $stmt = $this->pdo->prepare(
-            'SELECT vin, user_id, name, model_id FROM vehicles WHERE user_id = :user_id ORDER BY name',
+            'SELECT vin, user_id, name, model_code, public_id FROM vehicles WHERE user_id = :user_id ORDER BY name',
         );
         $stmt->execute([':user_id' => $userId]);
 
@@ -45,13 +56,18 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
     {
         try {
             $stmt = $this->pdo->prepare(
-                'INSERT INTO vehicles (vin, user_id, name, model_id) VALUES (:vin, :user_id, :name, :model_id)',
+                'INSERT INTO vehicles (vin, user_id, name, model_code)
+                 VALUES (:vin, :user_id, :name, :model_code)
+                 ON CONFLICT (vin) DO UPDATE SET
+                     user_id    = EXCLUDED.user_id,
+                     name       = EXCLUDED.name,
+                     model_code = EXCLUDED.model_code',
             );
             $stmt->execute([
                 ':vin' => $vehicle->vin->value,
                 ':user_id' => $vehicle->userId,
                 ':name' => $vehicle->name,
-                ':model_id' => $vehicle->modelId,
+                ':model_code' => $vehicle->modelCode,
             ]);
         } catch (PDOException $e) {
             throw new DatabaseException(
@@ -61,13 +77,13 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
         }
     }
 
-    public function deleteByVin(Vin $vin): void
+    public function detachByVin(Vin $vin): void
     {
         try {
-            $stmt = $this->pdo->prepare('DELETE FROM vehicles WHERE vin = :vin');
+            $stmt = $this->pdo->prepare('UPDATE vehicles SET user_id = NULL WHERE vin = :vin');
             $stmt->execute([':vin' => $vin->value]);
         } catch (PDOException $e) {
-            throw new DatabaseException("Failed to delete vehicle {$vin->value}", previous: $e);
+            throw new DatabaseException("Failed to detach vehicle $vin->value", previous: $e);
         }
     }
 

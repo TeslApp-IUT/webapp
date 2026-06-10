@@ -1,5 +1,5 @@
 ------------------------------------------------------------------
---                          VERSION 13                          --
+--                          VERSION 16                          --
 ------------------------------------------------------------------
 
 DROP TABLE IF EXISTS app.remember_tokens CASCADE;
@@ -19,10 +19,10 @@ DROP TABLE IF EXISTS app.rate_limits CASCADE;
 
 CREATE TABLE app.vehicle_models
 (
-    id   UUID,
-    name VARCHAR(32) NOT NULL UNIQUE,
+    vin_code CHAR(1)     NOT NULL,  -- 4th VIN character: 'S', '3', 'X', 'Y', 'C'
+    name     VARCHAR(32) NOT NULL UNIQUE,
 
-    CONSTRAINT pk_vehicle_models PRIMARY KEY (id)
+    CONSTRAINT pk_vehicle_models PRIMARY KEY (vin_code)
 );
 
 CREATE TABLE app.users
@@ -40,20 +40,20 @@ CREATE TABLE app.users
 
 CREATE TABLE app.vehicles
 (
-    vin      VARCHAR(17),
-    user_id  UUID        NOT NULL,
-    name     VARCHAR(100) NOT NULL,
-    model_id UUID        NOT NULL,
+    vin        VARCHAR(17),
+    user_id    UUID,                   -- NULL = detached vehicle (gone from the Tesla account)
+    name       VARCHAR(100) NOT NULL,
+    model_code CHAR(1)      NOT NULL,  -- 4th VIN character, FK to vehicle_models
 
     CONSTRAINT pk_vehicles PRIMARY KEY (vin),
 
-    CONSTRAINT fk_vehicles_vehicle_models FOREIGN KEY (model_id)
-        REFERENCES app.vehicle_models (id)
-        ON DELETE CASCADE,
+    -- No ON DELETE CASCADE: deleting a reference model must never wipe vehicles.
+    CONSTRAINT fk_vehicles_vehicle_models FOREIGN KEY (model_code)
+        REFERENCES app.vehicle_models (vin_code),
 
     CONSTRAINT fk_vehicles_users FOREIGN KEY (user_id)
         REFERENCES app.users (id)
-        ON DELETE CASCADE
+        ON DELETE SET NULL
 );
 
 CREATE TABLE app.jwt
@@ -183,6 +183,8 @@ CREATE TABLE app.charging_planner
     activation_longitude     NUMERIC(9, 6),
     location_label           VARCHAR(255),
     deactivate_after_success BOOLEAN,
+    enabled                  BOOLEAN     NOT NULL DEFAULT TRUE,
+    tesla_schedule_id        BIGINT,
 
     CONSTRAINT pk_charging_planner PRIMARY KEY (id),
 

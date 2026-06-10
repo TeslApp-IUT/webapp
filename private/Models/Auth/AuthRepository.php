@@ -27,17 +27,19 @@ final readonly class AuthRepository
         string $email,
         string $firstName,
         string $lastName,
+        string $avatarUrl = '',
     ): void {
         try {
             $stmt = $this->pdo->prepare(
-                'INSERT INTO users (id, email, first_name, last_name) VALUES (:id, :email, :first_name, :last_name)
-                 ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email, updated_at = now(), first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name',
+                'INSERT INTO users (id, email, first_name, last_name, avatar_url) VALUES (:id, :email, :first_name, :last_name, :avatar_url)
+                 ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email, updated_at = now(), first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name, avatar_url = EXCLUDED.avatar_url',
             );
             $stmt->execute([
                 ':id' => $userId,
                 ':email' => $email,
                 ':first_name' => $firstName,
                 ':last_name' => $lastName,
+                ':avatar_url' => $avatarUrl ?: null,
             ]);
         } catch (PDOException $e) {
             throw new DatabaseException("Failed to upsert user $userId", previous: $e);
@@ -159,5 +161,17 @@ final readonly class AuthRepository
         $row = $stmt->fetch();
 
         return $row !== false ? $row : null;
+    }
+
+    public function isUserInDatabase(string $sub_id): bool
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT 1
+                   FROM users
+                   WHERE id = :sub_id',
+        );
+        $stmt->execute([':sub_id' => $sub_id]);
+        $row = $stmt->fetch();
+        return $row !== false;
     }
 }

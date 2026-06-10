@@ -4,12 +4,19 @@ declare(strict_types=1);
 
 namespace Teslapp\Controllers\Auth;
 
+use Teslapp\Models\Auth\AuthRepository;
 use Teslapp\Models\Auth\ImpersonationRepository;
+use Teslapp\Models\Shared\TokenCipher;
 use Teslapp\Utils\Csrf;
+use Teslapp\Utils\Flash;
 
 final class AuthImpersonateController
 {
-    public function __construct(private readonly ImpersonationRepository $repo) {}
+    public function __construct(
+        private readonly ImpersonationRepository $repo,
+        private readonly AuthRepository $authRepo,
+        private readonly TokenCipher $cipher,
+    ) {}
 
     public function show(): void
     {
@@ -30,7 +37,7 @@ final class AuthImpersonateController
             exit();
         }
 
-        // Validate the target exists in DB (not just blindly trusting POST input)
+        // Validate target exists and is not the developer themselves
         $realId = (string) $_SESSION['real_user_id'];
         $all = $this->repo->listUsersExcept($realId);
         $valid = array_filter($all, static fn(array $u): bool => $u['id'] === $targetId);
@@ -39,10 +46,38 @@ final class AuthImpersonateController
             exit();
         }
 
-        $_SESSION['user_id'] = $targetId;
-        unset($_SESSION['selected_vin']);
+        // Load target user's OAuth tokens from DB
+        $credentials = $this->authRepo->getLatestCredentials($targetId);
+        if ($credentials === null) {
+            Flash::set('errors', ["Cet utilisateur n'a pas de jetons OAuth enregistrés."]);
+            header('Location: /auth/impersonate', true, 302);
+            exit();
+        }
 
-        header('Location: /vehicle/select', true, 302);
+        // Stash the developer's tokens once (guard against nested impersonation overwriting them)
+        if (!array_key_exists('real_access_token', $_SESSION)) {
+            $_SESSION['real_access_token'] = $_SESSION['access_token'] ?? null;
+            $_SESSION['real_refresh_token'] = $_SESSION['refresh_token'] ?? null;
+            $_SESSION['real_access_token_expires_at'] =
+                $_SESSION['access_token_expires_at'] ?? null;
+        }
+
+        // Swap in the target user's decrypted tokens
+        $_SESSION['access_token'] = $this->cipher->decrypt(
+            $credentials['access_token_encrypted'],
+            $credentials['access_token_nonce'],
+        );
+        $_SESSION['refresh_token'] = $this->cipher->decrypt(
+            $credentials['refresh_token_encrypted'],
+            $credentials['refresh_token_nonce'],
+        );
+        // Force a refresh on the next API call: the stored token may be expired and the
+        // buffer-adjusted expiry constant is private to TeslaHttpClient.
+        $_SESSION['access_token_expires_at'] = 0;
+
+        $_SESSION['user_id'] = $targetId;
+
+        header('Location: /dashboard', true, 302);
         exit();
     }
 
@@ -55,8 +90,18 @@ final class AuthImpersonateController
 
         Csrf::requireValid('/auth/impersonate');
 
+        // Restore developer's identity and tokens
         $_SESSION['user_id'] = $_SESSION['real_user_id'];
-        unset($_SESSION['selected_vin']);
+        $_SESSION['access_token'] = $_SESSION['real_access_token'] ?? null;
+        $_SESSION['refresh_token'] = $_SESSION['real_refresh_token'] ?? null;
+        $_SESSION['access_token_expires_at'] = $_SESSION['real_access_token_expires_at'] ?? null;
+
+        unset(
+            $_SESSION['real_user_id'],
+            $_SESSION['real_access_token'],
+            $_SESSION['real_refresh_token'],
+            $_SESSION['real_access_token_expires_at'],
+        );
 
         header('Location: /auth/impersonate', true, 302);
         exit();
@@ -69,7 +114,6 @@ final class AuthImpersonateController
             exit();
         }
 
-        // Ensure real_user_id is always set while on impersonation pages
         if (!isset($_SESSION['real_user_id'])) {
             $_SESSION['real_user_id'] = $_SESSION['user_id'];
         }

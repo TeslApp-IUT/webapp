@@ -4,11 +4,12 @@
  *
  * Set $activeNav before including to highlight the current tab:
  *   'overview' | 'vehicle' | 'ac' | 'battery' | 'navigation'
+ * $vehicleId must also be set by the including controller/view.
  */
 $activeNav = $activeNav ?? 'overview';
 ?>
 <nav class="dashboard-navigation">
-    <a href="/dashboard/overview" class="nav-item<?= $activeNav === 'overview' ? ' nav-item--active' : '' ?>" aria-label="Vue générale">
+    <a href="/dashboard/<?= e($vehicleId) ?>/overview" class="nav-item<?= $activeNav === 'overview' ? ' nav-item--active' : '' ?>" aria-label="Vue générale">
         <span class="nav-item__icon nav-item__icon--overview">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                  stroke="currentColor" class="size-6">
@@ -16,9 +17,9 @@ $activeNav = $activeNav ?? 'overview';
                     d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
             </svg>
         </span>
-        <span class="nav-item__label">Vue d’ensemble</span>
+        <span class="nav-item__label">Vue d'ensemble</span>
     </a>
-    <a href="/dashboard/vehicle" class="nav-item<?= $activeNav === 'vehicle' ? ' nav-item--active' : '' ?>" aria-label="Véhicule">
+    <a href="/dashboard/<?= e($vehicleId) ?>/vehicle" class="nav-item<?= $activeNav === 'vehicle' ? ' nav-item--active' : '' ?>" aria-label="Véhicule">
         <span class="nav-item__icon nav-item__icon--vehicle">
           <svg width="100" height="100" viewBox="4 4 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -34,7 +35,7 @@ $activeNav = $activeNav ?? 'overview';
         </span>
         <span class="nav-item__label">Véhicule</span>
     </a>
-    <a href="/dashboard/ac" class="nav-item<?= $activeNav === 'ac' ? ' nav-item--active' : '' ?>" aria-label="Climatisation">
+    <a href="/dashboard/<?= e($vehicleId) ?>/ac" class="nav-item<?= $activeNav === 'ac' ? ' nav-item--active' : '' ?>" aria-label="Climatisation">
         <span class="nav-item__icon nav-item__icon--ac">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                  stroke-linejoin="round" aria-hidden="true">
@@ -43,7 +44,7 @@ $activeNav = $activeNav ?? 'overview';
         </span>
         <span class="nav-item__label">Climatisation</span>
     </a>
-    <a href="/dashboard/battery" class="nav-item<?= $activeNav === 'battery' ? ' nav-item--active' : '' ?>" aria-label="Batterie">
+    <a href="/dashboard/<?= e($vehicleId) ?>/battery" class="nav-item<?= $activeNav === 'battery' ? ' nav-item--active' : '' ?>" aria-label="Batterie">
         <span class="nav-item__icon nav-item__icon--battery">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                  stroke="currentColor" class="size-6">
@@ -53,7 +54,7 @@ $activeNav = $activeNav ?? 'overview';
         </span>
         <span class="nav-item__label">Batterie</span>
     </a>
-    <a href="/dashboard/navigation" class="nav-item<?= $activeNav === 'navigation' ? ' nav-item--active' : '' ?>" aria-label="Navigation">
+    <a href="/dashboard/<?= e($vehicleId) ?>/navigation" class="nav-item<?= $activeNav === 'navigation' ? ' nav-item--active' : '' ?>" aria-label="Navigation">
         <span class="nav-item__icon nav-item__icon--navigation">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                  stroke-linejoin="round" aria-hidden="true">

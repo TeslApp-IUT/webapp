@@ -10,7 +10,21 @@ use Teslapp\Controllers\Auth\AuthImpersonateController;
 use Teslapp\Controllers\Auth\AuthLogoutController;
 use Teslapp\Controllers\Auth\AuthSignUpController;
 use Teslapp\Controllers\Auth\AuthController;
+use Teslapp\Controllers\Charging\ChargingController;
+use Teslapp\Controllers\Charging\ChargingPlannerController;
+use Teslapp\Controllers\Climate\PreconditioningController;
+use Teslapp\Controllers\GeocodingController;
+use Teslapp\Models\Charging\ChargingPlannerRepository;
+use Teslapp\Models\Charging\ChargingPlannerRepositoryInterface;
+use Teslapp\Models\Charging\ChargingPlannerService;
+use Teslapp\Models\Charging\ChargingService;
+use Teslapp\Models\Auth\AuthRepository;
 use Teslapp\Models\Auth\ImpersonationRepository;
+use Teslapp\Models\Auth\RememberTokenRepository;
+use Teslapp\Models\Climate\PreconditioningPlannerRepository;
+use Teslapp\Models\Climate\PreconditioningPlannerRepositoryInterface;
+use Teslapp\Models\Climate\PreconditioningService;
+use Teslapp\Models\Shared\TokenCipher;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\VehicleCommandController;
@@ -18,7 +32,9 @@ use Teslapp\Controllers\VehicleController;
 use Teslapp\Models\Database;
 use Teslapp\Models\Shared\Geocoding\GeocoderInterface;
 use Teslapp\Models\Shared\Geocoding\NominatimGeocoder;
+use Teslapp\Models\Shared\TeslaApi\ChargingCommandClient;
 use Teslapp\Models\Shared\TeslaApi\ClimateCommandClient;
+use Teslapp\Models\Shared\TeslaApi\TeslaChargingClient;
 use Teslapp\Models\Shared\TeslaApi\TeslaClimateClient;
 use Teslapp\Models\Shared\TeslaApi\TeslaCommandClient;
 use Teslapp\Models\Shared\TeslaApi\TeslaStateClient;
@@ -26,8 +42,6 @@ use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleTelemetryRepositoryInterface;
 use Teslapp\Models\Shared\VehicleTelemetryRepository;
-use Teslapp\Models\Vehicle\TeslaModelRepository;
-use Teslapp\Models\Vehicle\TeslaModelRepositoryInterface;
 use Teslapp\Models\Vehicle\VehicleCommandService;
 use Teslapp\Models\Vehicle\VehicleRepository;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
@@ -50,10 +64,6 @@ $container->set(
     static fn(): VehicleRepositoryInterface => new VehicleRepository(Database::pdo()),
 );
 $container->set(
-    TeslaModelRepositoryInterface::class,
-    static fn(): TeslaModelRepositoryInterface => new TeslaModelRepository(Database::pdo()),
-);
-$container->set(
     VehicleStateClient::class,
     static fn(): VehicleStateClient => new TeslaStateClient(),
 );
@@ -62,7 +72,6 @@ $container->set(
     static fn(Container $c): VehicleService => new VehicleService(
         $c->get(VehicleStateClient::class),
         $c->get(VehicleRepositoryInterface::class),
-        $c->get(TeslaModelRepositoryInterface::class),
     ),
 );
 $container->set(
@@ -88,11 +97,17 @@ $container->set(AuthController::class, static fn(): AuthController => new AuthCo
 
 $container->set(
     AuthCallbackController::class,
-    static fn(): AuthCallbackController => new AuthCallbackController(),
+    static fn(Container $c): AuthCallbackController => new AuthCallbackController(
+        $c->get(AuthRepository::class),
+        $c->get(RememberToken::class),
+    ),
 );
 $container->set(
     AuthSignUpController::class,
-    static fn(): AuthSignUpController => new AuthSignUpController(Database::pdo()),
+    static fn(Container $c): AuthSignUpController => new AuthSignUpController(
+        $c->get(AuthRepository::class),
+        $c->get(RememberToken::class),
+    ),
 );
 
 $container->set(
@@ -108,9 +123,23 @@ $container->set(
 );
 
 $container->set(
+    AuthRepository::class,
+    static fn(): AuthRepository => new AuthRepository(Database::pdo()),
+);
+
+$container->set(
+    TokenCipher::class,
+    static fn(): TokenCipher => new TokenCipher(
+        base64_decode(getenv('TESLAPP_TOKEN_ENCRYPTION_KEY'), strict: true),
+    ),
+);
+
+$container->set(
     AuthImpersonateController::class,
     static fn(Container $c): AuthImpersonateController => new AuthImpersonateController(
         $c->get(ImpersonationRepository::class),
+        $c->get(AuthRepository::class),
+        $c->get(TokenCipher::class),
     ),
 );
 
@@ -141,6 +170,8 @@ $container->set(
     static fn(Container $c): ClimateController => new ClimateController(
         $c->get(ClimateService::class),
         $c->get(PreconditioningService::class),
+        $c->get(VehicleRepositoryInterface::class),
+        $c->get(VehicleTelemetryRepositoryInterface::class),
     ),
 );
 
@@ -160,6 +191,7 @@ $container->set(
     VehicleCommandController::class,
     static fn(Container $c): VehicleCommandController => new VehicleCommandController(
         $c->get(VehicleCommandService::class),
+        $c->get(VehicleRepositoryInterface::class),
     ),
 );
 
@@ -199,6 +231,50 @@ $container->set(
     PreconditioningController::class,
     static fn(Container $c): PreconditioningController => new PreconditioningController(
         $c->get(PreconditioningService::class),
+        $c->get(VehicleRepositoryInterface::class),
+    ),
+);
+
+// Charging (issue #30): command adapter, repository, services, controllers.
+$container->set(
+    ChargingCommandClient::class,
+    static fn(): ChargingCommandClient => new TeslaChargingClient(TESLA_COMMANDS_DRY_RUN),
+);
+$container->set(
+    ChargingPlannerRepositoryInterface::class,
+    static fn(): ChargingPlannerRepositoryInterface => new ChargingPlannerRepository(
+        Database::pdo(),
+    ),
+);
+$container->set(
+    ChargingService::class,
+    static fn(Container $c): ChargingService => new ChargingService(
+        $c->get(ChargingCommandClient::class),
+        $c->get(VehicleRepositoryInterface::class),
+    ),
+);
+$container->set(
+    ChargingPlannerService::class,
+    static fn(Container $c): ChargingPlannerService => new ChargingPlannerService(
+        $c->get(ChargingPlannerRepositoryInterface::class),
+        $c->get(VehicleRepositoryInterface::class),
+        $c->get(ChargingCommandClient::class),
+    ),
+);
+$container->set(
+    ChargingController::class,
+    static fn(Container $c): ChargingController => new ChargingController(
+        $c->get(ChargingService::class),
+        $c->get(ChargingPlannerService::class),
+        $c->get(VehicleTelemetryRepositoryInterface::class),
+        $c->get(VehicleRepositoryInterface::class),
+    ),
+);
+$container->set(
+    ChargingPlannerController::class,
+    static fn(Container $c): ChargingPlannerController => new ChargingPlannerController(
+        $c->get(ChargingPlannerService::class),
+        $c->get(VehicleRepositoryInterface::class),
     ),
 );
 

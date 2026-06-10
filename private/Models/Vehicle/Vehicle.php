@@ -15,7 +15,8 @@ final readonly class Vehicle
         public Vin $vin,
         public string $userId,
         public string $name,
-        public string $modelId,
+        public string $modelCode,
+        public string $publicId,
     ) {}
 
     public function isAccessibleBy(string $userId): bool
@@ -30,12 +31,13 @@ final readonly class Vehicle
             vin: new Vin((string) $row['vin']),
             userId: (string) $row['user_id'],
             name: (string) $row['name'],
-            modelId: (string) $row['model_id'],
+            modelCode: (string) $row['model_code'],
+            publicId: (string) $row['public_id'],
         );
     }
 
     /**
-     * Builds from a Tesla API vehicle. userId and modelId stay empty until the
+     * Builds from a Tesla API vehicle. userId and modelCode stay empty until the
      * sync fills them in before saving.
      *
      * @param array<string, mixed> $data
@@ -46,7 +48,8 @@ final readonly class Vehicle
             vin: new Vin((string) ($data['vin'] ?? '')),
             userId: '',
             name: (string) ($data['display_name'] ?? ''),
-            modelId: '',
+            modelCode: '',
+            publicId: '',
         );
     }
 }

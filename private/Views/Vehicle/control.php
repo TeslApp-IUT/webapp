@@ -13,6 +13,7 @@ $description = 'Commandes à distance de votre véhicule Tesla : verrouillage, k
 $header = 'user';
 $extraCss = ['dashboard', 'vehicle-actions'];
 $extraJs = ['vehicle-actions'];
+$headExtra = '<meta name="vehicle-id" content="' . e($vehicleId) . '">';
 
 ob_start();
 ?>
@@ -20,10 +21,10 @@ ob_start();
     <div class="dashboard-layout">
       <?php $activeNav = 'vehicle'; require __DIR__ . '/../partials/dashboard_nav.php'; ?>
 
-      <main class="dashboard-content">
+      <div class="dashboard-content">
         <header class="commands-header">
           <h1 class="dashboard-title">Commandes du véhicule</h1>
-          <a href="/vehicle/select" class="btn-switch-vehicle">
+          <a href="/dashboard" class="btn-switch-vehicle">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
             </svg>
@@ -140,7 +141,7 @@ ob_start();
             </div>
           </section>
         </div>
-      </main>
+      </div>
     </div>
   </section>
 <?php

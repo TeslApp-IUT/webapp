@@ -1471,6 +1471,14 @@ input:focus-visible {
   object-fit: contain;
 }
 
+.vehicle-card__image--preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .vehicle-card__image--placeholder {
   display: flex;
   flex-direction: column;
@@ -1516,7 +1524,7 @@ input:focus-visible {
 
 /* ----- Body: model line + vehicle name ----- */
 .vehicle-card__body {
-  padding: 16px 20px 0;
+  padding: 16px 20px;
 }
 
 .vehicle-card__model {

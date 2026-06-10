@@ -13,9 +13,12 @@ use Teslapp\Models\Climate\ValueObjects\Temperature;
 use Teslapp\Models\Shared\Exceptions\TeslaAppException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\ValueObjects\Vin;
+use Teslapp\Models\Shared\VehicleTelemetryRepository;
+use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 use Teslapp\Utils\Csrf;
 use Teslapp\Utils\Flash;
 use Teslapp\Utils\Http;
+use Teslapp\Utils\Route;
 
 /**
  * Controller responsible for climate-related commands.
@@ -26,23 +29,29 @@ final class ClimateController
     public function __construct(
         private readonly ClimateService $climateService,
         private readonly PreconditioningService $preconditioningService,
+        private readonly VehicleRepositoryInterface $vehicles,
+        private readonly VehicleTelemetryRepository $telemetryRepository,
     ) {}
 
     /**
-     * GET dashboard/ac
+     * GET dashboard/{vehicleId}/ac
      * Displays the climate control page with the preconditioning plans for the selected vehicle.
      * Redirects to vehicle selection if the vehicle is invalid or unauthorized.
+     *
+     * @throws \Exception
      **/
     public function ac(): void
     {
-        ['userId' => $userId, 'vin' => $vin] = $this->requireSession();
+        ['userId' => $userId, 'vin' => $vin, 'vehicleId' => $vehicleId] = $this->requireVehicle();
 
         try {
             $plans = $this->preconditioningService->listPlansForVehicle($userId, $vin);
         } catch (InvalidArgumentException | VehicleUnauthorizedException) {
             Flash::set('error', 'Véhicule invalide ou inaccessible.');
-            Http::redirect('/vehicle/select');
+            Http::redirect('/dashboard');
         }
+
+        $data = $this->telemetryRepository->latest('temp_int', 'inside_temp', $vin);
 
         require_once __DIR__ . '/../../Views/Climate/ac.php';
     }
@@ -55,16 +64,18 @@ final class ClimateController
      **/
     public function toggle(): void
     {
-        Csrf::requireValid('/dashboard/ac');
+        $vehicleId = (string) (filter_input(INPUT_POST, 'vehicle_id', FILTER_UNSAFE_RAW) ?? '');
+        $page = '/dashboard/' . $vehicleId . '/ac';
+        Csrf::requireValid($page);
 
-        ['userId' => $userId, 'vin' => $vin] = $this->requireSession();
+        ['userId' => $userId, 'vin' => $vin] = $this->resolveVehicle($vehicleId);
 
         $action = ClimateAction::tryFrom(
             filter_input(INPUT_POST, 'action', FILTER_UNSAFE_RAW) ?? '',
         );
 
         if ($action === null) {
-            Http::redirect('/dashboard/ac');
+            Http::redirect($page);
         }
 
         try {
@@ -82,7 +93,7 @@ final class ClimateController
             Flash::set('error', 'Impossible d\'envoyer la commande à Tesla.');
         }
 
-        Http::redirect('/dashboard/ac');
+        Http::redirect($page);
     }
 
     /**
@@ -92,16 +103,18 @@ final class ClimateController
      **/
     public function setKeeperMode(): void
     {
-        Csrf::requireValid('/dashboard/ac');
+        $vehicleId = (string) (filter_input(INPUT_POST, 'vehicle_id', FILTER_UNSAFE_RAW) ?? '');
+        $page = '/dashboard/' . $vehicleId . '/ac';
+        Csrf::requireValid($page);
 
-        ['userId' => $userId, 'vin' => $vin] = $this->requireSession();
+        ['userId' => $userId, 'vin' => $vin] = $this->resolveVehicle($vehicleId);
 
         $raw = filter_input(INPUT_POST, 'climate_keeper_mode', FILTER_VALIDATE_INT);
         $mode = $raw !== false ? KeeperMode::tryFrom($raw) : null;
 
         if ($mode === null) {
             Flash::set('error', 'Mode invalide.');
-            Http::redirect('/dashboard/ac');
+            Http::redirect($page);
         }
 
         try {
@@ -112,23 +125,28 @@ final class ClimateController
             Flash::set('error', 'Impossible d\'appliquer le mode keeper.');
         }
 
-        Http::redirect('/dashboard/ac');
+        Http::redirect($page);
     }
 
     /**
-     * Checks that a vehicle is selected in the session
+     * Resolves the vehicle targeted by the {vehicleId} route parameter.
      *
-     * @return array{userId: string, vin: Vin}
+     * @return array{userId: string, vin: Vin, vehicleId: string}
      **/
-    private function requireSession(): array
+    private function requireVehicle(): array
     {
-        if (!isset($_SESSION['selected_vin'])) {
-            Http::redirect('/vehicle/select');
-        }
+        $vehicleId = Route::param('vehicleId');
+        return $this->resolveVehicle($vehicleId) + ['vehicleId' => $vehicleId];
+    }
 
-        return [
-            'userId' => (string) ($_SESSION['user_id'] ?? ''),
-            'vin' => new Vin($_SESSION['selected_vin']),
-        ];
+    /** @return array{userId: string, vin: Vin} */
+    private function resolveVehicle(string $vehicleId): array
+    {
+        $userId = (string) ($_SESSION['user_id'] ?? '');
+        $vehicle = $this->vehicles->findByPublicId($vehicleId);
+        if ($vehicle === null || !$vehicle->isAccessibleBy($userId)) {
+            Http::redirect('/dashboard');
+        }
+        return ['userId' => $userId, 'vin' => $vehicle->vin];
     }
 }

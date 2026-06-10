@@ -15,10 +15,10 @@ final readonly class GeoPoint
     public function __construct(public float $latitude, public float $longitude)
     {
         if ($latitude < -90.0 || $latitude > 90.0) {
-            throw new InvalidArgumentException("Latitude out of range: {$latitude}");
+            throw new InvalidArgumentException("Latitude out of range: $latitude");
         }
         if ($longitude < -180.0 || $longitude > 180.0) {
-            throw new InvalidArgumentException("Longitude out of range: {$longitude}");
+            throw new InvalidArgumentException("Longitude out of range: $longitude");
         }
     }
 }

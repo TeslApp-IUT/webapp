@@ -11,66 +11,69 @@ use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
 use Teslapp\Models\Shared\ValueObjects\GeoPoint;
 use Teslapp\Models\Shared\ValueObjects\Vin;
+use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 use Teslapp\Utils\Csrf;
 use Teslapp\Utils\Flash;
 use Teslapp\Utils\Http;
+use Teslapp\Utils\Route;
 
 /**
- * Preconditioning schedule write actions on the climate page (dashboard/ac).
+ * Preconditioning schedule write actions on the climate page (dashboard/{vehicleId}/ac).
  *
  * create/update/delete/toggle are POST actions sharing the same shape: check the CSRF
- * token, resolve the session context, call PreconditioningService, set a flash message,
- * then redirect back. The schedules are listed by ClimateController on dashboard/ac.
- * Pure HTTP orchestration: no business rule and no SQL here.
+ * token, resolve the vehicle from the URL param, call PreconditioningService, set a flash
+ * message, then redirect back. Pure HTTP orchestration: no business rule and no SQL here.
  */
 final class PreconditioningController
 {
-    private const PAGE = '/dashboard/ac';
+    public function __construct(
+        private readonly PreconditioningService $service,
+        private readonly VehicleRepositoryInterface $vehicles,
+    ) {}
 
-    public function __construct(private readonly PreconditioningService $service) {}
-
-    // Creates a schedule from the submitted form.
     public function create(): void
     {
-        Csrf::requireValid(self::PAGE);
-        [$userId, $vin] = $this->context();
+        $vehicleId = Route::param('vehicleId');
+        $page = '/dashboard/' . $vehicleId . '/ac';
+        Csrf::requireValid($page);
+
+        ['userId' => $userId, 'vin' => $vin] = $this->resolveVehicle($vehicleId);
 
         try {
             $this->service->createPlan(
                 $userId,
-                new Vin($vin),
+                $vin,
                 $this->readActivationHour(),
                 $this->readDays(),
                 $this->boolField('memorize'),
                 $this->boolField('enabled'),
                 $this->readLocation(),
-                $this->post('location_label') ?: null, // empty label stays null
+                $this->post('location_label') ?: null,
             );
             Flash::set('success', 'Planification créée.');
         } catch (InvalidArgumentException) {
-            // Invalid hour or coordinates in the form.
             Flash::set('errors', ['Saisie invalide (heure ou coordonnées).']);
         } catch (VehicleUnauthorizedException) {
-            // The vehicle is not the logged-in user's.
             Flash::set('errors', ['Vous n\'avez pas accès à ce véhicule.']);
         } catch (TeslaApiException) {
-            // The schedule push to the Tesla API failed.
             Flash::set('errors', ['La commande Tesla a échoué.']);
         }
 
-        Http::redirect(self::PAGE);
+        Http::redirect($page);
     }
 
-    // Updates the schedule identified by plan_id from the submitted form.
     public function update(): void
     {
-        Csrf::requireValid(self::PAGE);
-        [$userId, $vin] = $this->context();
+        $vehicleId = Route::param('vehicleId');
+        $page = '/dashboard/' . $vehicleId . '/ac';
+        Csrf::requireValid($page);
+
+        ['userId' => $userId, 'vin' => $vin] = $this->resolveVehicle($vehicleId);
 
         try {
             $this->service->updatePlan(
                 $userId,
-                new Vin($vin),
+                $vin,
                 $this->post('plan_id'),
                 $this->readActivationHour(),
                 $this->readDays(),
@@ -88,17 +91,19 @@ final class PreconditioningController
             Flash::set('errors', ['La commande Tesla a échoué.']);
         }
 
-        Http::redirect(self::PAGE);
+        Http::redirect($page);
     }
 
-    // Deletes the schedule identified by plan_id (also removes it on the Tesla side).
     public function delete(): void
     {
-        Csrf::requireValid(self::PAGE);
-        [$userId, $vin] = $this->context();
+        $vehicleId = Route::param('vehicleId');
+        $page = '/dashboard/' . $vehicleId . '/ac';
+        Csrf::requireValid($page);
+
+        ['userId' => $userId, 'vin' => $vin] = $this->resolveVehicle($vehicleId);
 
         try {
-            $this->service->deletePlan($userId, new Vin($vin), $this->post('plan_id'));
+            $this->service->deletePlan($userId, $vin, $this->post('plan_id'));
             Flash::set('success', 'Planification supprimée.');
         } catch (InvalidArgumentException) {
             Flash::set('errors', ['Saisie invalide.']);
@@ -108,19 +113,21 @@ final class PreconditioningController
             Flash::set('errors', ['La commande Tesla a échoué.']);
         }
 
-        Http::redirect(self::PAGE);
+        Http::redirect($page);
     }
 
-    // Enables or disables a schedule straight from the list (the list switch posts here).
     public function toggle(): void
     {
-        Csrf::requireValid(self::PAGE);
-        [$userId, $vin] = $this->context();
+        $vehicleId = Route::param('vehicleId');
+        $page = '/dashboard/' . $vehicleId . '/ac';
+        Csrf::requireValid($page);
+
+        ['userId' => $userId, 'vin' => $vin] = $this->resolveVehicle($vehicleId);
 
         try {
             $this->service->setPlanEnabled(
                 $userId,
-                new Vin($vin),
+                $vin,
                 $this->post('plan_id'),
                 $this->boolField('enabled'),
             );
@@ -129,33 +136,21 @@ final class PreconditioningController
         } catch (VehicleUnauthorizedException) {
             Flash::set('errors', ['Vous n\'avez pas accès à ce véhicule.']);
         }
-        // No TeslaApiException catch: toggling only writes our database, it never calls Tesla.
 
-        Http::redirect(self::PAGE);
+        Http::redirect($page);
     }
 
-    /**
-     * Reads the user id and selected VIN from the session, redirecting out when either is
-     * missing. The router does not enforce the auth flag, so each action guards itself here.
-     *
-     * @return array{string, string} the user id and the selected VIN
-     */
-    private function context(): array
+    /** @return array{userId: string, vin: Vin} */
+    private function resolveVehicle(string $vehicleId): array
     {
-        $userId = $_SESSION['user_id'] ?? '';
-        $vin = $_SESSION['selected_vin'] ?? '';
-
-        if (!is_string($userId) || $userId === '') {
-            Http::redirect('/site/home');
+        $userId = (string) ($_SESSION['user_id'] ?? '');
+        $vehicle = $this->vehicles->findByPublicId($vehicleId);
+        if ($vehicle === null || !$vehicle->isAccessibleBy($userId)) {
+            Http::redirect('/dashboard');
         }
-        if (!is_string($vin) || $vin === '') {
-            Http::redirect('/vehicle/select');
-        }
-
-        return [$userId, $vin];
+        return ['userId' => $userId, 'vin' => $vehicle->vin];
     }
 
-    // Validates the "HH:MM" field so a malformed value never reaches the TIME column.
     private function readActivationHour(): string
     {
         $hour = $this->post('activation_hour');
@@ -166,11 +161,7 @@ final class PreconditioningController
         return $hour;
     }
 
-    /**
-     * Maps the checked day boxes to a DayOfWeek list, dropping any unknown value.
-     *
-     * @return list<DayOfWeek>
-     */
+    /** @return list<DayOfWeek> */
     private function readDays(): array
     {
         $raw = $_POST['days'] ?? [];
@@ -189,8 +180,6 @@ final class PreconditioningController
         return $days;
     }
 
-    // Optional geofence: both fields empty stays null, a partial or non-numeric pair is
-    // rejected, and a valid pair builds a range-checked GeoPoint.
     private function readLocation(): ?GeoPoint
     {
         $lat = $this->post('latitude');
@@ -206,7 +195,6 @@ final class PreconditioningController
         return new GeoPoint((float) $lat, (float) $lon);
     }
 
-    // Trimmed POST string, or '' when the field is absent.
     private function post(string $name): string
     {
         $value = filter_input(INPUT_POST, $name, FILTER_DEFAULT);
@@ -214,7 +202,6 @@ final class PreconditioningController
         return is_string($value) ? trim($value) : '';
     }
 
-    // Reads a checkbox: present and truthy means true, absent means false.
     private function boolField(string $name): bool
     {
         return filter_input(INPUT_POST, $name, FILTER_VALIDATE_BOOLEAN) === true;

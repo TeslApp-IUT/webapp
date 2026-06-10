@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Teslapp\Controllers;
 
-use Teslapp\Models\Shared\TeslaApi\VehicleTelemetryRepositoryInterface;
-use Teslapp\Models\Shared\ValueObjects\Vin;
+use Teslapp\Models\Shared\VehicleTelemetryRepository;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
+use Teslapp\Utils\Http;
+use Teslapp\Utils\Route;
 
 /**
  * Displays the vehicle dashboard: pulls the latest telemetry for the selected
@@ -15,40 +16,24 @@ use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 final readonly class DashboardController
 {
     public function __construct(
-        private VehicleTelemetryRepositoryInterface $telemetry,
+        private VehicleTelemetryRepository $telemetry,
         private VehicleRepositoryInterface $vehicles,
     ) {}
 
-    /**
-     * Requires an authenticated user with a selected vehicle, then renders the dashboard.
-     */
     public function index(): void
     {
-        // Authentication is enforced centrally by the front controller (requiresAuth route flag).
-        $selectedVin = $_SESSION['selected_vin'] ?? null;
-        if (!is_string($selectedVin) || $selectedVin === '') {
-            header('Location: /vehicle/select');
-            $userId = $_SESSION['user_id'] ?? null;
+        $vehicleId = Route::param('vehicleId');
+        $userId = (string) ($_SESSION['user_id'] ?? '');
 
-            /* Redirect to the home page if no user is found in session */
-            if (!$userId) {
-                header('Location: /');
-                exit();
-            }
-
-            try {
-                $vin = new Vin($selectedVin);
-            } catch (\InvalidArgumentException) {
-                // A corrupted/stale selected_vin must not 500 the dashboard.
-                unset($_SESSION['selected_vin']);
-                header('Location: /vehicle/select');
-                exit();
-            }
-
-            $data = $this->telemetry->getLatestTelemetry($vin);
-            $vehicleName = $this->vehicles->findByVin($vin)?->name ?? 'Mon véhicule';
-
-            require_once __DIR__ . '/../Views/Vehicle/dashboard.php';
+        $vehicle = $this->vehicles->findByPublicId($vehicleId);
+        if ($vehicle === null || !$vehicle->isAccessibleBy($userId)) {
+            Http::redirect('/dashboard');
         }
+
+        $vin = $vehicle->vin;
+        $data = $this->telemetry->getLatestTelemetry($vin);
+        $vehicleName = $vehicle->name !== '' ? $vehicle->name : 'Mon véhicule';
+
+        require_once __DIR__ . '/../Views/Vehicle/dashboard.php';
     }
 }

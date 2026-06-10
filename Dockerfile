@@ -37,6 +37,17 @@ RUN apk add --no-cache libpq nginx supervisor \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && mkdir -p /run/nginx
 
+# Install Xdebug in local environment for debugging purposes
+ARG INSTALL_XDEBUG=false
+RUN if [ "$INSTALL_XDEBUG" = "true" ]; then \
+      apk add --no-cache --virtual .xdebug-deps $PHPIZE_DEPS linux-headers \
+      && pecl install xdebug \
+      && docker-php-ext-enable xdebug \
+      && apk del .xdebug-deps \
+      && printf '[xdebug]\nxdebug.mode=debug\nxdebug.client_host=host.docker.internal\nxdebug.client_port=9003\nxdebug.start_with_request=yes\nxdebug.start_upon_error=yes\nxdebug.idekey=JETBRAINS\n' \
+         > "$PHP_INI_DIR/conf.d/xdebug.ini"; \
+    fi
+
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
 

@@ -6,6 +6,7 @@ use Teslapp\Models\Auth\ImpersonationRepository;
 use Teslapp\Utils\Csrf;
 use Teslapp\Utils\Flash;
 use Teslapp\Utils\RememberToken;
+use Teslapp\Utils\Route;
 
 /**
  * Loading: global configuration, Composer autoload (PSR-4),
@@ -26,6 +27,9 @@ $routes = require_once __DIR__ . '/../private/config/routes.php';
 // Custom DI container: resolves controllers and their dependencies (see private/config/container.php)
 $container = require_once __DIR__ . '/../private/config/container.php';
 
+// Enable strict mode to reduce attack surface
+ini_set('session.use_strict_mode', '1');
+
 session_name('TESLAPP_SESSION');
 
 // Session cookie settings. SameSite=Lax (not Strict) so that the cookie
@@ -35,7 +39,6 @@ $sessionCookieParams = [
     'cookie_secure' => true,
     'cookie_httponly' => true,
     'cookie_samesite' => 'Lax',
-    'use_strict_mode' => true,
     'use_only_cookies' => true,
     'cookie_lifetime' => 0,
 ];
@@ -100,7 +103,25 @@ if ($route === '' || $route === 'index.php') {
     $route = 'site/home';
 }
 
-if (!isset($routes[$route])) {
+$handler = $routes[$route] ?? null;
+
+if ($handler === null) {
+    // Parameterized route matching: patterns like 'dashboard/{vehicleId}/overview'
+    $routeParams = [];
+    foreach ($routes as $pattern => $candidate) {
+        if (!str_contains($pattern, '{')) {
+            continue;
+        }
+        $regex = '#^' . preg_replace('/\{(\w+)\}/', '(?P<$1>[^/]+)', $pattern) . '$#';
+        if (preg_match($regex, $route, $matches) === 1) {
+            $handler = $candidate;
+            $routeParams = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+            break;
+        }
+    }
+}
+
+if ($handler === null) {
     http_response_code(404);
 
     [$errClass, $errMethod] = $routes['error/404'];
@@ -113,8 +134,10 @@ if (!isset($routes[$route])) {
     exit();
 }
 
-[$class, $method] = $routes[$route];
-$requiresAuth = $routes[$route][2] ?? false;
+Route::setParams($routeParams ?? []);
+
+[$class, $method] = $handler;
+$requiresAuth = $handler[2] ?? false;
 
 // Centralised authentication guard: routes flagged requiresAuth need a logged-in user.
 // AJAX callers (Accept: application/json — e.g. the command endpoints) get a 401 JSON;
@@ -130,7 +153,8 @@ if ($requiresAuth && empty($_SESSION['user_id'])) {
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode(['error' => 'Authentication required']);
     } else {
-        header('Location: /auth', true, 302);
+        $redirectUri = $_SERVER['REQUEST_URI'] ?? '/';
+        header('Location: /auth?redirectURI=' . urlencode($redirectUri), true, 302);
     }
     exit();
 }

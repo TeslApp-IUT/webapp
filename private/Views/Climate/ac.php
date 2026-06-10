@@ -3,6 +3,7 @@ use Teslapp\Models\Climate\PreconditioningPlanner;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
 
 $inside_temp = $data['inside_temp'] ?? 'N/A';
+$timestamp = $data['timestamp']->getTimestamp() ?? -1;
 $csrf = $_SESSION['csrf_token'] ?? '';
 $title = 'Climatisation — TeslApp';
 $description = 'Gérez la climatisation de votre Tesla à distance.';
@@ -23,8 +24,11 @@ ob_start();
       <?php $activeNav = 'ac';
       require __DIR__ . '/../partials/dashboard_nav.php'; ?>
       <!-- Right Section -->
-      <main class="dashboard-content">
-        <h1 class="dashboard-title">Climatisation</h1>
+      <div class="dashboard-content">
+        <div class="dashboard-title">
+          <h1>Climatisation</h1>
+          <p id="lastUpdate" data-value="<?php echo(e($timestamp)) ?>" class="text-gray-400 text-sm font-normal">Dernière mise à jour : <span id="lastUpdateValue"></span></p>
+        </div>
         <div class="dashboard-grid">
           <!-- Enable / Disable -->
           <div class="dashboard-card">
@@ -43,6 +47,7 @@ ob_start();
               <!-- Activate Button -->
               <form method="post" action="/climate/toggle" id="form-start">
                 <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
+                <input type="hidden" name="vehicle_id" value="<?= e($vehicleId) ?>">
                 <input type="hidden" name="action" value="start">
                 <input type="hidden" name="temperature" value="23" id="temp-hidden">
                 <button type="button" class="btn-enabled" id="btn-activer">Activer</button>
@@ -60,6 +65,7 @@ ob_start();
               <!-- Disable Button -->
               <form method="post" action="/climate/toggle" style="margin-top: 8px;">
                 <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
+                <input type="hidden" name="vehicle_id" value="<?= e($vehicleId) ?>">
                 <input type="hidden" name="action" value="stop">
                 <button type="submit" class="btn-primary">Désactiver</button>
               </form>
@@ -77,6 +83,7 @@ ob_start();
             <div class="card-details">
               <form method="post" action="/climate/keeper">
                 <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
+                <input type="hidden" name="vehicle_id" value="<?= e($vehicleId) ?>">
                 <select name="climate_keeper_mode" class="card-input">
                   <option value="0">Off</option>
                   <option value="1">Keep</option>
@@ -131,7 +138,7 @@ ob_start();
                       data-lon="<?= e($plan->location !== null ? (string)$plan->location->longitude : '') ?>"
                       data-label="<?= e($plan->locationLabel ?? '') ?>"
                     >Modifier</button>
-                    <form method="post" action="/dashboard/ac/precondition/toggle">
+                    <form method="post" action="/dashboard/<?= e($vehicleId) ?>/ac/precondition/toggle">
                       <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
                       <input type="hidden" name="plan_id" value="<?= e($plan->id) ?>">
                       <input type="hidden" name="enabled" value="<?= $plan->enabled ? '0' : '1' ?>">
@@ -142,7 +149,7 @@ ob_start();
                         aria-pressed="<?= $plan->enabled ? 'true' : 'false' ?>"
                       ><span class="switch-btn__knob"></span></button>
                     </form>
-                    <form method="post" action="/dashboard/ac/precondition/delete">
+                    <form method="post" action="/dashboard/<?= e($vehicleId) ?>/ac/precondition/delete">
                       <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
                       <input type="hidden" name="plan_id" value="<?= e($plan->id) ?>">
                       <button type="submit" class="btn-soft btn-danger">Supprimer</button>
@@ -158,7 +165,14 @@ ob_start();
               <h3 class="precond-dialog__title" id="precond-dialog-title">Nouvelle planification</h3>
               <button type="button" class="precond-dialog__close" id="precond-dialog-close" aria-label="Fermer">&times;</button>
             </div>
-            <form class="precond-form precond-form--dialog" id="precond-form" method="post" action="/dashboard/ac/precondition/create">
+            <!-- data-action-base lets ac.js switch the action between .../create and .../update. -->
+            <form
+              class="precond-form precond-form--dialog"
+              id="precond-form"
+              method="post"
+              action="/dashboard/<?= e($vehicleId) ?>/ac/precondition/create"
+              data-action-base="/dashboard/<?= e($vehicleId) ?>/ac/precondition"
+            >
               <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
               <!-- Enabled by ac.js in edit mode only (a disabled input is not submitted). -->
               <input type="hidden" name="plan_id" id="plan_id" disabled>
@@ -213,7 +227,7 @@ ob_start();
             </form>
           </dialog>
         </section>
-      </main>
+      </div>
     </div>
   </section>
 <?php

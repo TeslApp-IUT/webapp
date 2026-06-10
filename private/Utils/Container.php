@@ -77,7 +77,7 @@ final class Container
     private function build(string $id): object
     {
         if (!isset($this->recipes[$id])) {
-            throw new ServiceNotFoundException("Service isn't registered in the container: {$id}");
+            throw new ServiceNotFoundException("Service isn't registered in the container: $id");
         }
 
         return $this->recipes[$id]($this);
