@@ -17,7 +17,7 @@ final readonly class ChargeLimit
     public function __construct(int $value)
     {
         if ($value < 50 || $value > 100) {
-            throw new InvalidArgumentException("Charge limit $value");
+            throw new InvalidArgumentException("Charge limit $value is out of range [50, 100].");
         }
         $this->value = $value;
     }
