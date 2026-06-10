@@ -27,7 +27,7 @@ ob_start();
       <div class="hero-actions">
         <?php
         if ($_SESSION['logged_in'] === true) {
-          echo '<a href="/vehicle/select" class="btn-primary !bg-white !text-black !font-normal"><span>Tableau de bord</span></a>';
+          echo '<a href="/dashboard" class="btn-primary !bg-white !text-black !font-normal"><span>Tableau de bord</span></a>';
         } else {
           require_once __DIR__ . '/../partials/login.php';
         }

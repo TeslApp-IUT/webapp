@@ -33,10 +33,10 @@ window.addEventListener('message', (event) => {
   if (event.data.success) {
     // New users are sent to the signup form (event.data.redirect).
     // Returning users go back to the page they came from (redirectURI query param),
-    // or fall back to /vehicle/select.
+    // or fall back to /dashboard.
     const raw = new URLSearchParams(globalThis.location.search).get('redirectURI') ?? '';
     const redirectUri =
-      raw.startsWith('/') && !raw.startsWith('//') ? raw : '/vehicle/select';
+      raw.startsWith('/') && !raw.startsWith('//') ? raw : '/dashboard';
     globalThis.location.href = event.data.redirect ?? redirectUri;
   } else {
     showError(event.data.error);

@@ -6,6 +6,7 @@ use Teslapp\Models\Auth\ImpersonationRepository;
 use Teslapp\Utils\Csrf;
 use Teslapp\Utils\Flash;
 use Teslapp\Utils\RememberToken;
+use Teslapp\Utils\Route;
 
 /**
  * Loading: global configuration, Composer autoload (PSR-4),
@@ -102,7 +103,25 @@ if ($route === '' || $route === 'index.php') {
     $route = 'site/home';
 }
 
-if (!isset($routes[$route])) {
+$handler = $routes[$route] ?? null;
+
+if ($handler === null) {
+    // Parameterized route matching: patterns like 'dashboard/{vehicleId}/overview'
+    $routeParams = [];
+    foreach ($routes as $pattern => $candidate) {
+        if (!str_contains($pattern, '{')) {
+            continue;
+        }
+        $regex = '#^' . preg_replace('/\{(\w+)\}/', '(?P<$1>[^/]+)', $pattern) . '$#';
+        if (preg_match($regex, $route, $matches) === 1) {
+            $handler = $candidate;
+            $routeParams = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+            break;
+        }
+    }
+}
+
+if ($handler === null) {
     http_response_code(404);
 
     [$errClass, $errMethod] = $routes['error/404'];
@@ -115,8 +134,10 @@ if (!isset($routes[$route])) {
     exit();
 }
 
-[$class, $method] = $routes[$route];
-$requiresAuth = $routes[$route][2] ?? false;
+Route::setParams($routeParams ?? []);
+
+[$class, $method] = $handler;
+$requiresAuth = $handler[2] ?? false;
 
 // Centralised authentication guard: routes flagged requiresAuth need a logged-in user.
 // AJAX callers (Accept: application/json — e.g. the command endpoints) get a 401 JSON;

@@ -23,6 +23,7 @@ $description = 'Tableau de bord de votre véhicule Tesla : batterie, climatisati
 $header = 'user';
 $extraCss = ['dashboard', 'vehicle-actions'];
 $extraJs = ['vehicle-actions'];
+$headExtra = '<meta name="vehicle-id" content="' . e($vehicleId) . '">';
 
 ob_start();
 ?>
@@ -54,7 +55,7 @@ ob_start();
                   class="<?= $charge_enable ? 'status-on' : 'status-off' ?>"><?= $charge_enable ? 'Oui' : 'Non' ?></span>
               </p>
               <p>Charge programmée <span><?= e($scheduled_charging_start_time ?? 'Non programmée') ?></span></p>
-              <a class="btn-primary" href="/dashboard/battery" style="margin-top: 8px; display: inline-block; text-decoration: none;">Gérer la recharge</a>
+              <a class="btn-primary" href="/dashboard/<?= e($vehicleId) ?>/battery" style="margin-top: 8px; display: inline-block; text-decoration: none;">Gérer la recharge</a>
             </div>
           </div>
           <!-- Clim -->

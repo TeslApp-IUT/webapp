@@ -102,7 +102,7 @@ final readonly class AuthSignUpController
         $_SESSION['user_id'] = $sub;
         session_regenerate_id(true);
 
-        Http::redirect('/vehicle/select');
+        Http::redirect('/dashboard');
     }
 
     /**

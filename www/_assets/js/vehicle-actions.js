@@ -1,10 +1,10 @@
 // vehicle-actions.js — vehicle commands (issue #26).
 //
 // Each command tile carries a data-action matching a route segment (lock,
-// unlock, honk, flash, trunk-front, ...). Clicking it POSTs to /vehicle/<action>
-// with the CSRF token read from the <meta name="csrf-token"> tag. The VIN is
-// resolved server-side from the session (selected_vin), so it is never sent
-// from the browser.
+// unlock, honk, flash, trunk-front, ...). Clicking it POSTs to
+// /dashboard/<vehicleId>/<action> with the CSRF token read from the
+// <meta name="csrf-token"> tag. The vehicleId is read from
+// <meta name="vehicle-id"> injected by the control page view.
 //
 // The tile content (SVG pictogram + label) is preserved: instead of rewriting
 // button.textContent, the in-flight state is shown via an .is-loading class and
@@ -15,6 +15,8 @@
 function initVehicleActions() {
   const meta = document.querySelector('meta[name="csrf-token"]');
   const csrfToken = meta?.getAttribute('content') ?? '';
+  const vehicleMeta = document.querySelector('meta[name="vehicle-id"]');
+  const vehicleId = vehicleMeta?.getAttribute('content') ?? '';
   const feedback = document.querySelector('[data-action-feedback]');
   const buttons = document.querySelectorAll('.vehicle-commands [data-action]');
 
@@ -29,7 +31,7 @@ function initVehicleActions() {
       setFeedback(feedback, 'Envoi de la commande…', '');
 
       try {
-        const response = await fetch('/vehicle/' + action, {
+        const response = await fetch('/dashboard/' + vehicleId + '/' + action, {
           method: 'POST',
           redirect: 'manual',
           headers: {

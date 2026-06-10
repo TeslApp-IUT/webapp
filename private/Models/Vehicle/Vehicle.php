@@ -16,6 +16,7 @@ final readonly class Vehicle
         public string $userId,
         public string $name,
         public string $modelCode,
+        public string $publicId,
     ) {}
 
     public function isAccessibleBy(string $userId): bool
@@ -31,6 +32,7 @@ final readonly class Vehicle
             userId: (string) $row['user_id'],
             name: (string) $row['name'],
             modelCode: (string) $row['model_code'],
+            publicId: (string) $row['public_id'],
         );
     }
 
@@ -47,6 +49,7 @@ final readonly class Vehicle
             userId: '',
             name: (string) ($data['display_name'] ?? ''),
             modelCode: '',
+            publicId: '',
         );
     }
 }

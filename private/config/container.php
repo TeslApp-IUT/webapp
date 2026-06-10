@@ -170,6 +170,7 @@ $container->set(
     static fn(Container $c): ClimateController => new ClimateController(
         $c->get(ClimateService::class),
         $c->get(PreconditioningService::class),
+        $c->get(VehicleRepositoryInterface::class),
     ),
 );
 
@@ -189,6 +190,7 @@ $container->set(
     VehicleCommandController::class,
     static fn(Container $c): VehicleCommandController => new VehicleCommandController(
         $c->get(VehicleCommandService::class),
+        $c->get(VehicleRepositoryInterface::class),
     ),
 );
 
@@ -228,6 +230,7 @@ $container->set(
     PreconditioningController::class,
     static fn(Container $c): PreconditioningController => new PreconditioningController(
         $c->get(PreconditioningService::class),
+        $c->get(VehicleRepositoryInterface::class),
     ),
 );
 
@@ -263,12 +266,14 @@ $container->set(
         $c->get(ChargingService::class),
         $c->get(ChargingPlannerService::class),
         $c->get(VehicleTelemetryRepositoryInterface::class),
+        $c->get(VehicleRepositoryInterface::class),
     ),
 );
 $container->set(
     ChargingPlannerController::class,
     static fn(Container $c): ChargingPlannerController => new ChargingPlannerController(
         $c->get(ChargingPlannerService::class),
+        $c->get(VehicleRepositoryInterface::class),
     ),
 );
 

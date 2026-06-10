@@ -76,9 +76,8 @@ final class AuthImpersonateController
         $_SESSION['access_token_expires_at'] = 0;
 
         $_SESSION['user_id'] = $targetId;
-        unset($_SESSION['selected_vin']);
 
-        header('Location: /vehicle/select', true, 302);
+        header('Location: /dashboard', true, 302);
         exit();
     }
 
@@ -102,7 +101,6 @@ final class AuthImpersonateController
             $_SESSION['real_access_token'],
             $_SESSION['real_refresh_token'],
             $_SESSION['real_access_token_expires_at'],
-            $_SESSION['selected_vin'],
         );
 
         header('Location: /auth/impersonate', true, 302);

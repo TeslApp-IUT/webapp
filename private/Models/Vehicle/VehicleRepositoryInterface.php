@@ -10,6 +10,8 @@ interface VehicleRepositoryInterface
 {
     public function findByVin(Vin $vin): ?Vehicle;
 
+    public function findByPublicId(string $publicId): ?Vehicle;
+
     /** @return Vehicle[] */
     public function findByUser(string $userId): array;
 

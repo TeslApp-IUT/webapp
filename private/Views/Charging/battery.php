@@ -56,11 +56,13 @@ ob_start();
             <div class="card-details">
               <form method="post" action="/charging/toggle">
                 <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
+                <input type="hidden" name="vehicle_id" value="<?= e($vehicleId) ?>">
                 <input type="hidden" name="action" value="start">
                 <button type="submit" class="btn-success">Démarrer la charge</button>
               </form>
               <form method="post" action="/charging/toggle">
                 <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
+                <input type="hidden" name="vehicle_id" value="<?= e($vehicleId) ?>">
                 <input type="hidden" name="action" value="stop">
                 <button type="submit" class="btn-primary">Arrêter la charge</button>
               </form>
@@ -78,6 +80,7 @@ ob_start();
             <div class="card-details">
               <form method="post" action="/charging/limit" id="form-limit">
                 <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
+                <input type="hidden" name="vehicle_id" value="<?= e($vehicleId) ?>">
                 <input type="hidden" name="percent" value="80" id="limit-hidden">
                 <div class="temp-controls">
                   <button type="button" class="btn-temp" id="limit-minus" aria-label="Diminuer la limite">−</button>
@@ -101,6 +104,7 @@ ob_start();
             <div class="card-details">
               <form method="post" action="/charging/amps">
                 <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
+                <input type="hidden" name="vehicle_id" value="<?= e($vehicleId) ?>">
                 <label class="card-label" for="amps-input">Courant de charge (5 à 48 A)</label>
                 <input class="precond-input" type="number" id="amps-input" name="amps" min="5" max="48" step="1"
                        value="16" required>
@@ -133,7 +137,7 @@ ob_start();
                     <?php endif; ?>
                   </div>
                   <div class="precond-card__actions">
-                    <form method="post" action="/dashboard/battery/plan/toggle">
+                    <form method="post" action="/dashboard/<?= e($vehicleId) ?>/battery/plan/toggle">
                       <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
                       <input type="hidden" name="plan_id" value="<?= e($plan->id) ?>">
                       <input type="hidden" name="enabled" value="<?= $plan->enabled ? '0' : '1' ?>">
@@ -144,7 +148,7 @@ ob_start();
                         aria-pressed="<?= $plan->enabled ? 'true' : 'false' ?>"
                       ><span class="switch-btn__knob"></span></button>
                     </form>
-                    <form method="post" action="/dashboard/battery/plan/delete">
+                    <form method="post" action="/dashboard/<?= e($vehicleId) ?>/battery/plan/delete">
                       <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
                       <input type="hidden" name="plan_id" value="<?= e($plan->id) ?>">
                       <button type="submit" class="btn-soft btn-danger">Supprimer</button>
@@ -156,7 +160,7 @@ ob_start();
           <?php endif; ?>
           <!-- New Scheduling Form -->
           <h3 class="precond-subtitle">Nouvelle planification</h3>
-          <form class="precond-form" method="post" action="/dashboard/battery/plan/create">
+          <form class="precond-form" method="post" action="/dashboard/<?= e($vehicleId) ?>/battery/plan/create">
             <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
             <p class="precond-hint">
               La voiture limite sa charge à cette fenêtre lorsqu'elle est stationnée au lieu

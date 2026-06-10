@@ -19,9 +19,20 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
     public function findByVin(Vin $vin): ?Vehicle
     {
         $stmt = $this->pdo->prepare(
-            'SELECT vin, user_id, name, model_code FROM vehicles WHERE vin = :vin',
+            'SELECT vin, user_id, name, model_code, public_id FROM vehicles WHERE vin = :vin',
         );
         $stmt->execute([':vin' => $vin->value]);
+        $row = $stmt->fetch();
+
+        return $row !== false ? Vehicle::fromRow($row) : null;
+    }
+
+    public function findByPublicId(string $publicId): ?Vehicle
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT vin, user_id, name, model_code, public_id FROM vehicles WHERE public_id = :public_id LIMIT 1',
+        );
+        $stmt->execute([':public_id' => $publicId]);
         $row = $stmt->fetch();
 
         return $row !== false ? Vehicle::fromRow($row) : null;
@@ -31,7 +42,7 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
     public function findByUser(string $userId): array
     {
         $stmt = $this->pdo->prepare(
-            'SELECT vin, user_id, name, model_code FROM vehicles WHERE user_id = :user_id ORDER BY name',
+            'SELECT vin, user_id, name, model_code, public_id FROM vehicles WHERE user_id = :user_id ORDER BY name',
         );
         $stmt->execute([':user_id' => $userId]);
 

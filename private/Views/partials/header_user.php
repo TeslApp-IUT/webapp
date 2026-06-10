@@ -30,7 +30,7 @@ $userInitial = $userEmail !== '' ? mb_strtoupper(mb_substr($userEmail, 0, 1)) : 
         <!-- Main navigation -->
         <nav class="nav" aria-label="navigation principale">
             <a href="/" class="nav-link">Accueil</a>
-            <a href="/vehicle/select" class="nav-link">Tableau de bord</a>
+            <a href="/dashboard" class="nav-link">Tableau de bord</a>
         </nav>
 
         <!-- Header actions: logout + profile -->
@@ -81,7 +81,7 @@ $userInitial = $userEmail !== '' ? mb_strtoupper(mb_substr($userEmail, 0, 1)) : 
             <a href="/" class="mobile-menu-link">Accueil</a>
             <a href="/sitemap" class="mobile-menu-link">Plan du site</a>
             <a href="/legal" class="mobile-menu-link">Mentions légales</a>
-          <a href="/vehicle/select" class="nav-link">Tableau de bord</a>
+          <a href="/dashboard" class="nav-link">Tableau de bord</a>
         </nav>
 
         <div class="mobile-menu-actions">

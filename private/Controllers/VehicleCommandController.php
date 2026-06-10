@@ -9,8 +9,10 @@ use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\ValueObjects\TrunkSide;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\VehicleCommandService;
+use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 use Teslapp\Utils\Csrf;
 use Teslapp\Utils\Http;
+use Teslapp\Utils\Route;
 
 /**
  * JSON endpoints for the vehicle commands (issue #26): lock/unlock, horn,
@@ -24,29 +26,22 @@ use Teslapp\Utils\Http;
  */
 final class VehicleCommandController
 {
-    public function __construct(private readonly VehicleCommandService $service) {}
+    public function __construct(
+        private readonly VehicleCommandService $service,
+        private readonly VehicleRepositoryInterface $vehicles,
+    ) {}
 
     /**
      * Renders the vehicle command page (GET) — the "Véhicule" dashboard tab.
-     * Guards the session like the dashboard; the buttons themselves POST to the
-     * JSON endpoints below.
      */
     public function page(): void
     {
-        if (
-            !isset($_SESSION['user_id']) ||
-            !is_string($_SESSION['user_id']) ||
-            $_SESSION['user_id'] === ''
-        ) {
-            Http::redirect('/');
-        }
+        $vehicleId = Route::param('vehicleId');
+        $userId = (string) ($_SESSION['user_id'] ?? '');
 
-        if (
-            !isset($_SESSION['selected_vin']) ||
-            !is_string($_SESSION['selected_vin']) ||
-            $_SESSION['selected_vin'] === ''
-        ) {
-            Http::redirect('/vehicle/select');
+        $vehicle = $this->vehicles->findByPublicId($vehicleId);
+        if ($vehicle === null || !$vehicle->isAccessibleBy($userId)) {
+            Http::redirect('/dashboard');
         }
 
         require_once __DIR__ . '/../Views/Vehicle/control.php';
@@ -116,10 +111,6 @@ final class VehicleCommandController
     }
 
     /**
-     * Applies the shared guards, builds the command context from the session,
-     * runs the command and maps the outcome to a JSON response. Every path ends
-     * with Http::json() (which exits), hence the `never` return type.
-     *
      * @param callable(string, Vin): void $command
      */
     private function run(callable $command): never
@@ -129,7 +120,6 @@ final class VehicleCommandController
         }
 
         $userId = $_SESSION['user_id'] ?? '';
-        $vin = $_SESSION['selected_vin'] ?? '';
 
         if (!is_string($userId) || $userId === '') {
             Http::json(['error' => 'Authentication required'], 401);
@@ -139,16 +129,15 @@ final class VehicleCommandController
             Http::json(['error' => 'Invalid CSRF token'], 403);
         }
 
-        if (!is_string($vin) || $vin === '') {
+        $vehicleId = Route::param('vehicleId');
+        $vehicle = $this->vehicles->findByPublicId($vehicleId);
+
+        if ($vehicle === null || !$vehicle->isAccessibleBy($userId)) {
             Http::json(['error' => 'No vehicle selected'], 400);
         }
 
         try {
-            $command($userId, new Vin($vin));
-        } catch (\InvalidArgumentException) {
-            // A corrupted/stale selected_vin must not 500 a command endpoint (mirrors DashboardController).
-            unset($_SESSION['selected_vin']);
-            Http::json(['error' => 'No vehicle selected'], 400);
+            $command($userId, $vehicle->vin);
         } catch (VehicleUnauthorizedException) {
             Http::json(['error' => 'You do not have access to this vehicle'], 403);
         } catch (TeslaApiException) {

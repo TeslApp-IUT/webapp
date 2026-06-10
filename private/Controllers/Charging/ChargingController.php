@@ -14,38 +14,38 @@ use Teslapp\Models\Shared\Exceptions\TeslaAppException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\VehicleTelemetryRepositoryInterface;
 use Teslapp\Models\Shared\ValueObjects\Vin;
+use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 use Teslapp\Utils\Csrf;
 use Teslapp\Utils\Flash;
 use Teslapp\Utils\Http;
+use Teslapp\Utils\Route;
 
 /**
- * Battery page (dashboard/battery) and immediate charging commands.
+ * Battery page (dashboard/{vehicleId}/battery) and immediate charging commands.
  *
- * battery() renders the page with the telemetry snapshot and the charging schedules.
- * toggle(), setLimit() and setAmps() are POST actions sharing the same shape: check
- * the CSRF token, resolve the session context, call ChargingService, set a flash
- * message, then redirect back. Pure HTTP orchestration: no business rule here.
+ * battery() renders the page. toggle(), setLimit() and setAmps() are POST actions
+ * routed at static paths (charging/*); they read vehicle_id from the POST body to
+ * resolve the vehicle and construct the redirect URL.
  */
 final class ChargingController
 {
-    private const PAGE = '/dashboard/battery';
-
     public function __construct(
         private readonly ChargingService $chargingService,
         private readonly ChargingPlannerService $plannerService,
         private readonly VehicleTelemetryRepositoryInterface $telemetry,
+        private readonly VehicleRepositoryInterface $vehicles,
     ) {}
 
     public function battery(): void
     {
-        ['userId' => $userId, 'vin' => $vin] = $this->requireSession();
+        ['userId' => $userId, 'vin' => $vin, 'vehicleId' => $vehicleId] = $this->requireVehicle();
 
         try {
             $plans = $this->plannerService->listPlansForVehicle($userId, $vin);
             $data = $this->telemetry->getLatestTelemetry($vin);
         } catch (InvalidArgumentException | VehicleUnauthorizedException) {
             Flash::set('errors', ['Véhicule invalide ou inaccessible.']);
-            Http::redirect('/vehicle/select');
+            Http::redirect('/dashboard');
         }
 
         require_once __DIR__ . '/../../Views/Charging/battery.php';
@@ -53,16 +53,18 @@ final class ChargingController
 
     public function toggle(): void
     {
-        Csrf::requireValid(self::PAGE);
+        $vehicleId = (string) (filter_input(INPUT_POST, 'vehicle_id', FILTER_UNSAFE_RAW) ?? '');
+        $page = '/dashboard/' . $vehicleId . '/battery';
+        Csrf::requireValid($page);
 
-        ['userId' => $userId, 'vin' => $vin] = $this->requireSession();
+        ['userId' => $userId, 'vin' => $vin] = $this->resolveVehicle($vehicleId);
 
         $action = ChargingAction::tryFrom(
             filter_input(INPUT_POST, 'action', FILTER_UNSAFE_RAW) ?? '',
         );
 
         if ($action === null) {
-            Http::redirect(self::PAGE);
+            Http::redirect($page);
         }
 
         try {
@@ -76,14 +78,16 @@ final class ChargingController
             Flash::set('errors', ['Impossible d\'envoyer la commande à Tesla.']);
         }
 
-        Http::redirect(self::PAGE);
+        Http::redirect($page);
     }
 
     public function setLimit(): void
     {
-        Csrf::requireValid(self::PAGE);
+        $vehicleId = (string) (filter_input(INPUT_POST, 'vehicle_id', FILTER_UNSAFE_RAW) ?? '');
+        $page = '/dashboard/' . $vehicleId . '/battery';
+        Csrf::requireValid($page);
 
-        ['userId' => $userId, 'vin' => $vin] = $this->requireSession();
+        ['userId' => $userId, 'vin' => $vin] = $this->resolveVehicle($vehicleId);
 
         $raw = filter_input(INPUT_POST, 'percent', FILTER_VALIDATE_INT);
 
@@ -101,14 +105,16 @@ final class ChargingController
             Flash::set('errors', ['Impossible d\'envoyer la commande à Tesla.']);
         }
 
-        Http::redirect(self::PAGE);
+        Http::redirect($page);
     }
 
     public function setAmps(): void
     {
-        Csrf::requireValid(self::PAGE);
+        $vehicleId = (string) (filter_input(INPUT_POST, 'vehicle_id', FILTER_UNSAFE_RAW) ?? '');
+        $page = '/dashboard/' . $vehicleId . '/battery';
+        Csrf::requireValid($page);
 
-        ['userId' => $userId, 'vin' => $vin] = $this->requireSession();
+        ['userId' => $userId, 'vin' => $vin] = $this->resolveVehicle($vehicleId);
 
         $raw = filter_input(INPUT_POST, 'amps', FILTER_VALIDATE_INT);
 
@@ -126,19 +132,24 @@ final class ChargingController
             Flash::set('errors', ['Impossible d\'envoyer la commande à Tesla.']);
         }
 
-        Http::redirect(self::PAGE);
+        Http::redirect($page);
+    }
+
+    /** @return array{userId: string, vin: Vin, vehicleId: string} */
+    private function requireVehicle(): array
+    {
+        $vehicleId = Route::param('vehicleId');
+        return $this->resolveVehicle($vehicleId) + ['vehicleId' => $vehicleId];
     }
 
     /** @return array{userId: string, vin: Vin} */
-    private function requireSession(): array
+    private function resolveVehicle(string $vehicleId): array
     {
-        if (!isset($_SESSION['selected_vin'])) {
-            Http::redirect('/vehicle/select');
+        $userId = (string) ($_SESSION['user_id'] ?? '');
+        $vehicle = $this->vehicles->findByPublicId($vehicleId);
+        if ($vehicle === null || !$vehicle->isAccessibleBy($userId)) {
+            Http::redirect('/dashboard');
         }
-
-        return [
-            'userId' => (string) ($_SESSION['user_id'] ?? ''),
-            'vin' => new Vin($_SESSION['selected_vin']),
-        ];
+        return ['userId' => $userId, 'vin' => $vehicle->vin];
     }
 }

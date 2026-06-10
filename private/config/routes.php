@@ -34,22 +34,37 @@ return [
     'privacy' => [StaticPagesController::class, 'privacy', false],
     'error/404' => [StaticPagesController::class, 'notFound', false],
 
-    // URLs for the post authentification
-    'vehicle/select' => [VehicleController::class, 'select', true],
-    'vehicle/choose' => [VehicleController::class, 'choose', true],
-    'dashboard/overview' => [DashboardController::class, 'index', true],
-    'dashboard/vehicle' => [VehicleCommandController::class, 'page', true],
+    // Dashboard: vehicle picker (no vehicle selected yet)
+    'dashboard' => [VehicleController::class, 'select', true],
 
-    // Vehicle commands (issue #26) — POST AJAX endpoints answering JSON
-    'vehicle/lock' => [VehicleCommandController::class, 'lock', true],
-    'vehicle/unlock' => [VehicleCommandController::class, 'unlock', true],
-    'vehicle/honk' => [VehicleCommandController::class, 'honk', true],
-    'vehicle/flash' => [VehicleCommandController::class, 'flash', true],
-    'vehicle/trunk-front' => [VehicleCommandController::class, 'trunkFront', true],
-    'vehicle/trunk-rear' => [VehicleCommandController::class, 'trunkRear', true],
-    'vehicle/charge-port-open' => [VehicleCommandController::class, 'chargePortOpen', true],
-    'vehicle/charge-port-close' => [VehicleCommandController::class, 'chargePortClose', true],
-    'vehicle/wake' => [VehicleCommandController::class, 'wake', true],
+    // Dashboard pages — vehicle identified by its public_id UUID in the URL
+    'dashboard/{vehicleId}/overview'                => [DashboardController::class, 'index', true],
+    'dashboard/{vehicleId}/vehicle'                 => [VehicleCommandController::class, 'page', true],
+    'dashboard/{vehicleId}/ac'                      => [ClimateController::class, 'ac', true],
+    'dashboard/{vehicleId}/battery'                 => [ChargingController::class, 'battery', true],
+
+    // Vehicle commands (AJAX JSON endpoints) — vehicleId in URL, resolved to VIN server-side
+    'dashboard/{vehicleId}/lock'                    => [VehicleCommandController::class, 'lock', true],
+    'dashboard/{vehicleId}/unlock'                  => [VehicleCommandController::class, 'unlock', true],
+    'dashboard/{vehicleId}/honk'                    => [VehicleCommandController::class, 'honk', true],
+    'dashboard/{vehicleId}/flash'                   => [VehicleCommandController::class, 'flash', true],
+    'dashboard/{vehicleId}/trunk-front'             => [VehicleCommandController::class, 'trunkFront', true],
+    'dashboard/{vehicleId}/trunk-rear'              => [VehicleCommandController::class, 'trunkRear', true],
+    'dashboard/{vehicleId}/charge-port-open'        => [VehicleCommandController::class, 'chargePortOpen', true],
+    'dashboard/{vehicleId}/charge-port-close'       => [VehicleCommandController::class, 'chargePortClose', true],
+    'dashboard/{vehicleId}/wake'                    => [VehicleCommandController::class, 'wake', true],
+
+    // Climate preconditioning: schedule CRUD — vehicleId sent as POST field vehicle_id
+    'dashboard/{vehicleId}/ac/precondition/create'  => [PreconditioningController::class, 'create', true],
+    'dashboard/{vehicleId}/ac/precondition/update'  => [PreconditioningController::class, 'update', true],
+    'dashboard/{vehicleId}/ac/precondition/delete'  => [PreconditioningController::class, 'delete', true],
+    'dashboard/{vehicleId}/ac/precondition/toggle'  => [PreconditioningController::class, 'toggle', true],
+
+    // Charging schedule CRUD — vehicleId sent as POST field vehicle_id
+    'dashboard/{vehicleId}/battery/plan/create'     => [ChargingPlannerController::class, 'create', true],
+    'dashboard/{vehicleId}/battery/plan/update'     => [ChargingPlannerController::class, 'update', true],
+    'dashboard/{vehicleId}/battery/plan/delete'     => [ChargingPlannerController::class, 'delete', true],
+    'dashboard/{vehicleId}/battery/plan/toggle'     => [ChargingPlannerController::class, 'toggle', true],
 
     // URLs for authentification
     'auth' => [AuthController::class, 'auth', false],
@@ -60,28 +75,14 @@ return [
     'auth/impersonate/start' => [AuthImpersonateController::class, 'start', true],
     'auth/impersonate/stop' => [AuthImpersonateController::class, 'stop', true],
 
-    // URLs for air conditioning
-    'dashboard/ac' => [ClimateController::class, 'ac', true],
+    // Immediate AC and charging commands (form POST, redirect back)
     'climate/toggle' => [ClimateController::class, 'toggle', true],
     'climate/keeper' => [ClimateController::class, 'setKeeperMode', true],
-
-    // Climate preconditioning: schedule CRUD and address geocoding
-    'dashboard/ac/precondition/create' => [PreconditioningController::class, 'create', true],
-    'dashboard/ac/precondition/update' => [PreconditioningController::class, 'update', true],
-    'dashboard/ac/precondition/delete' => [PreconditioningController::class, 'delete', true],
-    'dashboard/ac/precondition/toggle' => [PreconditioningController::class, 'toggle', true],
-    'geocode' => [GeocodingController::class, 'geocode', true],
-    'geocode/reverse' => [GeocodingController::class, 'reverse', true],
-
-    // URLs for the battery page and immediate charging commands (issue #30)
-    'dashboard/battery' => [ChargingController::class, 'battery', true],
     'charging/toggle' => [ChargingController::class, 'toggle', true],
     'charging/limit' => [ChargingController::class, 'setLimit', true],
     'charging/amps' => [ChargingController::class, 'setAmps', true],
 
-    // Charging schedule CRUD (off-peak charging windows)
-    'dashboard/battery/plan/create' => [ChargingPlannerController::class, 'create', true],
-    'dashboard/battery/plan/update' => [ChargingPlannerController::class, 'update', true],
-    'dashboard/battery/plan/delete' => [ChargingPlannerController::class, 'delete', true],
-    'dashboard/battery/plan/toggle' => [ChargingPlannerController::class, 'toggle', true],
+    // Geocoding
+    'geocode' => [GeocodingController::class, 'geocode', true],
+    'geocode/reverse' => [GeocodingController::class, 'reverse', true],
 ];

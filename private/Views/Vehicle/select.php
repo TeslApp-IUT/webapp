@@ -1,7 +1,6 @@
 <?php
 /**
- * @var array<int, array{vehicle: Vehicle, model: string, image: string, status: VehicleConnectivityStatus, selected: bool}> $cards
- * @var string $csrfToken
+ * @var array<int, array{vehicle: Vehicle, model: string, image: string, status: VehicleConnectivityStatus}> $cards
  */
 
 use Teslapp\Models\Shared\ValueObjects\VehicleConnectivityStatus;
@@ -29,36 +28,30 @@ ob_start();
           <?php foreach ($cards as $card): ?>
             <?php $vehicle = $card['vehicle'];
             $status = $card['status']; ?>
-            <li class="vehicle-card<?= $card['selected'] ? ' vehicle-card--selected' : '' ?>">
-              <div class="vehicle-card__media">
-                            <span class="vehicle-card__status vehicle-card__status--<?= e($status->value) ?>">
-                                <span class="sr-only"><?= e($status->label()) ?></span>
-                            </span>
-                <?php if ($card['image'] !== ''): ?>
-                  <img class="vehicle-card__image" src="<?= e($card['image']) ?>"
-                       alt="Tesla <?= e($card['model']) ?>" loading="lazy" decoding="async">
-                <?php else: ?>
-                  <div class="vehicle-card__image vehicle-card__image--placeholder">
-                    <img src="/_assets/images/tesla_logo_gray.png" alt="" aria-hidden="true">
-                    <span><?= e($card['model']) ?></span>
-                  </div>
-                <?php endif; ?>
-              </div>
+            <li class="vehicle-card">
+              <a class="vehicle-card__link" href="/dashboard/<?= e($vehicle->publicId) ?>/overview">
+                <div class="vehicle-card__media">
+                  <span class="vehicle-card__status vehicle-card__status--<?= e($status->value) ?>">
+                    <span class="sr-only"><?= e($status->label()) ?></span>
+                  </span>
+                  <?php if ($card['image'] !== ''): ?>
+                    <img class="vehicle-card__image" src="<?= e($card['image']) ?>"
+                         alt="Tesla <?= e($card['model']) ?>" loading="lazy" decoding="async">
+                  <?php else: ?>
+                    <div class="vehicle-card__image vehicle-card__image--placeholder">
+                      <img src="/_assets/images/tesla_logo_gray.png" alt="" aria-hidden="true">
+                      <span><?= e($card['model']) ?></span>
+                    </div>
+                  <?php endif; ?>
+                </div>
 
-              <div class="vehicle-card__body">
-                <p class="vehicle-card__model"><?= e($card['model']) ?></p>
-                <h2 class="vehicle-card__name"><?= e($vehicle->name !== '' ? $vehicle->name : 'Véhicule') ?></h2>
-              </div>
+                <div class="vehicle-card__body">
+                  <p class="vehicle-card__model"><?= e($card['model']) ?></p>
+                  <h2 class="vehicle-card__name"><?= e($vehicle->name !== '' ? $vehicle->name : 'Véhicule') ?></h2>
+                </div>
 
-              <?php if ($card['selected']): ?>
-                <p class="vehicle-card__badge">Sélectionné</p>
-              <?php else: ?>
-                <form class="vehicle-card__form" method="post" action="/vehicle/choose">
-                  <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
-                  <input type="hidden" name="vin" value="<?= e($vehicle->vin->value) ?>">
-                  <button type="submit" class="btn-primary vehicle-card__select">Sélectionner</button>
-                </form>
-              <?php endif; ?>
+                <span class="btn-primary vehicle-card__select">Sélectionner</span>
+              </a>
             </li>
           <?php endforeach; ?>
         </ul>
