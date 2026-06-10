@@ -24,6 +24,7 @@ use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\VehicleController;
 use Teslapp\Controllers\VehicleCommandController;
+use Teslapp\Controllers\Auth\ProfileController;
 
 return [
     // URLs for static pages accessible to everyone
@@ -125,4 +126,7 @@ return [
     // Geocoding
     'geocode' => [GeocodingController::class, 'geocode', true],
     'geocode/reverse' => [GeocodingController::class, 'reverse', true],
+
+    //Profile page
+    'profile' => [ProfileController::class, 'profile', false],
 ];

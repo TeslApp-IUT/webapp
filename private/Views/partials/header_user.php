@@ -25,8 +25,6 @@ $userDisplayName = (string) ($_SESSION['user_display_name'] ?? '');
 if ($userDisplayName === '' && $userEmail !== '') {
     $userDisplayName = explode('@', $userEmail)[0];
 }
-/* Show first name only for a compact header. */
-$userFirstName = explode(' ', $userDisplayName)[0];
 ?>
 <header class="header">
     <div class="container">
@@ -44,9 +42,9 @@ $userFirstName = explode(' ', $userDisplayName)[0];
         <!-- Header actions: logout + profile -->
         <div class="header-actions">
           <!-- Profile (email initial; a full profile menu will come with the auth lot) -->
-          <button type="button" class="btn-profile" aria-label="Profil utilisateur">
+          <a type="button" href="/profile" class="btn-profile" aria-label="Profil utilisateur">
             <span class="profile-initials"><?= e($userDisplayName) ?></span>
-          </button>
+          </a>
 
             <!-- Logout (POST + CSRF). The /auth/logout route is wired in the auth lot. -->
             <form method="post" action="/auth/logout" class="logout-form h-4.5">

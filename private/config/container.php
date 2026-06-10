@@ -51,10 +51,19 @@ use Teslapp\Controllers\Climate\ClimateController;
 use Teslapp\Models\Climate\ClimateService;
 use Teslapp\Models\Shared\TeslaApi\ClimateClient;
 use Teslapp\Utils\RememberToken;
+use Teslapp\Controllers\Auth\ProfileController;
 
 $container = new Container();
 
 // Controllers
+
+$container->set(
+    ProfileController::class,
+    static fn(Container $c): ProfileController => new ProfileController(
+        $c->get(AuthRepository::class),
+    ),
+);
+
 $container->set(
     StaticPagesController::class,
     static fn(): StaticPagesController => new StaticPagesController(),
