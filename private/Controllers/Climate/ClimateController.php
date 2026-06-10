@@ -28,8 +28,8 @@ use Teslapp\Models\Climate\ValueObjects\CopTemp;
 final class ClimateController
 {
     public function __construct(
-        private readonly ClimateService             $climateService,
-        private readonly PreconditioningService     $preconditioningService,
+        private readonly ClimateService $climateService,
+        private readonly PreconditioningService $preconditioningService,
         private readonly VehicleRepositoryInterface $vehicles,
         private readonly VehicleTelemetryRepository $telemetryRepository,
     ) {}
@@ -47,7 +47,7 @@ final class ClimateController
 
         try {
             $plans = $this->preconditioningService->listPlansForVehicle($userId, $vin);
-        } catch (InvalidArgumentException|VehicleUnauthorizedException) {
+        } catch (InvalidArgumentException | VehicleUnauthorizedException) {
             Flash::set('error', 'Véhicule invalide ou inaccessible.');
             Http::redirect('/dashboard');
         }
@@ -65,7 +65,7 @@ final class ClimateController
      **/
     public function toggle(): void
     {
-        $vehicleId = (string)(filter_input(INPUT_POST, 'vehicle_id', FILTER_UNSAFE_RAW) ?? '');
+        $vehicleId = (string) (filter_input(INPUT_POST, 'vehicle_id', FILTER_UNSAFE_RAW) ?? '');
         $page = '/dashboard/' . $vehicleId . '/ac';
         Csrf::requireValid($page);
 
@@ -104,7 +104,7 @@ final class ClimateController
      **/
     public function setKeeperMode(): void
     {
-        $vehicleId = (string)(filter_input(INPUT_POST, 'vehicle_id', FILTER_UNSAFE_RAW) ?? '');
+        $vehicleId = (string) (filter_input(INPUT_POST, 'vehicle_id', FILTER_UNSAFE_RAW) ?? '');
         $page = '/dashboard/' . $vehicleId . '/ac';
         Csrf::requireValid($page);
 
@@ -156,7 +156,7 @@ final class ClimateController
     /** @return array{userId: string, vin: Vin} */
     private function resolveVehicle(string $vehicleId): array
     {
-        $userId = (string)($_SESSION['user_id'] ?? '');
+        $userId = (string) ($_SESSION['user_id'] ?? '');
         $vehicle = $this->vehicles->findByPublicId($vehicleId);
         if ($vehicle === null || !$vehicle->isAccessibleBy($userId)) {
             Http::redirect('/dashboard');
