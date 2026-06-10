@@ -40,9 +40,7 @@ final readonly class TeslaClimateClient implements ClimateCommandClient
             $body['id'] = $scheduleId;
         }
 
-        $response =
-            $this->post("/api/1/vehicles/$vin->value", $body) ??
-            [];
+        $response = $this->post("/api/1/vehicles/$vin->value", $body) ?? [];
 
         $inner = $response['response'] ?? [];
         $id = is_array($inner) ? $inner['id'] ?? null : null;
