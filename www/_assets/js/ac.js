@@ -49,6 +49,12 @@ if (dialog) {
 
   let map = null;
   let marker = null;
+  // Bumped on each geocode request so stale responses are ignored.
+  let geocodeSeq = 0;
+  let reverseTimer = null;
+  // Set when the user types in the address field.
+  let addressDirty = false;
+  let submitting = false;
 
   function showError(message) {
     errorBox.textContent = message;
@@ -88,16 +94,21 @@ if (dialog) {
     }
     clearError();
     if (reverseGeocode) {
-      fetch(`/geocode/reverse?lat=${lat}&lon=${lon}`, {
-        headers: { Accept: 'application/json' },
-      })
-        .then((response) => (response.ok ? response.json() : null))
-        .then((data) => {
-          addressInput.value = data?.label ?? `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+      // Keep the required field filled until the address resolves.
+      addressInput.value = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+      const seq = ++geocodeSeq;
+      clearTimeout(reverseTimer);
+      // Wait for the marker to settle before hitting Nominatim.
+      reverseTimer = setTimeout(() => {
+        fetch(`/geocode/reverse?lat=${lat}&lon=${lon}`, {
+          headers: { Accept: 'application/json' },
         })
-        .catch(() => {
-          addressInput.value = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
-        });
+          .then((response) => (response.ok ? response.json() : null))
+          .then((data) => {
+            if (seq === geocodeSeq && data?.label) addressInput.value = data.label;
+          })
+          .catch(() => {});
+      }, 400);
     }
   }
 
@@ -117,27 +128,34 @@ if (dialog) {
       showError('Saisissez une adresse ou cliquez sur la carte.');
       return false;
     }
+    const seq = ++geocodeSeq;
     try {
       const response = await fetch(`/geocode?q=${encodeURIComponent(query)}`, {
         headers: { Accept: 'application/json' },
       });
+      if (seq !== geocodeSeq) return false;
       if (!response.ok) {
         showError('Adresse introuvable : précisez (rue, ville…) ou cliquez sur la carte.');
         return false;
       }
       const data = await response.json();
+      if (seq !== geocodeSeq) return false;
       setLocation(data.lat, data.lon, { reverseGeocode: false });
       addressInput.value = data.label;
       map.setView([data.lat, data.lon], 15);
       return true;
     } catch {
-      showError('Recherche impossible pour le moment, réessayez.');
+      if (seq === geocodeSeq) showError('Recherche impossible pour le moment, réessayez.');
       return false;
     }
   }
 
   /* Opens the dialog in create mode (planData = null) or edit mode (planData = button dataset). */
   function openDialog(planData) {
+    // Drop any geocode response still in flight.
+    geocodeSeq++;
+    clearTimeout(reverseTimer);
+    addressDirty = false;
     form.reset();
     clearError();
     clearLocation();
@@ -155,6 +173,9 @@ if (dialog) {
       memorizeInput.checked = planData.memorize === '1';
       enabledInput.checked = planData.enabled === '1';
       addressInput.value = planData.label;
+      if (planData.lat === '' || planData.lon === '') {
+        showError("Ce plan n'a pas encore de lieu : choisissez-en un pour pouvoir l'enregistrer.");
+      }
     } else {
       dialogTitle.textContent = 'Nouvelle planification';
       submitBtn.textContent = 'Créer la planification';
@@ -196,37 +217,38 @@ if (dialog) {
       searchAddress();
     }
   });
+  addressInput.addEventListener('input', () => {
+    // Typing invalidates the stored coordinates.
+    addressDirty = true;
+    geocodeSeq++;
+    clearLocation();
+  });
 
   form.addEventListener('submit', async (e) => {
-    // Coordinates are required: geocode the typed address as a last resort,
-    // then requestSubmit() re-runs native validation before posting.
-    if (latInput.value === '' || lonInput.value === '') {
-      e.preventDefault();
+    // Location already resolved, nothing to do here.
+    if (latInput.value !== '' && lonInput.value !== '') return;
+
+    e.preventDefault();
+    if (submitting) return;
+
+    if (addressInput.value.trim() === '') {
+      showError('Saisissez une adresse ou cliquez sur la carte.');
+      return;
+    }
+    if (!addressDirty) {
+      // Never geocode a stored label behind the user's back.
+      showError('Vérifiez le lieu : lancez la recherche ou choisissez un point sur la carte.');
+      return;
+    }
+
+    // Resolve the typed address, then resubmit.
+    submitting = true;
+    submitBtn.disabled = true;
+    try {
       if (await searchAddress()) form.requestSubmit();
+    } finally {
+      submitting = false;
+      submitBtn.disabled = false;
     }
   });
 }
-
-/* ---- Relative "last telemetry update" timestamp on the climate card ---- */
-
-const lastUpdateP = document.querySelector('#lastUpdate');
-const lastUpdateSpan = document.querySelector('#lastUpdateValue');
-const timestamp = parseInt(lastUpdateP.getAttribute('data-value')) * 1000;
-const lastUpdated = new Date(timestamp);
-
-const rtf = new Intl.RelativeTimeFormat('fr', { numeric: 'auto' });
-const diffSeconds = Math.round((lastUpdated - Date.now()) / 1000);
-const abs = Math.abs(diffSeconds);
-
-let relativeTime;
-if (abs < 60) {
-  relativeTime = rtf.format(diffSeconds, 'second');
-} else if (abs < 3600) {
-  relativeTime = rtf.format(Math.round(diffSeconds / 60), 'minute');
-} else if (abs < 86400) {
-  relativeTime = rtf.format(Math.round(diffSeconds / 3600), 'hour');
-} else {
-  relativeTime = rtf.format(Math.round(diffSeconds / 86400), 'day');
-}
-
-lastUpdateSpan.textContent = relativeTime;

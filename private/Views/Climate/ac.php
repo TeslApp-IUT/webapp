@@ -3,7 +3,6 @@ use Teslapp\Models\Climate\PreconditioningPlanner;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
 
 $inside_temp = $data['inside_temp'] ?? 'N/A';
-$timestamp = $data['timestamp']->getTimestamp() ?? -1;
 $csrf = $_SESSION['csrf_token'] ?? '';
 $title = 'Climatisation — TeslApp';
 $description = 'Gérez la climatisation de votre Tesla à distance.';
@@ -27,7 +26,6 @@ ob_start();
       <div class="dashboard-content">
         <div class="dashboard-title">
           <h1>Climatisation</h1>
-          <p id="lastUpdate" data-value="<?php echo(e($timestamp)) ?>" class="text-gray-400 text-sm font-normal">Dernière mise à jour : <span id="lastUpdateValue"></span></p>
         </div>
         <div class="dashboard-grid">
           <!-- Enable / Disable -->
