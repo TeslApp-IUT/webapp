@@ -14,8 +14,8 @@ use Teslapp\Models\Navigation\Trip;
 $title = 'Navigation — TeslApp';
 $description = 'Navigation de votre Tesla : routes et informations de trajet.';
 $header = 'user';
-$extraCss = ['dashboard', 'navigation'];
-$extraJs = ['navigation'];
+$extraCss = ['dashboard', 'navigation', 'leaflet'];
+$extraJs = ['leaflet', 'navigation'];
 
 $runningDot = [
   true => '<div class="bg-green-500/80 rounded-full h-3 aspect-square animate-pulse"></div>',
@@ -44,15 +44,17 @@ ob_start();
           </div>
           <h2 class="card-title">Historique des trajets</h2>
           <div class="card-content">
-            <div class="flex flex-col gap-2">
+            <div class="trips-list flex flex-col gap-2"
+                 data-trip-endpoint="/dashboard/<?= htmlspecialchars($vehicleId, ENT_QUOTES) ?>/navigation/trip">
               <?php
               foreach ($trips as $trip) {
                 $startTimestamp = date_timestamp_get($trip->startTime);
                 $unknown = 'Adresse inconnue';
                 $startAddress = htmlspecialchars($addresses[$trip->id]['start'] ?? $unknown, ENT_QUOTES);
                 $endAddress = htmlspecialchars($addresses[$trip->id]['end'] ?? $unknown, ENT_QUOTES);
+                $tripId = htmlspecialchars($trip->id, ENT_QUOTES);
                 echo <<<EOD
-                <div class="flex flex-row justify-between items-center w-full bg-gray-500/10 rounded-xl p-3.5">
+                <button type="button" class="trip-item flex flex-row justify-between items-center w-full bg-gray-500/10 hover:bg-gray-500/20 rounded-xl p-3.5 text-left cursor-pointer transition-colors ring-blue-500/60" data-trip-id="$tripId">
                   <div class="flex flex-row gap-4 items-center">
                     {$runningDot[$trip->running]}
                     <div class="flex flex-col gap-1">
@@ -60,11 +62,29 @@ ob_start();
                       <div class="start-time text-sm text-gray-400"><span data-timestamp="$startTimestamp"></span></div>
                     </div>
                   </div>
-                </div>
+                </button>
                 EOD;
               }
               ?>
             </div>
+          </div>
+        </div>
+
+        <!-- Trip details card — filled by navigation.js when a trip is clicked -->
+        <div class="dashboard-card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="10" r="3" />
+              <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z" />
+            </svg>
+          </div>
+          <h2 class="card-title">Détails du trajet</h2>
+          <div class="card-content">
+            <div id="trip-details" class="text-sm text-gray-400">
+              Sélectionnez un trajet pour afficher ses détails.
+            </div>
+            <div id="trip-map" class="hidden mt-4 h-64 rounded-xl overflow-hidden z-0"></div>
           </div>
         </div>
       </div>

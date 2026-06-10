@@ -45,6 +45,9 @@ return [
     'dashboard/{vehicleId}/battery' => [ChargingController::class, 'battery', true],
     'dashboard/{vehicleId}/navigation' => [NavigationController::class, 'page', true],
 
+    // Navigation (AJAX JSON endpoint) — single trip details, id passed as ?id= query param
+    'dashboard/{vehicleId}/navigation/trip' => [NavigationController::class, 'trip', true],
+
     // Vehicle commands (AJAX JSON endpoints) — vehicleId in URL, resolved to VIN server-side
     'dashboard/{vehicleId}/lock' => [VehicleCommandController::class, 'lock', true],
     'dashboard/{vehicleId}/unlock' => [VehicleCommandController::class, 'unlock', true],

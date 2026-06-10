@@ -6,8 +6,10 @@ namespace Teslapp\Controllers\Navigation;
 
 use InvalidArgumentException;
 use Teslapp\Models\Navigation\NavigationRepositoryInterface;
+use Teslapp\Models\Navigation\Trip;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\Geocoding\GeocoderInterface;
+use Teslapp\Models\Shared\ValueObjects\GeoPoint;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Shared\VehicleTelemetryRepository;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
@@ -48,6 +50,81 @@ final readonly class NavigationController
         $addresses = $this->resolveTripAddresses($trips);
 
         require_once __DIR__ . '/../../Views/Navigation/navigation.php';
+    }
+
+    /**
+     * GET dashboard/{vehicleId}/navigation/trip?id={tripId}
+     *
+     * JSON endpoint backing the trip details card: returns the details of a
+     * single trip so the navigation page can show more about it without a full
+     * reload. Read-only GET, authenticated, scoped to the selected vehicle.
+     */
+    public function trip(): never
+    {
+        $userId = $_SESSION['user_id'] ?? '';
+        if (!is_string($userId) || $userId === '') {
+            Http::json(['error' => 'Authentication required'], 401);
+        }
+
+        $vehicle = $this->vehicles->findByPublicId(Route::param('vehicleId'));
+        if ($vehicle === null || !$vehicle->isAccessibleBy($userId)) {
+            Http::json(['error' => 'No vehicle selected'], 400);
+        }
+
+        $tripId = filter_input(INPUT_GET, 'id', FILTER_DEFAULT);
+        $tripId = is_string($tripId) ? trim($tripId) : '';
+        if (!$this->isUuid($tripId)) {
+            Http::json(['error' => 'Invalid trip id'], 400);
+        }
+
+        $trip = $this->navigationRepository->findTrip($vehicle->vin, $tripId);
+        if ($trip === null) {
+            Http::json(['error' => 'Trip not found'], 404);
+        }
+
+        $trip = $trip->withPoints($this->navigationRepository->listTripPoints($trip));
+
+        Http::json($this->tripDetails($trip));
+    }
+
+    /**
+     * Shapes a trip into the JSON payload consumed by the details card. The
+     * start/end points were already reverse-geocoded when the list rendered, so
+     * these lookups are served from the cache rather than hitting Nominatim.
+     *
+     * @return array<string, mixed>
+     */
+    private function tripDetails(Trip $trip): array
+    {
+        $start = date_timestamp_get($trip->startTime);
+        $end = date_timestamp_get($trip->endTime);
+
+        return [
+            'id' => $trip->id,
+            'startAddress' => $this->geocoder->reverseGeocode($trip->start),
+            'endAddress' => $this->geocoder->reverseGeocode($trip->end),
+            'startLat' => $trip->start->latitude,
+            'startLon' => $trip->start->longitude,
+            'endLat' => $trip->end->latitude,
+            'endLon' => $trip->end->longitude,
+            'startTimestamp' => $start,
+            'endTimestamp' => $end,
+            'distanceKm' => round($trip->totalDistance / 1000, 1),
+            'durationMinutes' => (int) round(($end - $start) / 60),
+            'running' => $trip->running,
+            'points' => array_map(
+                static fn(GeoPoint $p): array => [$p->latitude, $p->longitude],
+                $trip->points ?? [],
+            ),
+        ];
+    }
+
+    private function isUuid(string $value): bool
+    {
+        return preg_match(
+            '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i',
+            $value,
+        ) === 1;
     }
 
     /**
