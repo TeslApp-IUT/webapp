@@ -73,15 +73,15 @@ final readonly class NominatimGeocoder implements GeocoderInterface
         }
 
         $part = static fn(string $key): ?string => isset($address[$key]) &&
-            is_string($address[$key]) &&
-            $address[$key] !== ''
+        is_string($address[$key]) &&
+        $address[$key] !== ''
             ? $address[$key]
             : null;
 
         $street = trim(
-            ($part('house_number') ?? '') . ' ' . ($part('road') ?? $part('pedestrian') ?? ''),
+            ($part('house_number') ?? '') . ' ' . ($part('road') ?? ($part('pedestrian') ?? '')),
         );
-        $city = $part('city') ?? $part('town') ?? $part('village') ?? $part('municipality');
+        $city = $part('city') ?? ($part('town') ?? ($part('village') ?? $part('municipality')));
         $cityLine = trim(($part('postcode') ?? '') . ' ' . ($city ?? ''));
 
         $label = implode(

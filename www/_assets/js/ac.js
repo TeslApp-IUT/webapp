@@ -65,8 +65,7 @@ if (dialog) {
     map = L.map('precond-map').setView(FRANCE_CENTER, 5);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
     map.on('click', (e) => {
       const point = e.latlng.wrap();
@@ -184,9 +183,7 @@ if (dialog) {
   document.querySelectorAll('.precond-card__edit').forEach((button) => {
     button.addEventListener('click', () => openDialog(button.dataset));
   });
-  document
-    .getElementById('precond-dialog-close')
-    .addEventListener('click', () => dialog.close());
+  document.getElementById('precond-dialog-close').addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', (e) => {
     // A click on the native backdrop targets the <dialog> element itself.
     if (e.target === dialog) dialog.close();
