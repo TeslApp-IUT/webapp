@@ -1,22 +1,288 @@
-/* Battery page (dashboard/battery).
-   Planner styles are duplicated from ac.css on purpose: each page ships its own
-   stylesheet (dashboard.css, ac.css, vehicle-actions.css…), with no shared import. */
+/* Battery page (dashboard/{vehicleId}/battery).
+   Planner/dialog styles are duplicated from ac.css on purpose: each page ships its
+   own stylesheet (dashboard.css, ac.css, vehicle-actions.css…), with no shared import. */
 
-.temp-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin: 12px 0;
+/* ---- Page layout: two compact cards side by side ---- */
+
+.battery-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 20px;
 }
 
-.btn-temp {
+/* Compact card: tighter padding than .dashboard-card, inline icon + title header. */
+.battery-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 24px;
+}
+
+.battery-card__header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.battery-card__icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  font-size: 20px;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  color: #21c55e;
+  background-color: rgba(34, 197, 94, 0.14);
+  border-radius: 50%;
+}
+
+.battery-card__icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.battery-card__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* Charge state chip, pinned to the right of the header. */
+.battery-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: auto;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+}
+
+.battery-chip__dot {
+  width: 7px;
+  height: 7px;
+  background-color: var(--color-text-muted);
+  border-radius: 50%;
+}
+
+.battery-chip--on {
+  color: #4ade80;
+  background-color: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.battery-chip--on .battery-chip__dot {
+  background-color: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.8);
+}
+
+/* ---- Battery gauge ---- */
+
+.battery-gauge {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.battery-gauge__value {
+  margin: 0;
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -1px;
+  color: var(--color-text);
+}
+
+.battery-gauge__value span {
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--color-text-secondary);
+}
+
+.battery-gauge__track {
+  position: relative;
+  height: 14px;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+}
+
+.battery-gauge__fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #15803d, #22c55e);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.battery-gauge--low .battery-gauge__fill {
+  background: linear-gradient(90deg, #b45309, #f59e0b);
+}
+
+.battery-gauge--critical .battery-gauge__fill {
+  background: linear-gradient(90deg, #b91c1c, #ef4444);
+}
+
+/* Charge-limit marker; battery.js moves it when the limit stepper changes. */
+.battery-gauge__limit {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  margin-left: -1px;
+  background-color: var(--color-text-secondary);
+  border-radius: 1px;
+  transition: left 0.25s ease;
+}
+
+/* ---- Key/value rows under the gauge ---- */
+
+.battery-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+}
+
+.battery-meta__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.battery-meta__item dt {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.battery-meta__item dd {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* ---- Start / stop charge buttons ---- */
+
+.battery-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto; /* keep the buttons bottom-aligned when the grid stretches the card */
+}
+
+.battery-actions form {
+  display: flex;
+  flex: 1;
+}
+
+.battery-actions__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.battery-actions__btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---- Charge settings (limit + amps) ---- */
+
+.battery-setting {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.battery-setting__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.battery-setting__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.battery-setting__range {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.battery-setting__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.battery-presets {
+  display: flex;
+  gap: 6px;
+}
+
+/* Quick-value chip; battery.js toggles .is-active to mirror the stepper value. */
+.battery-preset {
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.battery-preset:hover {
+  color: var(--color-text);
+  border-color: var(--color-border-hover);
+}
+
+.battery-preset.is-active {
+  color: #000000;
+  background-color: #ffffff;
+  border-color: #6c6c6c;
+}
+
+.battery-preset:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.battery-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.battery-stepper__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--color-text);
   background-color: var(--color-bg-secondary);
@@ -26,20 +292,47 @@
   transition: background-color 0.15s ease;
 }
 
-.btn-temp:hover {
+.battery-stepper__btn:hover {
   background-color: var(--color-bg-hover);
 }
 
-.temp-value {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--color-text);
-  min-width: 80px;
-  text-align: center;
+.battery-stepper__btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
+.battery-stepper__value {
+  min-width: 58px;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-text);
+}
+
+.battery-setting__apply {
+  margin-left: auto; /* right-aligned, under the stepper when the controls wrap */
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.battery-divider {
+  margin: 0;
+  border: none;
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---- Scheduled charging section ---- */
+
 .precond-section {
-  margin-top: 40px;
+  margin-top: 36px;
+}
+
+.precond-section__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
 }
 
 .precond-section__title {
@@ -49,13 +342,44 @@
   color: var(--color-text);
 }
 
-.precond-subtitle {
+.precond-section__lead {
+  margin: 0;
+  max-width: 560px;
   font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin: 28px 0 12px;
+  color: var(--color-text-muted);
+}
+
+.precond-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  color: #ffffff;
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.precond-add svg {
+  width: 18px;
+  height: 18px;
+}
+
+.precond-add:hover {
+  opacity: 0.85;
+  transform: scale(1.05);
+}
+
+.precond-add:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .precond-optional {
@@ -67,7 +391,7 @@
 .precond-empty {
   font-size: 14px;
   color: var(--color-text-secondary);
-  padding: 16px 0;
+  padding: 8px 0;
 }
 
 .precond-list {
@@ -92,10 +416,16 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Disabled schedule: fade the description, keep the actions readable. */
+.precond-card--off .precond-card__info {
+  opacity: 0.5;
+}
+
 .precond-card__info {
   display: flex;
   flex-direction: column;
   gap: 3px;
+  transition: opacity 0.2s ease;
 }
 
 .precond-card__time {
@@ -119,6 +449,8 @@
   align-items: center;
   gap: 10px;
 }
+
+/* ---- Switches ---- */
 
 .switch {
   display: inline-flex;
@@ -201,6 +533,8 @@
   transform: translateX(20px);
 }
 
+/* ---- Soft / danger buttons ---- */
+
 .btn-soft {
   padding: 6px 12px;
   font-size: 13px;
@@ -229,6 +563,8 @@
   background-color: rgba(239, 68, 68, 0.08);
 }
 
+/* ---- Schedule dialog (create + edit) ---- */
+
 .precond-form {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -243,7 +579,6 @@
 .precond-form .precond-days,
 .precond-form .precond-check,
 .precond-form .switch,
-.precond-form .precond-hint,
 .precond-form button[type='submit'] {
   grid-column: 1 / -1;
 }
@@ -276,6 +611,18 @@
   border-color: var(--color-primary);
 }
 
+/* Off-peak helper line: explanation + one-click window preset. */
+.precond-window-hint {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
 .precond-days {
   border: none;
   padding: 0;
@@ -295,52 +642,189 @@
   gap: 10px;
 }
 
+/* Day picker chips: the checkbox is visually hidden, the label is the pill. */
 .precond-check {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  padding: 8px 16px;
   font-size: 14px;
   color: var(--color-text-secondary);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.precond-check:hover {
+  border-color: var(--color-border-hover);
+}
+
+.precond-check input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.precond-check:has(input:checked) {
+  color: #ffffff;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.precond-check:has(input:focus-visible) {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.precond-dialog {
+  /* The global reset zeroes margins, killing the UA's auto-centering of modal dialogs. */
+  margin: auto;
+  width: min(680px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background-color: var(--color-bg-card);
+  color: var(--color-text);
+  box-shadow: var(--shadow-card);
+}
+
+.precond-dialog::backdrop {
+  background: rgba(15, 18, 25, 0.55);
+}
+
+.precond-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 0;
+}
+
+.precond-dialog__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.precond-dialog__close {
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
 }
 
-/* Off-peak helper line: explanation + one-click window preset. */
-.precond-hint {
+.precond-dialog__close:hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+.precond-form--dialog {
+  gap: 18px 24px;
+  padding: 20px 24px 24px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.precond-form--dialog input[type='time'] {
+  max-width: 220px;
+}
+
+.precond-form--dialog button[type='submit'] {
+  padding: 12px;
+  font-size: 15px;
+}
+
+.precond-switches {
+  grid-column: 1 / -1;
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
-  margin: 0;
+  gap: 16px 32px;
+}
+
+.precond-map-block {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.precond-map-block > label {
   font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.precond-map {
+  position: relative;
+  z-index: 0;
+  height: 260px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+
+.precond-address {
+  display: flex;
+  gap: 8px;
+}
+
+.precond-address__input {
+  flex: 1;
+}
+
+.precond-map__hint {
+  margin: 0;
+  font-size: 12px;
   color: var(--color-text-muted);
 }
 
-/* Card forms (charge, limit, amps): stacked controls with full-width buttons. */
-.card-details form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.precond-form__error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-error);
 }
 
-.card-details .btn-success,
-.card-details .btn-primary {
-  width: 100%;
-  justify-content: center;
-}
+/* ---- Responsive ---- */
 
-/* Responsive */
-@media (max-width: 768px) {
-  .precond-form {
+@media (max-width: 1024px) {
+  .battery-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+  }
+}
+
+/* Same mobile breakpoint as dashboard.css, so the dialog collapses with its page layout. */
+@media (max-width: 768px) {
+  .battery-card {
     padding: 20px;
+  }
+
+  .battery-gauge__value {
+    font-size: 36px;
+  }
+
+  .precond-form--dialog {
+    grid-template-columns: 1fr;
+  }
+
+  .precond-map {
+    height: 220px;
   }
 
   .precond-card {
     padding: 14px 16px;
-  }
-
-  .temp-value {
-    min-width: 64px;
   }
 }
