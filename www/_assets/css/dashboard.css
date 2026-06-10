@@ -154,6 +154,21 @@
   box-shadow: var(--shadow-card);
 }
 
+.overwiew-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.dashboard-card-link {
+  text-decoration: none;
+  display: block;
+}
+
+.overwiew-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15), 0 16px 40px rgba(46, 46, 46, 0.5);
+}
+
 .card-icon {
   display: flex;
   align-items: center;
