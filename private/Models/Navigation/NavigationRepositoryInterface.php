@@ -12,15 +12,24 @@ use Teslapp\Models\Shared\ValueObjects\Vin;
  */
 interface NavigationRepositoryInterface
 {
+    /** Number of trips returned per page by {@see listTrips()}. */
+    public const PAGE_SIZE = 10;
+
     /**
-     * Pulls the list of trips from the database
-     * Shows a maximum of 10 items
+     * Pulls one page of trips from the database, at most {@see PAGE_SIZE} items.
      *
      * @param Vin $vin
      * @param ?int $page 1-based page number; null is treated as the first page
      * @return list<Trip> trips ordered by most recent first, without their route points
      */
     public function listTrips(Vin $vin, ?int $page): array;
+
+    /**
+     * Counts all trips of a vehicle, used to compute the number of pages.
+     *
+     * @return int total number of trips for the vehicle
+     */
+    public function countTrips(Vin $vin): int;
 
     /**
      * Fetches a single trip by its id, scoped to the given vehicle so a user

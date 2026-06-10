@@ -45,7 +45,13 @@ final readonly class NavigationController
             Http::redirect('/dashboard');
         }
 
-        $trips = $this->navigationRepository->listTrips($vin, null);
+        $totalTrips = $this->navigationRepository->countTrips($vin);
+        $totalPages = max(1, (int) ceil($totalTrips / NavigationRepositoryInterface::PAGE_SIZE));
+
+        $requestedPage = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
+        $page = min(max(is_int($requestedPage) ? $requestedPage : 1, 1), $totalPages);
+
+        $trips = $this->navigationRepository->listTrips($vin, $page);
 
         $addresses = $this->resolveTripAddresses($trips);
 

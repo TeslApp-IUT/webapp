@@ -7,6 +7,8 @@
  * @var string $vehicleId Vehicle public id, set by the rendering controller.
  * @var Trip[] $trips
  * @var array<string, array{start: ?string, end: ?string}> $addresses reverse-geocoded trip endpoints, keyed by trip id
+ * @var int $page current 1-based page of the trip history
+ * @var int $totalPages total number of trip history pages
  */
 
 use Teslapp\Models\Navigation\Trip;
@@ -67,6 +69,24 @@ ob_start();
               }
               ?>
             </div>
+            <?php if ($totalPages > 1):
+              $navBase = '/dashboard/' . htmlspecialchars($vehicleId, ENT_QUOTES) . '/navigation';
+              $prevDisabled = $page <= 1;
+              $nextDisabled = $page >= $totalPages;
+              $linkBase = 'px-4 py-2 rounded-lg text-sm bg-gray-500/10 transition-colors';
+              $enabled = ' hover:bg-gray-500/20';
+              $disabled = ' opacity-40 pointer-events-none';
+              ?>
+              <nav class="flex flex-row items-center justify-between gap-2 mt-4" aria-label="Pagination des trajets">
+                <a href="<?= $prevDisabled ? '#' : "$navBase?page=" . ($page - 1) ?>"
+                   class="<?= $linkBase . ($prevDisabled ? $disabled : $enabled) ?>"
+                   <?= $prevDisabled ? 'aria-disabled="true" tabindex="-1"' : 'rel="prev"' ?>>Précédent</a>
+                <span class="text-sm text-gray-400">Page <?= $page ?> sur <?= $totalPages ?></span>
+                <a href="<?= $nextDisabled ? '#' : "$navBase?page=" . ($page + 1) ?>"
+                   class="<?= $linkBase . ($nextDisabled ? $disabled : $enabled) ?>"
+                   <?= $nextDisabled ? 'aria-disabled="true" tabindex="-1"' : 'rel="next"' ?>>Suivant</a>
+              </nav>
+            <?php endif; ?>
           </div>
         </div>
 
