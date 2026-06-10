@@ -206,10 +206,10 @@ final readonly class AuthRepository
                  WHERE id = :id',
             );
             $stmt->execute([
-                ':id'         => $userId,
-                ':email'      => $email,
+                ':id' => $userId,
+                ':email' => $email,
                 ':first_name' => $firstName,
-                ':last_name'  => $lastName,
+                ':last_name' => $lastName,
             ]);
         } catch (PDOException $e) {
             throw new DatabaseException("Failed to update user $userId", previous: $e);
@@ -255,15 +255,21 @@ final readonly class AuthRepository
      *
      * @return array{first_name: string, last_name: string, email: string, avatar_url: string}|null
      */
-    public function getCredentials(string $userId): ?array {
+    public function getCredentials(string $userId): ?array
+    {
         $stmt = $this->pdo->prepare(
             'SELECT first_name, last_name, email, avatar_url FROM users WHERE id = :id LIMIT 1',
         );
         $stmt->execute([':id' => $userId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-
-
-        return $row !== false ? ['first_name' => (string) $row['first_name'], 'last_name' => (string) $row['last_name'], 'email' => (string) $row['email'], 'avatar_url' => (string) $row['avatar_url']] : null;
+        return $row !== false
+            ? [
+                'first_name' => (string) $row['first_name'],
+                'last_name' => (string) $row['last_name'],
+                'email' => (string) $row['email'],
+                'avatar_url' => (string) $row['avatar_url'],
+            ]
+            : null;
     }
 }

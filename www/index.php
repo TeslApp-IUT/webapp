@@ -75,9 +75,8 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_display_name'])) {
     $userName = $authRepo->getUserName((string) $_SESSION['user_id']);
     $_SESSION['user']['first_name'] = $userName['first_name'];
     $_SESSION['user']['last_name'] = $userName['last_name'];
-    $_SESSION['user_display_name'] = $userName !== null
-        ? trim($userName['first_name'] . ' ' . $userName['last_name'])
-        : '';
+    $_SESSION['user_display_name'] =
+        $userName !== null ? trim($userName['first_name'] . ' ' . $userName['last_name']) : '';
 }
 
 $_SESSION['LAST_ACTIVITY'] = $now;
