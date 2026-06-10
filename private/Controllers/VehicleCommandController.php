@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Teslapp\Controllers;
 
 use Teslapp\Models\Shared\Exceptions\TeslaApiException;
+use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\ValueObjects\TrunkSide;
 use Teslapp\Models\Shared\ValueObjects\Vin;
@@ -140,6 +141,12 @@ final class VehicleCommandController
             $command($userId, $vehicle->vin);
         } catch (VehicleUnauthorizedException) {
             Http::json(['error' => 'You do not have access to this vehicle'], 403);
+        } catch (VehicleAsleepException) {
+            // The service already woke the vehicle and retried; it needs more time.
+            Http::json(
+                ['error' => 'The vehicle did not wake up in time', 'reason' => 'vehicle_asleep'],
+                503,
+            );
         } catch (TeslaApiException) {
             Http::json(['error' => 'The vehicle command failed'], 503);
         }
