@@ -28,7 +28,8 @@ function initVehicleActions() {
       }
 
       button.classList.add('is-loading');
-      setFeedback(feedback, 'Envoi de la commande…', '');
+      // The server wakes a sleeping vehicle and retries, so the call can last ~20s.
+      setFeedback(feedback, 'Envoi de la commande… (réveil du véhicule si besoin)', '');
 
       try {
         const response = await fetch('/dashboard/' + vehicleId + '/' + action, {
@@ -42,6 +43,15 @@ function initVehicleActions() {
         });
 
         if (!response.ok) {
+          const body = await response.json().catch(() => null);
+          if (body && body.reason === 'vehicle_asleep') {
+            setFeedback(
+              feedback,
+              'Le véhicule ne s’est pas réveillé à temps, réessayez dans un instant.',
+              'error',
+            );
+            return;
+          }
           throw new Error('HTTP ' + response.status);
         }
 
