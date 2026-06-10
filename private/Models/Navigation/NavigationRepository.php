@@ -12,11 +12,7 @@ use Teslapp\Models\Shared\ValueObjects\Vin;
  */
 final readonly class NavigationRepository implements NavigationRepositoryInterface
 {
-    public function __construct(
-        private PDO $pdo
-    )
-    {
-    }
+    public function __construct(private PDO $pdo) {}
 
     private const PAGE_SIZE = 10;
 
@@ -49,9 +45,6 @@ final readonly class NavigationRepository implements NavigationRepositoryInterfa
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
 
-        return array_map(
-            static fn(array $row): Trip => Trip::fromRow($row),
-            $stmt->fetchAll(),
-        );
+        return array_map(static fn(array $row): Trip => Trip::fromRow($row), $stmt->fetchAll());
     }
 }

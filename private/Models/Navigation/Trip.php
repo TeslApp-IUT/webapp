@@ -54,9 +54,7 @@ final readonly class Trip
             startLocationId: isset($row['start_location_id'])
                 ? (int) $row['start_location_id']
                 : null,
-            endLocationId: isset($row['end_location_id'])
-                ? (int) $row['end_location_id']
-                : null,
+            endLocationId: isset($row['end_location_id']) ? (int) $row['end_location_id'] : null,
             start: new GeoPoint((float) $row['start_latitude'], (float) $row['start_longitude']),
             end: new GeoPoint((float) $row['end_latitude'], (float) $row['end_longitude']),
             totalDistance: (float) $row['total_distance'],

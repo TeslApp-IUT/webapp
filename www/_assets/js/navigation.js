@@ -5,7 +5,7 @@ const RELATIVE_TIME_OFFSET_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const locale = new Intl.Locale('fr-FR');
 const absoluteFormat = new Intl.DateTimeFormat(locale, {
   dateStyle: 'long',
-  timeStyle: 'short'
+  timeStyle: 'short',
 });
 const relativeFormat = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
 
@@ -14,7 +14,7 @@ const RELATIVE_UNITS = [
   ['day', 24 * 60 * 60 * 1000],
   ['hour', 60 * 60 * 1000],
   ['minute', 60 * 1000],
-  ['second', 1000]
+  ['second', 1000],
 ];
 
 function formatRelative(date) {
@@ -30,7 +30,5 @@ document.querySelectorAll('.start-time > span[data-timestamp]').forEach((e) => {
   const date = new Date(e.getAttribute('data-timestamp') * 1000);
   const elapsed = Date.now() - date.getTime();
   e.textContent =
-    elapsed <= RELATIVE_TIME_OFFSET_MS
-      ? formatRelative(date)
-      : absoluteFormat.format(date);
+    elapsed <= RELATIVE_TIME_OFFSET_MS ? formatRelative(date) : absoluteFormat.format(date);
 });

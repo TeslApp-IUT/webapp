@@ -16,10 +16,7 @@ use Teslapp\Models\Shared\ValueObjects\GeoPoint;
  */
 final readonly class CachingGeocoder implements GeocoderInterface
 {
-    public function __construct(
-        private GeocoderInterface $inner,
-        private PDO $pdo,
-    ) {}
+    public function __construct(private GeocoderInterface $inner, private PDO $pdo) {}
 
     public function geocode(string $address): ?GeocodeResult
     {

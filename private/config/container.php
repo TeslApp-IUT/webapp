@@ -284,7 +284,9 @@ $container->set(
 
 $container->set(
     NavigationRepositoryInterface::class,
-    static fn(Container $c): NavigationRepositoryInterface => new NavigationRepository(Database::pdo())
+    static fn(Container $c): NavigationRepositoryInterface => new NavigationRepository(
+        Database::pdo(),
+    ),
 );
 
 // Navigation
@@ -294,8 +296,8 @@ $container->set(
         $c->get(VehicleTelemetryRepositoryInterface::class),
         $c->get(VehicleRepositoryInterface::class),
         $c->get(NavigationRepositoryInterface::class),
-        new CachingGeocoder($c->get(GeocoderInterface::class), Database::pdo())
-    )
+        new CachingGeocoder($c->get(GeocoderInterface::class), Database::pdo()),
+    ),
 );
 
 return $container;

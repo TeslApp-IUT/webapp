@@ -22,13 +22,11 @@ use Teslapp\Utils\Route;
 final readonly class NavigationController
 {
     public function __construct(
-        private VehicleTelemetryRepository    $telemetryRepository,
-        private VehicleRepositoryInterface    $vehicles,
+        private VehicleTelemetryRepository $telemetryRepository,
+        private VehicleRepositoryInterface $vehicles,
         private NavigationRepositoryInterface $navigationRepository,
-        private GeocoderInterface             $geocoder
-    )
-    {
-    }
+        private GeocoderInterface $geocoder,
+    ) {}
 
     /**
      * GET dashboard/{vehicleId}/navigation
@@ -40,7 +38,7 @@ final readonly class NavigationController
 
         try {
             $data = $this->telemetryRepository->getLatestTelemetry($vin);
-        } catch (InvalidArgumentException|VehicleUnauthorizedException) {
+        } catch (InvalidArgumentException | VehicleUnauthorizedException) {
             Flash::set('error', 'Véhicule invalide ou inaccessible.');
             Http::redirect('/dashboard');
         }
@@ -88,7 +86,7 @@ final readonly class NavigationController
      */
     private function resolveVehicle(string $vehicleId): array
     {
-        $userId = (string)($_SESSION['user_id'] ?? '');
+        $userId = (string) ($_SESSION['user_id'] ?? '');
         $vehicle = $this->vehicles->findByPublicId($vehicleId);
         if ($vehicle === null || !$vehicle->isAccessibleBy($userId)) {
             Http::redirect('/dashboard');

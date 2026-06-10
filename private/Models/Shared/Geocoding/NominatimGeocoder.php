@@ -87,7 +87,10 @@ final readonly class NominatimGeocoder implements GeocoderInterface
         $place = $name ?? $road;
         $city = $part('city') ?? ($part('town') ?? ($part('village') ?? $part('municipality')));
 
-        $parts = array_filter([$place, $city], static fn(?string $s): bool => $s !== null && $s !== '');
+        $parts = array_filter(
+            [$place, $city],
+            static fn(?string $s): bool => $s !== null && $s !== '',
+        );
         $label = implode(', ', $parts);
 
         return $label !== '' ? $label : $fallback;
