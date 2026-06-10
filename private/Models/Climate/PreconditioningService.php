@@ -34,6 +34,8 @@ final class PreconditioningService
     }
 
     /**
+     * A plan must have a location (Tesla schedules are geofenced).
+     *
      * @param list<DayOfWeek> $days
      * @return string the new planner id
      * @throws VehicleUnauthorizedException if the user does not own the vehicle
@@ -45,7 +47,7 @@ final class PreconditioningService
         array $days,
         bool $memorizeLongTerm,
         bool $enabled,
-        ?GeoPoint $location = null,
+        GeoPoint $location,
         ?string $locationLabel = null,
     ): string {
         $this->assertOwnership($vin, $userId);
@@ -79,7 +81,7 @@ final class PreconditioningService
         array $days,
         bool $memorizeLongTerm,
         bool $enabled,
-        ?GeoPoint $location = null,
+        GeoPoint $location,
         ?string $locationLabel = null,
     ): void {
         $existing = $this->requireOwnedPlanner($userId, $vin, $planId);
@@ -114,13 +116,30 @@ final class PreconditioningService
 
     /**
      * Enables or disables a schedule from the list, without opening the edit form.
-     * A disabled schedule stays listed and can be re-enabled.
+     * A disabled schedule stays listed and can be re-enabled. The new state is
+     * also pushed to the car.
      *
      * @throws VehicleUnauthorizedException if the vehicle or planner isn't the user's
      */
     public function setPlanEnabled(string $userId, Vin $vin, string $planId, bool $enabled): void
     {
-        $this->requireOwnedPlanner($userId, $vin, $planId);
+        $existing = $this->requireOwnedPlanner($userId, $vin, $planId);
+
+        // Car first: if the push fails, the row keeps the old state.
+        $this->pushAndStore(
+            $planId,
+            new PreconditioningPlanner(
+                id: $existing->id,
+                vin: $existing->vin,
+                activationHour: $existing->activationHour,
+                deactivateAfterSuccess: $existing->deactivateAfterSuccess,
+                days: $existing->days,
+                enabled: $enabled,
+                location: $existing->location,
+                locationLabel: $existing->locationLabel,
+                teslaScheduleId: $existing->teslaScheduleId,
+            ),
+        );
 
         $this->plannerRepository->setEnabled($planId, $enabled);
     }

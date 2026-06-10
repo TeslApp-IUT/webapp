@@ -6,6 +6,7 @@ namespace Teslapp\Controllers\Climate;
 
 use InvalidArgumentException;
 use Teslapp\Models\Climate\PreconditioningService;
+use Teslapp\Models\DatabaseException;
 use Teslapp\Models\Shared\Exceptions\TeslaApiException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
@@ -40,6 +41,11 @@ final class PreconditioningController
         ['userId' => $userId, 'vin' => $vin] = $this->resolveVehicle($vehicleId);
 
         try {
+            $location = $this->readLocation();
+            if ($location === null) {
+                Flash::set('errors', ['Choisissez un lieu (recherche ou carte).']);
+                Http::redirect($page);
+            }
             $this->service->createPlan(
                 $userId,
                 $vin,
@@ -47,7 +53,7 @@ final class PreconditioningController
                 $this->readDays(),
                 $this->boolField('memorize'),
                 $this->boolField('enabled'),
-                $this->readLocation(),
+                $location,
                 $this->post('location_label') ?: null,
             );
             Flash::set('success', 'Planification créée.');
@@ -57,6 +63,8 @@ final class PreconditioningController
             Flash::set('errors', ['Vous n\'avez pas accès à ce véhicule.']);
         } catch (TeslaApiException) {
             Flash::set('errors', ['La commande Tesla a échoué.']);
+        } catch (DatabaseException) {
+            Flash::set('errors', ['Erreur interne, réessayez plus tard.']);
         }
 
         Http::redirect($page);
@@ -71,6 +79,11 @@ final class PreconditioningController
         ['userId' => $userId, 'vin' => $vin] = $this->resolveVehicle($vehicleId);
 
         try {
+            $location = $this->readLocation();
+            if ($location === null) {
+                Flash::set('errors', ['Choisissez un lieu (recherche ou carte).']);
+                Http::redirect($page);
+            }
             $this->service->updatePlan(
                 $userId,
                 $vin,
@@ -79,7 +92,7 @@ final class PreconditioningController
                 $this->readDays(),
                 $this->boolField('memorize'),
                 $this->boolField('enabled'),
-                $this->readLocation(),
+                $location,
                 $this->post('location_label') ?: null,
             );
             Flash::set('success', 'Planification mise à jour.');
@@ -89,6 +102,8 @@ final class PreconditioningController
             Flash::set('errors', ['Vous n\'avez pas accès à ce véhicule.']);
         } catch (TeslaApiException) {
             Flash::set('errors', ['La commande Tesla a échoué.']);
+        } catch (DatabaseException) {
+            Flash::set('errors', ['Erreur interne, réessayez plus tard.']);
         }
 
         Http::redirect($page);
@@ -111,6 +126,8 @@ final class PreconditioningController
             Flash::set('errors', ['Vous n\'avez pas accès à ce véhicule.']);
         } catch (TeslaApiException) {
             Flash::set('errors', ['La commande Tesla a échoué.']);
+        } catch (DatabaseException) {
+            Flash::set('errors', ['Erreur interne, réessayez plus tard.']);
         }
 
         Http::redirect($page);
@@ -135,6 +152,10 @@ final class PreconditioningController
             Flash::set('errors', ['Saisie invalide.']);
         } catch (VehicleUnauthorizedException) {
             Flash::set('errors', ['Vous n\'avez pas accès à ce véhicule.']);
+        } catch (TeslaApiException) {
+            Flash::set('errors', ['La commande Tesla a échoué.']);
+        } catch (DatabaseException) {
+            Flash::set('errors', ['Erreur interne, réessayez plus tard.']);
         }
 
         Http::redirect($page);
