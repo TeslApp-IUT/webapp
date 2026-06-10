@@ -15,7 +15,7 @@ final class AuthController
 {
     public function auth(): void
     {
-        if ($_SESSION['logged_in'] === true) {
+        if (($_SESSION['logged_in'] ?? false) === true) {
             header('Location: /dashboard', true, 302);
             exit();
         }
