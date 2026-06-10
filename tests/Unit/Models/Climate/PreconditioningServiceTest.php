@@ -96,28 +96,39 @@ final class PreconditioningServiceTest extends TestCase
     }
 
     #[Test]
-    public function createPlanWithoutLocationDoesNotPushToTesla(): void
+    public function setPlanEnabledPushesTheNewStateToTesla(): void
     {
+        $vin = new Vin(self::VIN);
+
         $planners = $this->createMock(PreconditioningPlannerRepositoryInterface::class);
-        $planners->method('save')->willReturn('plan-1');
-        $planners->expects($this->never())->method('setTeslaScheduleId');
+        $planners
+            ->method('findById')
+            ->willReturn(
+                $this->makePlanner($vin, teslaScheduleId: 555, location: new GeoPoint(43.5, 5.4)),
+            );
+        $planners->expects($this->once())->method('setEnabled')->with('plan-1', false);
 
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(true);
 
         $climate = $this->createMock(ClimateCommandClient::class);
-        $climate->expects($this->never())->method('addPreconditionSchedule');
+        $climate
+            ->expects($this->once())
+            ->method('addPreconditionSchedule')
+            ->willReturnCallback(static function (
+                Vin $v,
+                int $minutes,
+                string $days,
+                bool $enabled,
+            ): ?int {
+                self::assertFalse($enabled);
+
+                return 555;
+            });
 
         $service = new PreconditioningService($planners, $vehicles, $climate);
 
-        $service->createPlan(
-            self::USER,
-            new Vin(self::VIN),
-            '07:30',
-            [DayOfWeek::Monday],
-            true,
-            true,
-        );
+        $service->setPlanEnabled(self::USER, $vin, 'plan-1', false);
     }
 
     #[Test]
@@ -178,7 +189,7 @@ final class PreconditioningServiceTest extends TestCase
     }
 
     #[Test]
-    public function setPlanEnabledTogglesThroughTheRepository(): void
+    public function setPlanEnabledWithoutLocationDoesNotPushToTesla(): void
     {
         $vin = new Vin(self::VIN);
 
@@ -189,11 +200,10 @@ final class PreconditioningServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(true);
 
-        $service = new PreconditioningService(
-            $planners,
-            $vehicles,
-            $this->createMock(ClimateCommandClient::class),
-        );
+        $climate = $this->createMock(ClimateCommandClient::class);
+        $climate->expects($this->never())->method('addPreconditionSchedule');
+
+        $service = new PreconditioningService($planners, $vehicles, $climate);
 
         $service->setPlanEnabled(self::USER, $vin, 'plan-1', false);
     }
@@ -258,8 +268,11 @@ final class PreconditioningServiceTest extends TestCase
         $service->deletePlan(self::USER, $vin, 'plan-1');
     }
 
-    private function makePlanner(Vin $vin, ?int $teslaScheduleId = null): PreconditioningPlanner
-    {
+    private function makePlanner(
+        Vin $vin,
+        ?int $teslaScheduleId = null,
+        ?GeoPoint $location = null,
+    ): PreconditioningPlanner {
         return new PreconditioningPlanner(
             id: 'plan-1',
             vin: $vin,
@@ -267,6 +280,7 @@ final class PreconditioningServiceTest extends TestCase
             deactivateAfterSuccess: false,
             days: [DayOfWeek::Monday],
             enabled: true,
+            location: $location,
             teslaScheduleId: $teslaScheduleId,
         );
     }
