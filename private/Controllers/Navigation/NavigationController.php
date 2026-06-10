@@ -99,6 +99,46 @@ final readonly class NavigationController
         $start = date_timestamp_get($trip->startTime);
         $end = date_timestamp_get($trip->endTime);
 
+        // Prepare original raw points (lat, lon) for compatibility with older clients
+        $points = array_map(
+            static fn(GeoPoint $p): array => [$p->latitude, $p->longitude],
+            $trip->points ?? [],
+        );
+
+        // Attempt to request a routed geometry from the OSRM backend when we have
+        // at least two observed points. OSRM expects coordinates in lon,lat order
+        // separated by semicolons.
+        $route = null;
+        if (count($trip->points ?? []) > 1) {
+            $coords = array_map(static fn(GeoPoint $p): string => $p->longitude . ',' . $p->latitude, $trip->points);
+            $coordStr = implode(';', $coords);
+            $osrmUrl = 'https://osrm.feyli.dev/route/v1/driving/' . $coordStr . '?overview=full&geometries=geojson';
+
+            $ch = curl_init($osrmUrl);
+            if ($ch !== false) {
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_TIMEOUT => 10,
+                    CURLOPT_HTTPHEADER => ['User-Agent: Teslapp/1.0'],
+                ]);
+
+                $body = curl_exec($ch);
+                $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+
+                if (is_string($body) && $status < 400) {
+                    $data = json_decode($body, true);
+                    if (isset($data['routes'][0]['geometry']['coordinates']) && is_array($data['routes'][0]['geometry']['coordinates'])) {
+                        // Convert OSRM geojson coordinates ([lon, lat]) to [lat, lon]
+                        $route = array_map(
+                            static fn(array $c): array => [(float) $c[1], (float) $c[0]],
+                            $data['routes'][0]['geometry']['coordinates']
+                        );
+                    }
+                }
+            }
+        }
+
         return [
             'id' => $trip->id,
             'startAddress' => $this->geocoder->reverseGeocode($trip->start),
@@ -112,10 +152,10 @@ final readonly class NavigationController
             'distanceKm' => round($trip->totalDistance / 1000, 1),
             'durationMinutes' => (int) round(($end - $start) / 60),
             'running' => $trip->running,
-            'points' => array_map(
-                static fn(GeoPoint $p): array => [$p->latitude, $p->longitude],
-                $trip->points ?? [],
-            ),
+            'points' => $points,
+            // 'route' is either null or an array of [lat, lon] coordinates derived
+            // from OSRM's routed geometry (preferred for drawing a realistic route).
+            'route' => $route,
         ];
     }
 

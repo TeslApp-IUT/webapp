@@ -154,7 +154,9 @@ if (tripsList && detailsPanel) {
 
     const start = [trip.startLat, trip.startLon];
     const end = [trip.endLat, trip.endLon];
-    const route = Array.isArray(trip.points) ? trip.points : [];
+    const route = Array.isArray(trip.route) && trip.route.length > 0
+      ? trip.route
+      : (Array.isArray(trip.points) ? trip.points : []);
 
     markers.clearLayers();
 
