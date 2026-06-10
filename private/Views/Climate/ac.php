@@ -74,7 +74,6 @@ ob_start();
             </div>
           </div>
           <!-- Keeper Mode -->
-          <!-- Keeper Mode -->
           <div class="dashboard-card">
             <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -97,14 +96,31 @@ ob_start();
                     ];
                     $current = (int)($data['climate_keeper_mode'] ?? 0);
                     foreach ($modes as $value => $label): ?>
-                      <label class="keeper-mode__pill <?= $current === $value ? 'keeper-mode__pill--active' : '' ?>">
+                      <label class="keeper-mode__pill <?= $current === $value ? : '' ?>">
                         <input type="radio" name="climate_keeper_mode" value="<?= $value ?>"
                             <?= $current === $value ? 'checked' : '' ?>>
                           <?= e($label) ?>
                       </label>
                     <?php endforeach; ?>
                 </div>
-                <button type="submit" class="btn-success">Appliquer</button>
+                <!-- COP temperature -->
+                <div class="cop-modes" id="cop-modes" style="display:none; margin-top: 12px;">
+                    <?php
+                    $copLevels = [
+                        0 => 'Bas (30°C)',
+                        1 => 'Moyen (35°C)',
+                        2 => 'Haut (40°C)',
+                    ];
+                    $currentCop = (int)($data['cop_temp'] ?? 0);
+                    foreach ($copLevels as $value => $label): ?>
+                      <label class="keeper-mode__pill <?= $currentCop === $value ? : '' ?>">
+                        <input type="radio" name="cop_temp" value="<?= $value ?>"
+                            <?= $currentCop === $value ? 'checked' : '' ?>>
+                          <?= e($label) ?>
+                      </label>
+                    <?php endforeach; ?>
+                </div>
+                <button type="submit" class="btn-success" style="margin-top: 12px;">Appliquer</button>
               </form>
             </div>
           </div>

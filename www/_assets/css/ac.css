@@ -562,6 +562,13 @@
   color: #000000;
 }
 
+.cop-modes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
 /* Same mobile breakpoint as dashboard.css, so the dialog collapses with its page layout. */
 @media (max-width: 768px) {
   .precond-form--dialog {
