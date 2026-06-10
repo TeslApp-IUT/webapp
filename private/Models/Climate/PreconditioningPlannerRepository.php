@@ -80,7 +80,7 @@ final readonly class PreconditioningPlannerRepository implements
             $this->pdo->rollBack();
 
             throw new DatabaseException(
-                "Failed to save preconditioning planner for VIN $planner->vin->value",
+                "Failed to save preconditioning planner for VIN {$planner->vin->value}",
                 previous: $e,
             );
         }

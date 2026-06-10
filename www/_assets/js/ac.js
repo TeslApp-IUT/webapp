@@ -26,3 +26,25 @@ btnPlus.addEventListener('click', () => {
     tempDisplay.textContent = val;
   }
 });
+
+const lastUpdateP = document.querySelector('#lastUpdate');
+const lastUpdateSpan = document.querySelector('#lastUpdateValue');
+const timestamp = parseInt(lastUpdateP.getAttribute('data-value')) * 1000;
+const lastUpdated = new Date(timestamp);
+
+const rtf = new Intl.RelativeTimeFormat('fr', { numeric: 'auto' });
+const diffSeconds = Math.round((lastUpdated - Date.now()) / 1000);
+const abs = Math.abs(diffSeconds);
+
+let relativeTime;
+if (abs < 60) {
+  relativeTime = rtf.format(diffSeconds, 'second');
+} else if (abs < 3600) {
+  relativeTime = rtf.format(Math.round(diffSeconds / 60), 'minute');
+} else if (abs < 86400) {
+  relativeTime = rtf.format(Math.round(diffSeconds / 3600), 'hour');
+} else {
+  relativeTime = rtf.format(Math.round(diffSeconds / 86400), 'day');
+}
+
+lastUpdateSpan.textContent = relativeTime;

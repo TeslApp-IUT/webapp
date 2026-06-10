@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace Teslapp\Models\Shared;
 
+use DateTimeImmutable;
+use DateTimeZone;
+use Exception;
 use PDO;
 use Teslapp\Models\Shared\TeslaApi\VehicleTelemetryRepositoryInterface;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 
 final readonly class VehicleTelemetryRepository implements VehicleTelemetryRepositoryInterface
 {
-    public function __construct(private readonly PDO $pdo) {}
+    public function __construct(private readonly PDO $pdo)
+    {
+    }
 
     /**
      * @return array<string, mixed>
@@ -33,13 +38,15 @@ final readonly class VehicleTelemetryRepository implements VehicleTelemetryRepos
     /**
      * Most recent value of a single signal for a VIN, or null when none was recorded.
      *
-     * @param string $table  fleet_telemetry table (internal constant, not user input)
+     * @param string $table fleet_telemetry table (internal constant, not user input)
      * @param string $column column to read (internal constant, not user input)
+     * @return array{timestamp: DateTimeImmutable}&array<string, mixed>|null
+     * @throws Exception
      */
-    private function latest(string $table, string $column, Vin $vin): mixed
+    public function latest(string $table, string $column, Vin $vin): mixed
     {
         $stmt = $this->pdo->prepare(
-            "SELECT {$column}
+            "SELECT $column, timestamp
              FROM fleet_telemetry.{$table}
              WHERE vin = :vin
              ORDER BY timestamp DESC
@@ -48,6 +55,11 @@ final readonly class VehicleTelemetryRepository implements VehicleTelemetryRepos
         $stmt->execute([':vin' => $vin->value]);
         $row = $stmt->fetch();
 
-        return is_array($row) ? $row[$column] ?? null : null;
+        if (!is_array($row)) return null;
+
+        return [
+            $column => $row[$column],
+            'timestamp' => new DateTimeImmutable($row['timestamp'], new DateTimeZone('UTC')),
+        ];
     }
 }

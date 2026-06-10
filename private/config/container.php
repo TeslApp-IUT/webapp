@@ -171,6 +171,7 @@ $container->set(
         $c->get(ClimateService::class),
         $c->get(PreconditioningService::class),
         $c->get(VehicleRepositoryInterface::class),
+        $c->get(VehicleTelemetryRepositoryInterface::class)
     ),
 );
 

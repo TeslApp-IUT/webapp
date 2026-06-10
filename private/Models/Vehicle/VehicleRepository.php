@@ -71,7 +71,7 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
             ]);
         } catch (PDOException $e) {
             throw new DatabaseException(
-                "Failed to save vehicle $vehicle->vin->value",
+                "Failed to save vehicle {$vehicle->vin->value}",
                 previous: $e,
             );
         }

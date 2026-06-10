@@ -81,7 +81,7 @@ final readonly class ChargingPlannerRepository implements ChargingPlannerReposit
             $this->pdo->rollBack();
 
             throw new DatabaseException(
-                "Failed to save charging planner for VIN $planner->vin->value",
+                "Failed to save charging planner for VIN {$planner->vin->value}",
                 previous: $e,
             );
         }
