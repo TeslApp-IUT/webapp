@@ -157,6 +157,7 @@
 .overwiew-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
+  position: relative;
 }
 
 .dashboard-card-link {
@@ -167,6 +168,26 @@
 .overwiew-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15), 0 16px 40px rgba(46, 46, 46, 0.5);
+}
+
+.card-arrow {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-bg-secondary);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.card-arrow svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--color-text-secondary);
 }
 
 .card-icon {
