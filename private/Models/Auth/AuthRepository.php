@@ -174,4 +174,20 @@ final readonly class AuthRepository
         $row = $stmt->fetch();
         return $row !== false;
     }
+
+    /**
+     * Returns the user's first and last name, or null if the user is not found.
+     *
+     * @return array{first_name: string, last_name: string}|null
+     */
+    public function getUserName(string $userId): ?array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT first_name, last_name FROM users WHERE id = :id LIMIT 1',
+        );
+        $stmt->execute([':id' => $userId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row !== false ? ['first_name' => (string) $row['first_name'], 'last_name' => (string) $row['last_name']] : null;
+    }
 }

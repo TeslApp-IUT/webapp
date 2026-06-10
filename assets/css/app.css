@@ -326,6 +326,15 @@ input:focus-visible {
   gap: 16px;
 }
 
+/* ----- Header Username ----- */
+.header-username {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.75));
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
 /* ===================================================================================================
    8. HERO SECTION
    =================================================================================================== */
