@@ -6,6 +6,9 @@
  *   'overview' | 'vehicle' | 'ac' | 'battery' | 'navigation'
  * $vehicleId must also be set by the including controller/view.
  */
+
+/** @var string $vehicleId */
+
 $activeNav = $activeNav ?? 'overview';
 ?>
 <nav class="dashboard-navigation">

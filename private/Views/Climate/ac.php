@@ -2,6 +2,8 @@
 use Teslapp\Models\Climate\PreconditioningPlanner;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
 
+/** @var string $vehicleId Vehicle public id, set by the rendering controller. */
+
 $inside_temp = $data['inside_temp'] ?? 'N/A';
 $csrf = $_SESSION['csrf_token'] ?? '';
 $title = 'Climatisation — TeslApp';

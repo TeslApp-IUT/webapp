@@ -2,6 +2,8 @@
 use Teslapp\Models\Charging\ChargingPlanner;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
 
+/** @var string $vehicleId Vehicle public id, set by the rendering controller. */
+
 $battery_level = $data['battery_level'] ?? 'N/A';
 $charge_enable = $data['charge_enable'] ?? false;
 $scheduled_charging_start_time = $data['scheduled_charging_start_time'] ?? null;

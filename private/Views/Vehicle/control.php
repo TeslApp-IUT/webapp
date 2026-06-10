@@ -8,6 +8,9 @@
  * an .is-loading class and writes the shared [data-action-feedback] element — it
  * never rewrites a button's content, so the SVG pictograms are preserved.
  */
+
+/** @var string $vehicleId Vehicle public id, set by the rendering controller. */
+
 $title = 'Commandes du véhicule — TeslApp';
 $description = 'Commandes à distance de votre véhicule Tesla : verrouillage, klaxon, coffres et trappe de charge.';
 $header = 'user';

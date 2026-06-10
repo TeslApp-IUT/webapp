@@ -1,4 +1,6 @@
 <?php
+/** @var string $vehicleId Vehicle public id, set by the rendering controller. */
+
 $vehicleName = $vehicleName ?? 'Mon véhicule';
 
 /* Telemetry values — keys match the app.overview columns read by VehicleTelemetryRepository */
