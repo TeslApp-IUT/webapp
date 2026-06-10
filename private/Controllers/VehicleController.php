@@ -12,7 +12,7 @@ use Teslapp\Utils\Flash;
 /**
  * Lists the user's vehicles so the user can navigate to one.
  */
-final class VehicleController
+final readonly class VehicleController
 {
     public function __construct(private readonly VehicleService $vehicleService) {}
 
@@ -60,8 +60,6 @@ final class VehicleController
     /** Web path to the model image, or '' when the file is missing (the view shows a fallback). */
     private function modelImage(string $modelName): string
     {
-        $file = '/_assets/images/' . str_replace(' ', '-', strtolower($modelName)) . '.png';
-
-        return is_file(__DIR__ . '/../../www' . $file) ? $file : '';
+        return '/_assets/images/' . str_replace(' ', '-', strtolower($modelName)) . '.png';
     }
 }

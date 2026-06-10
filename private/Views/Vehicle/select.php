@@ -8,6 +8,7 @@ use Teslapp\Models\Vehicle\Vehicle;
 
 $title = 'Sélection du véhicule — TeslApp';
 $description = 'Choisissez le véhicule Tesla à piloter.';
+$extraJs = ['vehicle-select'];
 
 ob_start();
 ?>
@@ -34,14 +35,13 @@ ob_start();
                   <span class="vehicle-card__status vehicle-card__status--<?= e($status->value) ?>">
                     <span class="sr-only"><?= e($status->label()) ?></span>
                   </span>
+                  <div class="vehicle-card__image vehicle-card__image--placeholder">
+                    <img src="/_assets/images/tesla_logo_gray.png" alt="" aria-hidden="true">
+                    <span><?= e($card['model']) ?></span>
+                  </div>
                   <?php if ($card['image'] !== ''): ?>
-                    <img class="vehicle-card__image" src="<?= e($card['image']) ?>"
+                    <img class="vehicle-card__image--preview" src="<?= e($card['image']) ?>"
                          alt="Tesla <?= e($card['model']) ?>" loading="lazy" decoding="async">
-                  <?php else: ?>
-                    <div class="vehicle-card__image vehicle-card__image--placeholder">
-                      <img src="/_assets/images/tesla_logo_gray.png" alt="" aria-hidden="true">
-                      <span><?= e($card['model']) ?></span>
-                    </div>
                   <?php endif; ?>
                 </div>
 
