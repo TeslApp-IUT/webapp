@@ -7,6 +7,8 @@ namespace Teslapp\Tests\Unit\Models\Vehicle;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Teslapp\Models\Shared\Exceptions\TeslaApiException;
+use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
 use Teslapp\Models\Shared\ValueObjects\TrunkSide;
@@ -269,5 +271,75 @@ final class VehicleCommandServiceTest extends TestCase
 
         $this->expectException(VehicleUnauthorizedException::class);
         $service->wakeUp('user-2', $vin);
+    }
+
+    #[Test]
+    public function lockWakesTheVehicleAndRetriesWhenAsleep(): void
+    {
+        $vin = new Vin(self::VIN);
+
+        $calls = 0;
+        $commands = $this->createMock(VehicleCommandClient::class);
+        $commands
+            ->expects($this->exactly(2))
+            ->method('lock')
+            ->with($vin)
+            ->willReturnCallback(function () use (&$calls): void {
+                if (++$calls === 1) {
+                    throw new VehicleAsleepException('asleep');
+                }
+            });
+        $commands->expects($this->once())->method('wakeUp')->with($vin);
+
+        $vehicles = $this->createMock(VehicleRepositoryInterface::class);
+        $vehicles->method('isAccessibleBy')->willReturn(true);
+
+        (new VehicleCommandService($commands, $vehicles, wakeRetryDelays: [0]))->lock(
+            'user-1',
+            $vin,
+        );
+    }
+
+    #[Test]
+    public function lockGivesUpWhenTheVehicleStaysAsleep(): void
+    {
+        $vin = new Vin(self::VIN);
+
+        $commands = $this->createMock(VehicleCommandClient::class);
+        // 1 initial attempt + 2 retries (one per delay), all rejected as asleep.
+        $commands
+            ->expects($this->exactly(3))
+            ->method('lock')
+            ->willThrowException(new VehicleAsleepException('asleep'));
+        $commands->expects($this->once())->method('wakeUp')->with($vin);
+
+        $vehicles = $this->createMock(VehicleRepositoryInterface::class);
+        $vehicles->method('isAccessibleBy')->willReturn(true);
+
+        $service = new VehicleCommandService($commands, $vehicles, wakeRetryDelays: [0, 0]);
+
+        $this->expectException(VehicleAsleepException::class);
+        $service->lock('user-1', $vin);
+    }
+
+    #[Test]
+    public function lockDoesNotWakeOnOtherApiErrors(): void
+    {
+        $vin = new Vin(self::VIN);
+
+        $commands = $this->createMock(VehicleCommandClient::class);
+        $commands
+            ->expects($this->once())
+            ->method('lock')
+            ->willThrowException(new TeslaApiException('command failed'));
+        $commands->expects($this->never())->method('wakeUp');
+
+        $vehicles = $this->createMock(VehicleRepositoryInterface::class);
+        $vehicles->method('isAccessibleBy')->willReturn(true);
+
+        $service = new VehicleCommandService($commands, $vehicles, wakeRetryDelays: [0]);
+
+        $this->expectException(TeslaApiException::class);
+        $service->lock('user-1', $vin);
     }
 }

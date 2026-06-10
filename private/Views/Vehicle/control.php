@@ -1,12 +1,13 @@
 <?php
 /**
  * Vehicle command page — the "Véhicule" dashboard tab (issue #26).
- * A primary "wake" banner on top, then remote command tiles grouped by
- * category. Each wired control (the hero + every tile) is a <button data-action>
- * that POSTs to /vehicle/<action> (handled by VehicleCommandController); the VIN
- * is resolved server-side from the session. The JS (vehicle-actions.js) toggles
- * an .is-loading class and writes the shared [data-action-feedback] element — it
- * never rewrites a button's content, so the SVG pictograms are preserved.
+ * Remote command tiles grouped by category. Each tile is a <button data-action>
+ * that POSTs to /dashboard/<vehicleId>/<action> (VehicleCommandController); the
+ * VIN is resolved server-side. There is no wake button: the service wakes the
+ * vehicle and retries automatically when Tesla reports it asleep. The JS
+ * (vehicle-actions.js) toggles an .is-loading class and writes the shared
+ * [data-action-feedback] element — it never rewrites a button's content, so the
+ * SVG pictograms are preserved.
  */
 
 /** @var string $vehicleId Vehicle public id, set by the rendering controller. */
@@ -38,19 +39,6 @@ ob_start();
         <p class="actions-feedback" role="status" aria-live="polite" data-action-feedback></p>
 
         <div class="vehicle-commands">
-          <!-- Primary action: wake the vehicle -->
-          <button class="command-hero" type="button" data-action="wake">
-            <span class="command-hero__icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9" />
-              </svg>
-            </span>
-            <span class="command-hero__text">
-              <span class="command-hero__title">Réveiller le véhicule</span>
-              <span class="command-hero__hint">À lancer avant une commande si la voiture est en veille</span>
-            </span>
-          </button>
-
           <!-- Accès & sécurité -->
           <section class="command-group">
             <h2 class="command-group__title">Accès &amp; sécurité</h2>
