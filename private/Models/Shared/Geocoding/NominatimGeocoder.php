@@ -60,7 +60,37 @@ final readonly class NominatimGeocoder implements GeocoderInterface
 
         $name = isset($data['name']) && is_string($data['name']) ? $data['name'] : null;
 
-        return $this->compactLabel($data['address'] ?? null, $data['display_name'], $name);
+        return $this->conciseLabel($data['address'] ?? null, $data['display_name'], $name);
+    }
+
+    /**
+     * Very short label for a point: just "road, city" (or "place, city"),
+     * dropping the house number and postcode. Falls back to the verbose
+     * display name when address details are missing.
+     *
+     * @param mixed $address the `address` object of a Nominatim response
+     * @param string|null $name the top-level `name` field, empty for plain addresses
+     */
+    private function conciseLabel(mixed $address, string $fallback, ?string $name = null): string
+    {
+        if (!is_array($address)) {
+            return $fallback;
+        }
+
+        $part = static fn(string $key): ?string => isset($address[$key]) &&
+        is_string($address[$key]) &&
+        $address[$key] !== ''
+            ? $address[$key]
+            : null;
+
+        $road = $part('road') ?? $part('pedestrian');
+        $place = $name ?? $road;
+        $city = $part('city') ?? ($part('town') ?? ($part('village') ?? $part('municipality')));
+
+        $parts = array_filter([$place, $city], static fn(?string $s): bool => $s !== null && $s !== '');
+        $label = implode(', ', $parts);
+
+        return $label !== '' ? $label : $fallback;
     }
 
     /**

@@ -14,6 +14,7 @@ use Teslapp\Controllers\Charging\ChargingController;
 use Teslapp\Controllers\Charging\ChargingPlannerController;
 use Teslapp\Controllers\Climate\PreconditioningController;
 use Teslapp\Controllers\GeocodingController;
+use Teslapp\Controllers\Navigation\NavigationController;
 use Teslapp\Models\Charging\ChargingPlannerRepository;
 use Teslapp\Models\Charging\ChargingPlannerRepositoryInterface;
 use Teslapp\Models\Charging\ChargingPlannerService;
@@ -24,12 +25,15 @@ use Teslapp\Models\Auth\RememberTokenRepository;
 use Teslapp\Models\Climate\PreconditioningPlannerRepository;
 use Teslapp\Models\Climate\PreconditioningPlannerRepositoryInterface;
 use Teslapp\Models\Climate\PreconditioningService;
+use Teslapp\Models\Navigation\NavigationRepository;
+use Teslapp\Models\Navigation\NavigationRepositoryInterface;
 use Teslapp\Models\Shared\TokenCipher;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\VehicleCommandController;
 use Teslapp\Controllers\VehicleController;
 use Teslapp\Models\Database;
+use Teslapp\Models\Shared\Geocoding\CachingGeocoder;
 use Teslapp\Models\Shared\Geocoding\GeocoderInterface;
 use Teslapp\Models\Shared\Geocoding\NominatimGeocoder;
 use Teslapp\Models\Shared\TeslaApi\ChargingCommandClient;
@@ -276,6 +280,22 @@ $container->set(
         $c->get(ChargingPlannerService::class),
         $c->get(VehicleRepositoryInterface::class),
     ),
+);
+
+$container->set(
+    NavigationRepositoryInterface::class,
+    static fn(Container $c): NavigationRepositoryInterface => new NavigationRepository(Database::pdo())
+);
+
+// Navigation
+$container->set(
+    NavigationController::class,
+    static fn(Container $c): NavigationController => new NavigationController(
+        $c->get(VehicleTelemetryRepositoryInterface::class),
+        $c->get(VehicleRepositoryInterface::class),
+        $c->get(NavigationRepositoryInterface::class),
+        new CachingGeocoder($c->get(GeocoderInterface::class), Database::pdo())
+    )
 );
 
 return $container;
