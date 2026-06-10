@@ -76,7 +76,9 @@ final readonly class AuthCallbackController
 
                 // Store the display name in the session for the header.
                 $userName = $this->authRepository->getUserName($sub);
-                $_SESSION['user_display_name'] = trim(($userName['first_name'] ?? '') . ' ' . ($userName['last_name'] ?? ''));
+                $_SESSION['user_display_name'] = trim(
+                    ($userName['first_name'] ?? '') . ' ' . ($userName['last_name'] ?? ''),
+                );
 
                 // Issue a remember-me token so the user stays logged in across browser restarts.
                 $this->rememberToken->issue($sub);

@@ -188,6 +188,11 @@ final readonly class AuthRepository
         $stmt->execute([':id' => $userId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $row !== false ? ['first_name' => (string) $row['first_name'], 'last_name' => (string) $row['last_name']] : null;
+        return $row !== false
+            ? [
+                'first_name' => (string) $row['first_name'],
+                'last_name' => (string) $row['last_name'],
+            ]
+            : null;
     }
 }
