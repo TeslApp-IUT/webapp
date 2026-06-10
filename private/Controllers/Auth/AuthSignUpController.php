@@ -83,7 +83,8 @@ final readonly class AuthSignUpController
         }
 
         // 1. Create the user row FIRST — jwt.sub / oauth2_token.user_id FK onto users.id.
-        $this->authRepository->ensureUser($sub, $email, $firstName, $lastName);
+        $avatarUrl = (string) ($_SESSION['signup_tmp_profile_picture'] ?? '');
+        $this->authRepository->ensureUser($sub, $email, $firstName, $lastName, $avatarUrl);
 
         // 2. Persist the OAuth credentials gathered during the callback.
         $claims = $_SESSION['signup_tmp_claims'] ?? null;
@@ -111,7 +112,7 @@ final readonly class AuthSignUpController
      */
     private function renderForm(array $pendingUser, array $errors = []): void
     {
-        $profilePicture = (string) ($_SESSION['signup_tmp_profile_picture'] ?? '');
+        $profilePicture = (string) ($_SESSION['signup_tmp_profile_picture_display'] ?? '');
         $csrfToken = (string) ($_SESSION['csrf_token'] ?? '');
         require_once __DIR__ . '/../../Views/Auth/auth_signup.php';
     }
