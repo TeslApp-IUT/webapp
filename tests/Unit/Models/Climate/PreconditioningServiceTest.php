@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Teslapp\Tests\Unit\Models\Climate;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -23,6 +24,7 @@ final class PreconditioningServiceTest extends TestCase
     private const VIN = '5YJ3E1EA7KF000316';
     private const OTHER_VIN = '5YJ3E1EA7KF000999';
     private const USER = 'user-1';
+    private const PLAN_ID = '11111111-1111-4111-8111-111111111111';
 
     #[Test]
     public function listPlansThrowsWhenUserDoesNotOwnTheVehicle(): void
@@ -41,6 +43,25 @@ final class PreconditioningServiceTest extends TestCase
 
         $this->expectException(VehicleUnauthorizedException::class);
         $service->listPlansForVehicle(self::USER, new Vin(self::VIN));
+    }
+
+    #[Test]
+    public function deletePlanRejectsAMalformedPlanId(): void
+    {
+        $planners = $this->createMock(PreconditioningPlannerRepositoryInterface::class);
+        $planners->expects($this->never())->method('findById');
+
+        $vehicles = $this->createMock(VehicleRepositoryInterface::class);
+        $vehicles->method('isAccessibleBy')->willReturn(true);
+
+        $service = new PreconditioningService(
+            $planners,
+            $vehicles,
+            $this->createMock(ClimateCommandClient::class),
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        $service->deletePlan(self::USER, new Vin(self::VIN), 'not-a-uuid');
     }
 
     #[Test]
@@ -71,8 +92,8 @@ final class PreconditioningServiceTest extends TestCase
     public function createPlanWithLocationPushesToTeslaAndStoresTheScheduleId(): void
     {
         $planners = $this->createMock(PreconditioningPlannerRepositoryInterface::class);
-        $planners->method('save')->willReturn('plan-1');
-        $planners->expects($this->once())->method('setTeslaScheduleId')->with('plan-1', 999);
+        $planners->method('save')->willReturn(self::PLAN_ID);
+        $planners->expects($this->once())->method('setTeslaScheduleId')->with(self::PLAN_ID, 999);
 
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(true);
@@ -92,7 +113,7 @@ final class PreconditioningServiceTest extends TestCase
             location: new GeoPoint(43.5, 5.4),
         );
 
-        self::assertSame('plan-1', $id);
+        self::assertSame(self::PLAN_ID, $id);
     }
 
     #[Test]
@@ -106,7 +127,7 @@ final class PreconditioningServiceTest extends TestCase
             ->willReturn(
                 $this->makePlanner($vin, teslaScheduleId: 555, location: new GeoPoint(43.5, 5.4)),
             );
-        $planners->expects($this->once())->method('setEnabled')->with('plan-1', false);
+        $planners->expects($this->once())->method('setEnabled')->with(self::PLAN_ID, false);
 
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(true);
@@ -128,7 +149,7 @@ final class PreconditioningServiceTest extends TestCase
 
         $service = new PreconditioningService($planners, $vehicles, $climate);
 
-        $service->setPlanEnabled(self::USER, $vin, 'plan-1', false);
+        $service->setPlanEnabled(self::USER, $vin, self::PLAN_ID, false);
     }
 
     #[Test]
@@ -136,7 +157,7 @@ final class PreconditioningServiceTest extends TestCase
     {
         // Dry-run path: the push returns no id, so nothing is stored.
         $planners = $this->createMock(PreconditioningPlannerRepositoryInterface::class);
-        $planners->method('save')->willReturn('plan-1');
+        $planners->method('save')->willReturn(self::PLAN_ID);
         $planners->expects($this->never())->method('setTeslaScheduleId');
 
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
@@ -166,7 +187,7 @@ final class PreconditioningServiceTest extends TestCase
         $planners = $this->createMock(PreconditioningPlannerRepositoryInterface::class);
         $planners->method('findById')->willReturn($this->makePlanner($vin, teslaScheduleId: 555));
         $planners->expects($this->once())->method('update');
-        $planners->expects($this->once())->method('setTeslaScheduleId')->with('plan-1', 555);
+        $planners->expects($this->once())->method('setTeslaScheduleId')->with(self::PLAN_ID, 555);
 
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(true);
@@ -179,7 +200,7 @@ final class PreconditioningServiceTest extends TestCase
         $service->updatePlan(
             self::USER,
             $vin,
-            'plan-1',
+            self::PLAN_ID,
             '08:00',
             [DayOfWeek::Tuesday],
             memorizeLongTerm: false,
@@ -195,7 +216,7 @@ final class PreconditioningServiceTest extends TestCase
 
         $planners = $this->createMock(PreconditioningPlannerRepositoryInterface::class);
         $planners->method('findById')->willReturn($this->makePlanner($vin));
-        $planners->expects($this->once())->method('setEnabled')->with('plan-1', false);
+        $planners->expects($this->once())->method('setEnabled')->with(self::PLAN_ID, false);
 
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(true);
@@ -205,7 +226,7 @@ final class PreconditioningServiceTest extends TestCase
 
         $service = new PreconditioningService($planners, $vehicles, $climate);
 
-        $service->setPlanEnabled(self::USER, $vin, 'plan-1', false);
+        $service->setPlanEnabled(self::USER, $vin, self::PLAN_ID, false);
     }
 
     #[Test]
@@ -225,7 +246,7 @@ final class PreconditioningServiceTest extends TestCase
         );
 
         $this->expectException(VehicleUnauthorizedException::class);
-        $service->setPlanEnabled(self::USER, new Vin(self::VIN), 'plan-1', false);
+        $service->setPlanEnabled(self::USER, new Vin(self::VIN), self::PLAN_ID, false);
     }
 
     #[Test]
@@ -235,7 +256,7 @@ final class PreconditioningServiceTest extends TestCase
 
         $planners = $this->createMock(PreconditioningPlannerRepositoryInterface::class);
         $planners->method('findById')->willReturn($this->makePlanner($vin, teslaScheduleId: 777));
-        $planners->expects($this->once())->method('deleteById')->with('plan-1');
+        $planners->expects($this->once())->method('deleteById')->with(self::PLAN_ID);
 
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(true);
@@ -245,7 +266,7 @@ final class PreconditioningServiceTest extends TestCase
 
         $service = new PreconditioningService($planners, $vehicles, $climate);
 
-        $service->deletePlan(self::USER, $vin, 'plan-1');
+        $service->deletePlan(self::USER, $vin, self::PLAN_ID);
     }
 
     #[Test]
@@ -255,7 +276,7 @@ final class PreconditioningServiceTest extends TestCase
 
         $planners = $this->createMock(PreconditioningPlannerRepositoryInterface::class);
         $planners->method('findById')->willReturn($this->makePlanner($vin, teslaScheduleId: null));
-        $planners->expects($this->once())->method('deleteById')->with('plan-1');
+        $planners->expects($this->once())->method('deleteById')->with(self::PLAN_ID);
 
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(true);
@@ -265,7 +286,7 @@ final class PreconditioningServiceTest extends TestCase
 
         $service = new PreconditioningService($planners, $vehicles, $climate);
 
-        $service->deletePlan(self::USER, $vin, 'plan-1');
+        $service->deletePlan(self::USER, $vin, self::PLAN_ID);
     }
 
     private function makePlanner(
@@ -274,7 +295,7 @@ final class PreconditioningServiceTest extends TestCase
         ?GeoPoint $location = null,
     ): PreconditioningPlanner {
         return new PreconditioningPlanner(
-            id: 'plan-1',
+            id: self::PLAN_ID,
             vin: $vin,
             activationHour: '07:30',
             deactivateAfterSuccess: false,
