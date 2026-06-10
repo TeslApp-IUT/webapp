@@ -32,7 +32,7 @@ final readonly class ClimateClient
         foreach (range(0, 8) as $seat) {
             $this->post("/api/1/vehicles/{$vin->value}/command/remote_seat_heater_request", [
                 'seat_position' => $seat,
-                'level'         => 0,
+                'level' => 0,
             ]);
         }
 
