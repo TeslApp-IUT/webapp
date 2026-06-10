@@ -11,6 +11,6 @@ final class VehicleUnauthorizedException extends TeslaAppException
 {
     public function __construct(string $vin, string $userId)
     {
-        parent::__construct("User {$userId} is not allowed to access vehicle {$vin}");
+        parent::__construct("User $userId");
     }
 }

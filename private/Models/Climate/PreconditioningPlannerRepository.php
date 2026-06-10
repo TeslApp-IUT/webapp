@@ -80,7 +80,7 @@ final readonly class PreconditioningPlannerRepository implements
             $this->pdo->rollBack();
 
             throw new DatabaseException(
-                "Failed to save preconditioning planner for VIN {$planner->vin->value}",
+                "Failed to save preconditioning planner for VIN $planner->vin->value",
                 previous: $e,
             );
         }
@@ -125,7 +125,7 @@ final readonly class PreconditioningPlannerRepository implements
             $this->pdo->rollBack();
 
             throw new DatabaseException(
-                "Failed to update preconditioning planner {$id}",
+                "Failed to update preconditioning planner $id",
                 previous: $e,
             );
         }
@@ -140,7 +140,7 @@ final readonly class PreconditioningPlannerRepository implements
             $stmt->execute([':enabled' => $enabled ? 'true' : 'false', ':id' => $id]);
         } catch (PDOException $e) {
             throw new DatabaseException(
-                "Failed to toggle preconditioning planner {$id}",
+                "Failed to toggle preconditioning planner $id",
                 previous: $e,
             );
         }
@@ -155,7 +155,7 @@ final readonly class PreconditioningPlannerRepository implements
             $stmt->execute([':tid' => $teslaScheduleId, ':id' => $id]);
         } catch (PDOException $e) {
             throw new DatabaseException(
-                "Failed to store the Tesla schedule id on preconditioning planner {$id}",
+                "Failed to store the Tesla schedule id on preconditioning planner $id",
                 previous: $e,
             );
         }
@@ -170,7 +170,7 @@ final readonly class PreconditioningPlannerRepository implements
                 ->execute([':id' => $id]);
         } catch (PDOException $e) {
             throw new DatabaseException(
-                "Failed to delete preconditioning planner {$id}",
+                "Failed to delete preconditioning planner $id",
                 previous: $e,
             );
         }

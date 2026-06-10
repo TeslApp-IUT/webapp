@@ -81,7 +81,7 @@ final readonly class ChargingPlannerRepository implements ChargingPlannerReposit
             $this->pdo->rollBack();
 
             throw new DatabaseException(
-                "Failed to save charging planner for VIN {$planner->vin->value}",
+                "Failed to save charging planner for VIN $planner->vin->value",
                 previous: $e,
             );
         }
@@ -127,7 +127,7 @@ final readonly class ChargingPlannerRepository implements ChargingPlannerReposit
         } catch (PDOException $e) {
             $this->pdo->rollBack();
 
-            throw new DatabaseException("Failed to update charging planner {$id}", previous: $e);
+            throw new DatabaseException("Failed to update charging planner $id", previous: $e);
         }
     }
 
@@ -139,7 +139,7 @@ final readonly class ChargingPlannerRepository implements ChargingPlannerReposit
             );
             $stmt->execute([':enabled' => $enabled ? 'true' : 'false', ':id' => $id]);
         } catch (PDOException $e) {
-            throw new DatabaseException("Failed to toggle charging planner {$id}", previous: $e);
+            throw new DatabaseException("Failed to toggle charging planner $id", previous: $e);
         }
     }
 
@@ -152,7 +152,7 @@ final readonly class ChargingPlannerRepository implements ChargingPlannerReposit
             $stmt->execute([':tid' => $teslaScheduleId, ':id' => $id]);
         } catch (PDOException $e) {
             throw new DatabaseException(
-                "Failed to store the Tesla schedule id on charging planner {$id}",
+                "Failed to store the Tesla schedule id on charging planner $id",
                 previous: $e,
             );
         }
@@ -166,7 +166,7 @@ final readonly class ChargingPlannerRepository implements ChargingPlannerReposit
                 ->prepare('DELETE FROM charging_planner WHERE id = :id')
                 ->execute([':id' => $id]);
         } catch (PDOException $e) {
-            throw new DatabaseException("Failed to delete charging planner {$id}", previous: $e);
+            throw new DatabaseException("Failed to delete charging planner $id", previous: $e);
         }
     }
 

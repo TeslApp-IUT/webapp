@@ -18,7 +18,7 @@ final readonly class ChargingAmps
     public function __construct(int $value)
     {
         if ($value < 5 || $value > 48) {
-            throw new InvalidArgumentException("Charging amps {$value} is out of range [5, 48].");
+            throw new InvalidArgumentException("Charging amps $value");
         }
         $this->value = $value;
     }

@@ -71,7 +71,7 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
             ]);
         } catch (PDOException $e) {
             throw new DatabaseException(
-                "Failed to save vehicle {$vehicle->vin->value}",
+                "Failed to save vehicle $vehicle->vin->value",
                 previous: $e,
             );
         }
@@ -83,7 +83,7 @@ final readonly class VehicleRepository implements VehicleRepositoryInterface
             $stmt = $this->pdo->prepare('UPDATE vehicles SET user_id = NULL WHERE vin = :vin');
             $stmt->execute([':vin' => $vin->value]);
         } catch (PDOException $e) {
-            throw new DatabaseException("Failed to detach vehicle {$vin->value}", previous: $e);
+            throw new DatabaseException("Failed to detach vehicle $vin->value", previous: $e);
         }
     }
 

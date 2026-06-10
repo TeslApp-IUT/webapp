@@ -13,9 +13,9 @@ final readonly class ClimateClient
 
     public function startClimate(Vin $vin, ?Temperature $temp = null): void
     {
-        $this->post("/api/1/vehicles/{$vin->value}/command/auto_conditioning_start");
+        $this->post("/api/1/vehicles/$vin->value");
         if ($temp !== null) {
-            $this->post("/api/1/vehicles/{$vin->value}/command/set_temps", [
+            $this->post("/api/1/vehicles/$vin->value", [
                 'driver_temp' => $temp->value,
                 'passenger_temp' => $temp->value,
             ]);
@@ -24,12 +24,12 @@ final readonly class ClimateClient
 
     public function stopClimate(Vin $vin): void
     {
-        $this->post("/api/1/vehicles/{$vin->value}/command/auto_conditioning_stop");
+        $this->post("/api/1/vehicles/$vin->value");
     }
 
     public function setKeeperMode(Vin $vin, KeeperMode $mode): void
     {
-        $this->post("/api/1/vehicles/{$vin->value}/command/set_climate_keeper_mode", [
+        $this->post("/api/1/vehicles/$vin->value", [
             'climate_keeper_mode' => $mode->value,
         ]);
     }

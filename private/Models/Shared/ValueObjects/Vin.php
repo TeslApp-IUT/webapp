@@ -21,7 +21,7 @@ final readonly class Vin
         $normalized = strtoupper(trim($value));
 
         if (preg_match(self::PATTERN, $normalized) !== 1) {
-            throw new InvalidArgumentException("Invalid VIN: {$value}");
+            throw new InvalidArgumentException("Invalid VIN: $value");
         }
 
         $this->value = $normalized;

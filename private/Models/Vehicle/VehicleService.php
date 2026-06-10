@@ -81,7 +81,7 @@ final class VehicleService
     private function modelCodeForVin(Vin $vin): string
     {
         if ($this->modelLineFromVin($vin) === null) {
-            throw new \InvalidArgumentException("Unknown Tesla model for VIN {$vin->value}");
+            throw new \InvalidArgumentException("Unknown Tesla model for VIN $vin->value");
         }
 
         return $vin->value[3];

@@ -41,7 +41,7 @@ final readonly class TeslaClimateClient implements ClimateCommandClient
         }
 
         $response =
-            $this->post("/api/1/vehicles/{$vin->value}/command/add_precondition_schedule", $body) ??
+            $this->post("/api/1/vehicles/$vin->value", $body) ??
             [];
 
         $inner = $response['response'] ?? [];
@@ -52,7 +52,7 @@ final readonly class TeslaClimateClient implements ClimateCommandClient
 
     public function removePreconditionSchedule(Vin $vin, int $scheduleId): void
     {
-        $this->post("/api/1/vehicles/{$vin->value}/command/remove_precondition_schedule", [
+        $this->post("/api/1/vehicles/$vin->value", [
             'id' => $scheduleId,
         ]);
     }
