@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Teslapp\Controllers\Climate;
@@ -16,6 +17,10 @@ use Teslapp\Utils\Csrf;
 use Teslapp\Utils\Flash;
 use Teslapp\Utils\Http;
 
+/**
+ * Controller responsible for climate-related commands.
+ * Handles climate activation, deactivation, keeper mode and preconditioning plans.
+ **/
 final class ClimateController
 {
     public function __construct(
@@ -23,6 +28,11 @@ final class ClimateController
         private readonly PreconditioningService $preconditioningService,
     ) {}
 
+    /**
+     * GET dashboard/ac
+     * Displays the climate control page with the preconditioning plans for the selected vehicle.
+     * Redirects to vehicle selection if the vehicle is invalid or unauthorized.
+     **/
     public function ac(): void
     {
         ['userId' => $userId, 'vin' => $vin] = $this->requireSession();
@@ -37,6 +47,12 @@ final class ClimateController
         require_once __DIR__ . '/../../Views/Climate/ac.php';
     }
 
+    /**
+     * POST climate/toggle
+     * Activates or deactivates the climate system based on the 'action' POST parameter.
+     * When starting, optionally applies the requested temperature.
+     * Redirects to the climate page after the command is sent.
+     **/
     public function toggle(): void
     {
         Csrf::requireValid('/dashboard/ac');
@@ -69,6 +85,11 @@ final class ClimateController
         Http::redirect('/dashboard/ac');
     }
 
+    /**
+     * POST climate/keeper
+     * Sets the climate keeper mode for the selected vehicle
+     * Modes: 0 = Off, 1 = Keep, 2 = Dog, 3 = Camp
+     **/
     public function setKeeperMode(): void
     {
         Csrf::requireValid('/dashboard/ac');
@@ -94,6 +115,11 @@ final class ClimateController
         Http::redirect('/dashboard/ac');
     }
 
+    /**
+     * Checks that a vehicle is selected in the session
+     *
+     * @return array{userId: string, vin: Vin}
+     **/
     private function requireSession(): array
     {
         if (!isset($_SESSION['selected_vin'])) {
