@@ -13,9 +13,7 @@ use Teslapp\Models\Shared\ValueObjects\Vin;
 
 final readonly class VehicleTelemetryRepository implements VehicleTelemetryRepositoryInterface
 {
-    public function __construct(private readonly PDO $pdo)
-    {
-    }
+    public function __construct(private readonly PDO $pdo) {}
 
     /**
      * @return array<string, mixed>
@@ -55,7 +53,9 @@ final readonly class VehicleTelemetryRepository implements VehicleTelemetryRepos
         $stmt->execute([':vin' => $vin->value]);
         $row = $stmt->fetch();
 
-        if (!is_array($row)) return null;
+        if (!is_array($row)) {
+            return null;
+        }
 
         return [
             $column => $row[$column],
