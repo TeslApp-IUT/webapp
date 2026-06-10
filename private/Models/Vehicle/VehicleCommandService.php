@@ -40,49 +40,49 @@ final class VehicleCommandService
     public function lock(string $userId, Vin $vin): void
     {
         $this->assertAccessibleBy($userId, $vin);
-        $this->runAwake($vin, fn () => $this->commands->lock($vin));
+        $this->runAwake($vin, fn() => $this->commands->lock($vin));
     }
 
     /** Unlocks the vehicle's doors. */
     public function unlock(string $userId, Vin $vin): void
     {
         $this->assertAccessibleBy($userId, $vin);
-        $this->runAwake($vin, fn () => $this->commands->unlock($vin));
+        $this->runAwake($vin, fn() => $this->commands->unlock($vin));
     }
 
     /** Honks the horn. */
     public function honkHorn(string $userId, Vin $vin): void
     {
         $this->assertAccessibleBy($userId, $vin);
-        $this->runAwake($vin, fn () => $this->commands->honkHorn($vin));
+        $this->runAwake($vin, fn() => $this->commands->honkHorn($vin));
     }
 
     /** Briefly flashes the headlights. */
     public function flashLights(string $userId, Vin $vin): void
     {
         $this->assertAccessibleBy($userId, $vin);
-        $this->runAwake($vin, fn () => $this->commands->flashLights($vin));
+        $this->runAwake($vin, fn() => $this->commands->flashLights($vin));
     }
 
     /** Opens or closes the front or rear trunk. */
     public function actuateTrunk(string $userId, Vin $vin, TrunkSide $side): void
     {
         $this->assertAccessibleBy($userId, $vin);
-        $this->runAwake($vin, fn () => $this->commands->actuateTrunk($vin, $side));
+        $this->runAwake($vin, fn() => $this->commands->actuateTrunk($vin, $side));
     }
 
     /** Opens the charge port door. */
     public function openChargePortDoor(string $userId, Vin $vin): void
     {
         $this->assertAccessibleBy($userId, $vin);
-        $this->runAwake($vin, fn () => $this->commands->openChargePortDoor($vin));
+        $this->runAwake($vin, fn() => $this->commands->openChargePortDoor($vin));
     }
 
     /** Closes the charge port door. */
     public function closeChargePortDoor(string $userId, Vin $vin): void
     {
         $this->assertAccessibleBy($userId, $vin);
-        $this->runAwake($vin, fn () => $this->commands->closeChargePortDoor($vin));
+        $this->runAwake($vin, fn() => $this->commands->closeChargePortDoor($vin));
     }
 
     /** Wakes the vehicle from sleep. */

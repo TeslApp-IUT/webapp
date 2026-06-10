@@ -180,7 +180,12 @@ final class PreconditioningService
         $this->assertOwnership($vin, $userId);
 
         // Reject non-UUID ids before they reach PostgreSQL (uuid cast error -> 500).
-        if (preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $planId) !== 1) {
+        if (
+            preg_match(
+                '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i',
+                $planId,
+            ) !== 1
+        ) {
             throw new InvalidArgumentException('Invalid plan id');
         }
 
