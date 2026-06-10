@@ -37,7 +37,7 @@ function formatTimestamp(seconds) {
 
 // Render the trip start times in the list.
 document.querySelectorAll('.start-time > span[data-timestamp]').forEach((e) => {
-  e.textContent = formatTimestamp(Number(e.getAttribute('data-timestamp')));
+  e.textContent = formatTimestamp(Number(e.dataset.timestamp));
 });
 
 // --- Trip details panel: click a trip, fetch its details, show them next to the list ---
@@ -45,7 +45,7 @@ const tripsList = document.querySelector('.trips-list');
 const detailsPanel = document.getElementById('trip-details');
 
 if (tripsList && detailsPanel) {
-  const endpoint = tripsList.getAttribute('data-trip-endpoint');
+  const endpoint = tripsList.dataset.tripEndpoint;
   const tripItems = tripsList.querySelectorAll('.trip-item');
   const mapElement = document.getElementById('trip-map');
 
@@ -70,7 +70,7 @@ if (tripsList && detailsPanel) {
 
     detailsPanel.textContent = 'Chargement…';
 
-    const tripId = item.getAttribute('data-trip-id');
+    const tripId = item.dataset.tripId;
     try {
       const trip = await fetchTrip(tripId);
       renderDetails(trip);
@@ -129,7 +129,7 @@ if (tripsList && detailsPanel) {
   }
 
   function renderMap(trip) {
-    const leaflet = window.L;
+    const leaflet = globalThis.L;
     if (!mapElement || !leaflet) {
       return;
     }
