@@ -14,9 +14,7 @@ use Teslapp\Utils\Flash;
  */
 final readonly class VehicleController
 {
-    public function __construct(private readonly VehicleService $vehicleService)
-    {
-    }
+    public function __construct(private readonly VehicleService $vehicleService) {}
 
     /**
      * GET dashboard — refresh from the Tesla API when a token is available, then show the list.
