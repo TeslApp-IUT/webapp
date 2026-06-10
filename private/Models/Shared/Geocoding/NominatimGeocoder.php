@@ -42,7 +42,7 @@ final readonly class NominatimGeocoder implements GeocoderInterface
         return new GeocodeResult(new GeoPoint((float) $hit['lat'], (float) $hit['lon']), $label);
     }
 
-    public function reverseGeocode(GeoPoint $point): ?string
+    public function reverseGeocode(GeoPoint $point): ?ReverseGeocodeResult
     {
         $data = $this->get('/reverse', [
             'lat' => $point->latitude,
@@ -58,9 +58,11 @@ final readonly class NominatimGeocoder implements GeocoderInterface
             return null;
         }
 
+        $full = $data['display_name'];
         $name = isset($data['name']) && is_string($data['name']) ? $data['name'] : null;
+        $short = $this->conciseLabel($data['address'] ?? null, $full, $name);
 
-        return $this->conciseLabel($data['address'] ?? null, $data['display_name'], $name);
+        return new ReverseGeocodeResult($short, $full);
     }
 
     /**

@@ -150,8 +150,8 @@ final readonly class NavigationController
 
         return [
             'id' => $trip->id,
-            'startAddress' => $this->geocoder->reverseGeocode($trip->start),
-            'endAddress' => $this->geocoder->reverseGeocode($trip->end),
+            'startAddress' => $this->geocoder->reverseGeocode($trip->start)?->full,
+            'endAddress' => $this->geocoder->reverseGeocode($trip->end)?->full,
             'startLat' => $trip->start->latitude,
             'startLon' => $trip->start->longitude,
             'endLat' => $trip->end->latitude,
@@ -188,8 +188,8 @@ final readonly class NavigationController
         $addresses = [];
         foreach ($trips as $trip) {
             $addresses[$trip->id] = [
-                'start' => $this->geocoder->reverseGeocode($trip->start),
-                'end' => $this->geocoder->reverseGeocode($trip->end),
+                'start' => $this->geocoder->reverseGeocode($trip->start)?->short,
+                'end' => $this->geocoder->reverseGeocode($trip->end)?->short,
             ];
         }
 
