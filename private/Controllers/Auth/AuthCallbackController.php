@@ -76,7 +76,6 @@ final readonly class AuthCallbackController
 
                 // Issue a remember-me token so the user stays logged in across browser restarts.
                 $this->rememberToken->issue($sub);
-
             } else {
                 // First-time user: no `users` row yet (so we can't persist tokens — FK constraint).
                 // Pre-fill the signup form from the Tesla profile and stash everything in the
