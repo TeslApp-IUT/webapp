@@ -7,7 +7,7 @@ $pendingUser ??= [
   'email' => (string)($_SESSION['signup_tmp_email'] ?? ''),
 ];
 
-$profilePicture ??= (string)($_SESSION['signup_tmp_profile_picture_display'] ?? '');
+$profilePicture ??= (string)($_SESSION['signup_tmp_profile_picture'] ?? '');
 $errors ??= [];
 $csrfToken ??= (string)($_SESSION['csrf_token'] ?? '');
 

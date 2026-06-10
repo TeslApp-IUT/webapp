@@ -14,33 +14,31 @@ use Teslapp\Utils\Flash;
  */
 final readonly class VehicleController
 {
-    public function __construct(private readonly VehicleService $vehicleService) {}
+    public function __construct(private readonly VehicleService $vehicleService)
+    {
+    }
 
     /**
      * GET dashboard — refresh from the Tesla API when a token is available, then show the list.
      */
     public function select(): void
     {
-        $hasToken = isset($_SESSION['access_token']) && $_SESSION['access_token'] !== '';
-
         $statuses = [];
 
-        if ($hasToken) {
-            try {
-                $this->vehicleService->syncUserVehicles($_SESSION['user_id']);
-            } catch (TeslaAppException $e) {
-                error_log('Vehicle sync failed: ' . $e->getMessage());
-                Flash::set(
-                    'info',
-                    'Synchronisation Tesla indisponible, affichage des véhicules connus.',
-                );
-            }
+        try {
+            $this->vehicleService->syncUserVehicles($_SESSION['user_id']);
+        } catch (TeslaAppException $e) {
+            error_log('Vehicle sync failed: ' . $e->getMessage());
+            Flash::set(
+                'info',
+                'Synchronisation Tesla indisponible, affichage des véhicules connus.',
+            );
+        }
 
-            try {
-                $statuses = $this->vehicleService->connectivityForUser();
-            } catch (TeslaAppException $e) {
-                error_log('Connectivity fetch failed: ' . $e->getMessage());
-            }
+        try {
+            $statuses = $this->vehicleService->connectivityForUser();
+        } catch (TeslaAppException $e) {
+            error_log('Connectivity fetch failed: ' . $e->getMessage());
         }
 
         $cards = [];

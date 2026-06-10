@@ -112,7 +112,7 @@ final readonly class AuthSignUpController
      */
     private function renderForm(array $pendingUser, array $errors = []): void
     {
-        $profilePicture = (string) ($_SESSION['signup_tmp_profile_picture_display'] ?? '');
+        $profilePicture = (string) ($_SESSION['signup_tmp_profile_picture'] ?? '');
         $csrfToken = (string) ($_SESSION['csrf_token'] ?? '');
         require_once __DIR__ . '/../../Views/Auth/auth_signup.php';
     }

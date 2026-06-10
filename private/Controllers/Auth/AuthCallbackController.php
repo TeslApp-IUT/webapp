@@ -121,17 +121,7 @@ final readonly class AuthCallbackController
         $_SESSION['signup_tmp_email'] = (string) ($profile['email'] ?? '');
         $_SESSION['signup_tmp_first_name'] = $firstName;
         $_SESSION['signup_tmp_last_name'] = $lastName;
-        $profileImageUrl = (string) ($profile['profile_image_url'] ?? '');
-        $_SESSION['signup_tmp_profile_picture'] = $profileImageUrl;
-        $profileImageDisplay = '';
-        if ($profileImageUrl !== '') {
-            $imageData = @file_get_contents($profileImageUrl);
-            if ($imageData !== false) {
-                $mime = (new \finfo(FILEINFO_MIME_TYPE))->buffer($imageData) ?: 'image/jpeg';
-                $profileImageDisplay = 'data:' . $mime . ';base64,' . base64_encode($imageData);
-            }
-        }
-        $_SESSION['signup_tmp_profile_picture_display'] = $profileImageDisplay;
+        $_SESSION['signup_tmp_profile_picture'] = (string) ($profile['profile_image_url'] ?? '');
         $_SESSION['signup_tmp_claims'] = $identity['claims'];
         $_SESSION['signup_tmp_access_expires_at'] = $identity['accessExpiresAt'];
         $_SESSION['signup_tmp_refresh_expires_at'] = $identity['refreshExpiresAt'];
