@@ -32,10 +32,11 @@ final readonly class NominatimGeocoder implements GeocoderInterface
             return null;
         }
 
-        $label =
+        $fallback =
             isset($hit['display_name']) && is_string($hit['display_name'])
                 ? $hit['display_name']
                 : $address;
+        $label = $this->compactLabel($hit['address'] ?? null, $fallback);
 
         return new GeocodeResult(new GeoPoint((float) $hit['lat'], (float) $hit['lon']), $label);
     }
@@ -46,11 +47,49 @@ final readonly class NominatimGeocoder implements GeocoderInterface
             'lat' => $point->latitude,
             'lon' => $point->longitude,
             'format' => 'jsonv2',
+            // Building-level precision, with the address split into fields
+            // so a short "number street, postcode city" label can be built.
+            'zoom' => 18,
+            'addressdetails' => 1,
         ]);
 
-        return isset($data['display_name']) && is_string($data['display_name'])
-            ? $data['display_name']
+        if (!isset($data['display_name']) || !is_string($data['display_name'])) {
+            return null;
+        }
+
+        return $this->compactLabel($data['address'] ?? null, $data['display_name']);
+    }
+
+    /**
+     * Short human label ("413 Avenue Gaston Berger, 13090 Aix-en-Provence") built
+     * from Nominatim address details; falls back to the verbose display name.
+     *
+     * @param mixed $address the `address` object of a Nominatim response
+     */
+    private function compactLabel(mixed $address, string $fallback): string
+    {
+        if (!is_array($address)) {
+            return $fallback;
+        }
+
+        $part = static fn(string $key): ?string => isset($address[$key]) &&
+            is_string($address[$key]) &&
+            $address[$key] !== ''
+            ? $address[$key]
             : null;
+
+        $street = trim(
+            ($part('house_number') ?? '') . ' ' . ($part('road') ?? $part('pedestrian') ?? ''),
+        );
+        $city = $part('city') ?? $part('town') ?? $part('village') ?? $part('municipality');
+        $cityLine = trim(($part('postcode') ?? '') . ' ' . ($city ?? ''));
+
+        $label = implode(
+            ', ',
+            array_filter([$street, $cityLine], static fn(string $s): bool => $s !== ''),
+        );
+
+        return $label !== '' ? $label : $fallback;
     }
 
     /**
