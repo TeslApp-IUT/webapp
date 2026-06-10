@@ -80,7 +80,8 @@ final readonly class TeslaChargingClient implements ChargingCommandClient
             $body['id'] = $scheduleId;
         }
 
-        $response = $this->post("/api/1/vehicles/$vin->value/command/add_charge_schedule", $body) ?? [];
+        $response =
+            $this->post("/api/1/vehicles/$vin->value/command/add_charge_schedule", $body) ?? [];
 
         $inner = $response['response'] ?? [];
         $id = is_array($inner) ? $inner['id'] ?? null : null;
