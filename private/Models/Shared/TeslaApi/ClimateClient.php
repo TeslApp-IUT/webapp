@@ -5,6 +5,7 @@ namespace Teslapp\Models\Shared\TeslaApi;
 
 use Teslapp\Models\Climate\ValueObjects\KeeperMode;
 use Teslapp\Models\Climate\ValueObjects\Temperature;
+use Teslapp\Models\Climate\ValueObjects\CopTemp;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 
 /**
@@ -78,5 +79,16 @@ final readonly class ClimateClient
         }
 
         TeslaHttpClient::post($path, $body);
+    }
+
+    /**
+     * Sets the Cabin Overheat Protection temperature
+     * Levels: 0 = Low (30°C), 1 = Medium (35°C), 2 = High (40°C)
+     **/
+    public function setCopTemp(Vin $vin, CopTemp $level): void
+    {
+        $this->post("/api/1/vehicles/{$vin->value}/command/set_cop_temp", [
+            'cop_temp' => $level->value,
+        ]);
     }
 }
