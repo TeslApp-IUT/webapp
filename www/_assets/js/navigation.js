@@ -9,6 +9,12 @@ const absoluteFormat = new Intl.DateTimeFormat(locale, {
 });
 const relativeFormat = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
 
+// Full date + time, used in the trip details card where precision matters.
+const detailedFormat = new Intl.DateTimeFormat(locale, {
+  dateStyle: 'long',
+  timeStyle: 'medium',
+});
+
 // Largest unit whose threshold the elapsed time reaches, longest first.
 const RELATIVE_UNITS = [
   ['day', 24 * 60 * 60 * 1000],
@@ -31,6 +37,11 @@ function formatTimestamp(seconds) {
   const date = new Date(seconds * 1000);
   const elapsed = Date.now() - date.getTime();
   return elapsed <= RELATIVE_TIME_OFFSET_MS ? formatRelative(date) : absoluteFormat.format(date);
+}
+
+// Unix seconds -> full date + time (e.g. "11 juin 2026 à 14:30:05").
+function formatDateTime(seconds) {
+  return detailedFormat.format(new Date(seconds * 1000));
 }
 
 // Render the trip start times in the list.
@@ -101,8 +112,8 @@ if (tripsList && detailsPanel) {
     const rows = [
       ['Départ', trip.startAddress ?? 'Adresse inconnue'],
       ['Arrivée', trip.endAddress ?? 'Adresse inconnue'],
-      ['Début', formatTimestamp(trip.startTimestamp)],
-      ['Fin', trip.running ? 'En cours' : formatTimestamp(trip.endTimestamp)],
+      ['Début', formatDateTime(trip.startTimestamp)],
+      ['Fin', trip.running ? 'En cours' : formatDateTime(trip.endTimestamp)],
       ['Distance', `${trip.distanceKm} km`],
       ['Durée', `${trip.durationMinutes} min`],
     ];
