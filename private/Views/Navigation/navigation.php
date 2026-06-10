@@ -19,9 +19,11 @@ $header = 'user';
 $extraCss = ['dashboard', 'navigation', 'leaflet'];
 $extraJs = ['leaflet', 'navigation'];
 
-$runningDot = [
-  true => '<div class="bg-green-500/80 rounded-full h-3 aspect-square animate-pulse"></div>',
-  false => '<div class="bg-amber-500/80 ring-amber-500 ring-2 rounded-full h-3 aspect-square drop-shadow-lg drop-shadow-amber-500/30"></div>'
+// Only running trips carry an indicator: a pulsing dot with an "En cours" label.
+// Parked trips show nothing.
+$runningBadge = [
+  true => '<div class="flex flex-row items-center gap-1.5 shrink-0"><span class="bg-green-500/80 rounded-full h-2 aspect-square animate-pulse"></span><span class="text-xs font-medium text-green-400">En cours</span></div>',
+  false => ''
 ];
 
 ob_start();
@@ -56,14 +58,12 @@ ob_start();
                 $endAddress = htmlspecialchars($addresses[$trip->id]['end'] ?? $unknown, ENT_QUOTES);
                 $tripId = htmlspecialchars($trip->id, ENT_QUOTES);
                 echo <<<EOD
-                <button type="button" class="trip-item flex flex-row justify-between items-center w-full bg-gray-500/10 hover:bg-gray-500/20 rounded-xl p-3.5 text-left cursor-pointer transition-colors ring-blue-500/60" data-trip-id="$tripId">
-                  <div class="flex flex-row gap-4 items-center">
-                    {$runningDot[$trip->running]}
-                    <div class="flex flex-col gap-1">
-                      <div class="start-end-addresses flex flex-row items-center gap-2 font-medium"><span>$startAddress</span><img src="/_assets/images/fleche-gauche.svg" class="-scale-x-100" alt="flèche vers la droite"><span>$endAddress</span></div>
-                      <div class="start-time text-sm text-gray-400"><span data-timestamp="$startTimestamp"></span></div>
-                    </div>
+                <button type="button" class="trip-item flex flex-row justify-between items-start gap-3 w-full bg-gray-500/10 hover:bg-gray-500/20 rounded-xl p-3.5 text-left cursor-pointer transition-colors ring-blue-500/60" data-trip-id="$tripId">
+                  <div class="flex flex-col gap-1">
+                    <div class="start-end-addresses flex flex-row items-center gap-2 font-medium"><span>$startAddress</span><img src="/_assets/images/fleche-gauche.svg" class="-scale-x-100" alt="flèche vers la droite"><span>$endAddress</span></div>
+                    <div class="start-time text-sm text-gray-400"><span data-timestamp="$startTimestamp"></span></div>
                   </div>
+                  {$runningBadge[$trip->running]}
                 </button>
                 EOD;
               }
