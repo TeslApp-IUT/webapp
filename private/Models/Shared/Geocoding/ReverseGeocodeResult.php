@@ -11,8 +11,5 @@ namespace Teslapp\Models\Shared\Geocoding;
  */
 final readonly class ReverseGeocodeResult
 {
-    public function __construct(
-        public string $short,
-        public string $full,
-    ) {}
+    public function __construct(public string $short, public string $full) {}
 }
