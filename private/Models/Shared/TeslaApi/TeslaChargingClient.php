@@ -21,24 +21,24 @@ final readonly class TeslaChargingClient implements ChargingCommandClient
 
     public function startCharging(Vin $vin): void
     {
-        $this->post("/api/1/vehicles/$vin->value", []);
+        $this->post("/api/1/vehicles/$vin->value/command/charge_start", []);
     }
 
     public function stopCharging(Vin $vin): void
     {
-        $this->post("/api/1/vehicles/$vin->value", []);
+        $this->post("/api/1/vehicles/$vin->value/command/charge_stop", []);
     }
 
     public function setChargeLimit(Vin $vin, ChargeLimit $limit): void
     {
-        $this->post("/api/1/vehicles/$vin->value", [
+        $this->post("/api/1/vehicles/$vin->value/command/set_charge_limit", [
             'percent' => $limit->value,
         ]);
     }
 
     public function setChargingAmps(Vin $vin, ChargingAmps $amps): void
     {
-        $this->post("/api/1/vehicles/$vin->value", [
+        $this->post("/api/1/vehicles/$vin->value/command/set_charging_amps", [
             'charging_amps' => $amps->value,
         ]);
     }
@@ -80,7 +80,7 @@ final readonly class TeslaChargingClient implements ChargingCommandClient
             $body['id'] = $scheduleId;
         }
 
-        $response = $this->post("/api/1/vehicles/$vin->value", $body) ?? [];
+        $response = $this->post("/api/1/vehicles/$vin->value/command/add_charge_schedule", $body) ?? [];
 
         $inner = $response['response'] ?? [];
         $id = is_array($inner) ? $inner['id'] ?? null : null;
@@ -90,7 +90,7 @@ final readonly class TeslaChargingClient implements ChargingCommandClient
 
     public function removeChargeSchedule(Vin $vin, int $scheduleId): void
     {
-        $this->post("/api/1/vehicles/$vin->value", [
+        $this->post("/api/1/vehicles/$vin->value/command/remove_charge_schedule", [
             'id' => $scheduleId,
         ]);
     }
