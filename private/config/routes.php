@@ -129,4 +129,6 @@ return [
 
     //Profile page
     'profile' => [ProfileController::class, 'profile', false],
+    'profile/update' => [ProfileController::class, 'update', false],
+    'profile/delete' => [ProfileController::class, 'delete', false],
 ];

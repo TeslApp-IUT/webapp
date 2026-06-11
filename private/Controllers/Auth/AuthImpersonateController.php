@@ -56,10 +56,9 @@ final class AuthImpersonateController
 
         // Stash the developer's tokens once (guard against nested impersonation overwriting them)
         if (!array_key_exists('real_access_token', $_SESSION)) {
-            $_SESSION['real_access_token'] = $_SESSION['access_token'] ?? null;
-            $_SESSION['real_refresh_token'] = $_SESSION['refresh_token'] ?? null;
-            $_SESSION['real_access_token_expires_at'] =
-                $_SESSION['access_token_expires_at'] ?? null;
+            $_SESSION['real_access_token']            = $_SESSION['access_token'] ?? null;
+            $_SESSION['real_refresh_token']           = $_SESSION['refresh_token'] ?? null;
+            $_SESSION['real_access_token_expires_at'] = $_SESSION['access_token_expires_at'] ?? null;
         }
 
         // Swap in the target user's decrypted tokens
@@ -77,6 +76,13 @@ final class AuthImpersonateController
 
         $_SESSION['user_id'] = $targetId;
 
+        // Keep the header in sync with the impersonated user's identity
+        $targetUser = $this->authRepo->getUserById($targetId);
+        if ($targetUser !== null) {
+            $_SESSION['user_display_name'] = $targetUser['first_name'] . ' ' . $targetUser['last_name'];
+            $_SESSION['user']['email']     = $targetUser['email'];
+        }
+
         header('Location: /dashboard', true, 302);
         exit();
     }
@@ -91,10 +97,17 @@ final class AuthImpersonateController
         Csrf::requireValid('/auth/impersonate');
 
         // Restore developer's identity and tokens
-        $_SESSION['user_id'] = $_SESSION['real_user_id'];
-        $_SESSION['access_token'] = $_SESSION['real_access_token'] ?? null;
-        $_SESSION['refresh_token'] = $_SESSION['real_refresh_token'] ?? null;
-        $_SESSION['access_token_expires_at'] = $_SESSION['real_access_token_expires_at'] ?? null;
+        $_SESSION['user_id']                  = $_SESSION['real_user_id'];
+        $_SESSION['access_token']             = $_SESSION['real_access_token'] ?? null;
+        $_SESSION['refresh_token']            = $_SESSION['real_refresh_token'] ?? null;
+        $_SESSION['access_token_expires_at']  = $_SESSION['real_access_token_expires_at'] ?? null;
+
+        // Restore the real developer's display name and email
+        $realUser = $this->authRepo->getUserById($_SESSION['real_user_id']);
+        if ($realUser !== null) {
+            $_SESSION['user_display_name'] = $realUser['first_name'] . ' ' . $realUser['last_name'];
+            $_SESSION['user']['email']     = $realUser['email'];
+        }
 
         unset(
             $_SESSION['real_user_id'],
