@@ -144,45 +144,7 @@ ob_start();
       }
   </style>
 
-  <script>
-    document.getElementById('form').addEventListener('submit', (e) => {
-      let hasError = false;
 
-      // Helper function for field validation styling
-      function toggleFieldValidation(input, errorSpan, isValid) {
-        if (isValid) {
-          errorSpan.classList.add('hidden');
-          input.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/10');
-          input.classList.add('border-[#2a2a2a]', 'focus:border-[#e82127]', 'focus:ring-[#e82127]/10');
-        } else {
-          errorSpan.classList.remove('hidden');
-          input.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/10');
-          input.classList.remove('border-[#2a2a2a]', 'focus:border-[#e82127]', 'focus:ring-[#e82127]/10');
-          hasError = true;
-        }
-      }
-
-      // Validate Firstname
-      const firstnameInput = document.getElementById('firstname');
-      const firstnameError = document.querySelector('#field-firstname .error-msg');
-      toggleFieldValidation(firstnameInput, firstnameError, firstnameInput.value.trim() !== '');
-
-      // Validate Lastname
-      const lastnameInput = document.getElementById('lastname');
-      const lastnameError = document.querySelector('#field-lastname .error-msg');
-      toggleFieldValidation(lastnameInput, lastnameError, lastnameInput.value.trim() !== '');
-
-      // Validate Email
-      const emailInput = document.getElementById('email');
-      const emailError = document.querySelector('#field-email .error-msg');
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      toggleFieldValidation(emailInput, emailError, emailInput.value.trim() !== '' && emailRegex.test(emailInput.value));
-
-      if (hasError) {
-        e.preventDefault();
-      }
-    });
-  </script>
 
 <?php
 $content = ob_get_clean();

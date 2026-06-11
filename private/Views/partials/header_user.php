@@ -19,6 +19,12 @@
 /* Email source: explicit view variable -> session (future auth) -> '' (neutral empty avatar). */
 $userEmail = $userEmail ?? ($_SESSION['user']['email'] ?? '');
 $userInitial = $userEmail !== '' ? mb_strtoupper(mb_substr($userEmail, 0, 1)) : '';
+
+/* Display name: use the stored full name from the session, falling back to the email prefix. */
+$userDisplayName = (string) ($_SESSION['user_display_name'] ?? '');
+if ($userDisplayName === '' && $userEmail !== '') {
+    $userDisplayName = explode('@', $userEmail)[0];
+}
 ?>
 <header class="header">
     <div class="container">
@@ -35,8 +41,13 @@ $userInitial = $userEmail !== '' ? mb_strtoupper(mb_substr($userEmail, 0, 1)) : 
 
         <!-- Header actions: logout + profile -->
         <div class="header-actions">
+          <!-- Profile (email initial; a full profile menu will come with the auth lot) -->
+          <a type="button" href="/profile" class="btn-profile" aria-label="Profil utilisateur">
+            <span class="profile-initials"><?= e($userDisplayName) ?></span>
+          </a>
+
             <!-- Logout (POST + CSRF). The /auth/logout route is wired in the auth lot. -->
-            <form method="post" action="/auth/logout" class="logout-form">
+            <form method="post" action="/auth/logout" class="logout-form h-4.5">
                 <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
                 <button type="submit" class="btn-icon logout-icon" aria-label="Se déconnecter">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -47,10 +58,7 @@ $userInitial = $userEmail !== '' ? mb_strtoupper(mb_substr($userEmail, 0, 1)) : 
                 </button>
             </form>
 
-            <!-- Profile (email initial; a full profile menu will come with the auth lot) -->
-            <button type="button" class="btn-profile" aria-label="Profil utilisateur">
-                <span class="profile-initials"><?= e($userInitial) ?></span>
-            </button>
+
         </div>
 
         <!-- Mobile menu button -->

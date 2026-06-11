@@ -101,6 +101,7 @@ final readonly class AuthSignUpController
         $this->rememberToken->issue($sub);
         $this->cleanupSignupSession();
         $_SESSION['user_id'] = $sub;
+        $_SESSION['user_display_name'] = trim($firstName . ' ' . $lastName);
         session_regenerate_id(true);
 
         Http::redirect('/dashboard');
