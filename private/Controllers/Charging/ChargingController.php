@@ -11,6 +11,7 @@ use Teslapp\Models\Charging\ValueObjects\ChargeLimit;
 use Teslapp\Models\Charging\ValueObjects\ChargingAction;
 use Teslapp\Models\Charging\ValueObjects\ChargingAmps;
 use Teslapp\Models\Shared\Exceptions\TeslaAppException;
+use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\VehicleTelemetryRepositoryInterface;
 use Teslapp\Models\Shared\ValueObjects\Vin;
@@ -29,6 +30,8 @@ use Teslapp\Utils\Route;
  */
 final class ChargingController
 {
+    private const ASLEEP_MESSAGE = 'Le véhicule ne s\'est pas réveillé à temps. Réessayez dans un instant.';
+
     public function __construct(
         private readonly ChargingService $chargingService,
         private readonly ChargingPlannerService $plannerService,
@@ -73,6 +76,9 @@ final class ChargingController
                 : $this->chargingService->stop($userId, $vin);
 
             Flash::set('success', 'Commande envoyée.');
+        } catch (VehicleAsleepException) {
+            // The service already woke the vehicle and retried; it needs more time.
+            Flash::set('errors', [self::ASLEEP_MESSAGE]);
         } catch (TeslaAppException $e) {
             error_log('Charging toggle failed: ' . $e->getMessage());
             Flash::set('errors', ['Impossible d\'envoyer la commande à Tesla.']);
@@ -100,6 +106,8 @@ final class ChargingController
             Flash::set('success', 'Limite de charge appliquée.');
         } catch (InvalidArgumentException) {
             Flash::set('errors', ['Limite de charge invalide (50 à 100 %).']);
+        } catch (VehicleAsleepException) {
+            Flash::set('errors', [self::ASLEEP_MESSAGE]);
         } catch (TeslaAppException $e) {
             error_log('Charge limit failed: ' . $e->getMessage());
             Flash::set('errors', ['Impossible d\'envoyer la commande à Tesla.']);
@@ -127,6 +135,8 @@ final class ChargingController
             Flash::set('success', 'Ampérage appliqué.');
         } catch (InvalidArgumentException) {
             Flash::set('errors', ['Ampérage invalide (5 à 48 A).']);
+        } catch (VehicleAsleepException) {
+            Flash::set('errors', [self::ASLEEP_MESSAGE]);
         } catch (TeslaAppException $e) {
             error_log('Charging amps failed: ' . $e->getMessage());
             Flash::set('errors', ['Impossible d\'envoyer la commande à Tesla.']);

@@ -11,7 +11,7 @@ $title = 'Climatisation — TeslApp';
 $description = 'Gérez la climatisation de votre Tesla à distance.';
 $header = 'user';
 $extraCss = ['dashboard', 'ac'];
-$extraJs = ['ac'];
+$extraJs = ['ac', 'command-forms'];
 
 // Leaflet (self-hosted vendor) powers the schedule location picker in the dialog.
 // `defer` keeps document order, so it executes before ac.js (also deferred).

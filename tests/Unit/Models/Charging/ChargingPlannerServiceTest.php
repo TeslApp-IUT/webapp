@@ -11,8 +11,12 @@ use PHPUnit\Framework\TestCase;
 use Teslapp\Models\Charging\ChargingPlanner;
 use Teslapp\Models\Charging\ChargingPlannerRepositoryInterface;
 use Teslapp\Models\Charging\ChargingPlannerService;
+use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\ChargingCommandClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleWaker;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
 use Teslapp\Models\Shared\ValueObjects\GeoPoint;
 use Teslapp\Models\Shared\ValueObjects\Vin;
@@ -39,6 +43,7 @@ final class ChargingPlannerServiceTest extends TestCase
             $planners,
             $vehicles,
             $this->createMock(ChargingCommandClient::class),
+            $this->waker(),
         );
 
         $this->expectException(VehicleUnauthorizedException::class);
@@ -58,6 +63,7 @@ final class ChargingPlannerServiceTest extends TestCase
             $planners,
             $vehicles,
             $this->createMock(ChargingCommandClient::class),
+            $this->waker(),
         );
 
         $this->expectException(InvalidArgumentException::class);
@@ -83,6 +89,7 @@ final class ChargingPlannerServiceTest extends TestCase
             $planners,
             $vehicles,
             $this->createMock(ChargingCommandClient::class),
+            $this->waker(),
         );
 
         self::assertSame([$plan], $service->listPlansForVehicle(self::USER, $vin));
@@ -108,7 +115,7 @@ final class ChargingPlannerServiceTest extends TestCase
             ->with($vin, 1410, 450, 'Monday', true, false, 43.5, 5.4, 'Maison', null)
             ->willReturn(999);
 
-        $service = new ChargingPlannerService($planners, $vehicles, $charging);
+        $service = new ChargingPlannerService($planners, $vehicles, $charging, $this->waker());
 
         $id = $service->createPlan(
             self::USER,
@@ -138,7 +145,7 @@ final class ChargingPlannerServiceTest extends TestCase
         $charging = $this->createMock(ChargingCommandClient::class);
         $charging->expects($this->never())->method('addChargeSchedule');
 
-        $service = new ChargingPlannerService($planners, $vehicles, $charging);
+        $service = new ChargingPlannerService($planners, $vehicles, $charging, $this->waker());
 
         $service->createPlan(
             self::USER,
@@ -165,7 +172,7 @@ final class ChargingPlannerServiceTest extends TestCase
         $charging = $this->createMock(ChargingCommandClient::class);
         $charging->expects($this->once())->method('addChargeSchedule')->willReturn(null);
 
-        $service = new ChargingPlannerService($planners, $vehicles, $charging);
+        $service = new ChargingPlannerService($planners, $vehicles, $charging, $this->waker());
 
         $service->createPlan(
             self::USER,
@@ -195,7 +202,7 @@ final class ChargingPlannerServiceTest extends TestCase
         $charging = $this->createMock(ChargingCommandClient::class);
         $charging->expects($this->once())->method('addChargeSchedule')->willReturn(555);
 
-        $service = new ChargingPlannerService($planners, $vehicles, $charging);
+        $service = new ChargingPlannerService($planners, $vehicles, $charging, $this->waker());
 
         $service->updatePlan(
             self::USER,
@@ -226,6 +233,7 @@ final class ChargingPlannerServiceTest extends TestCase
             $planners,
             $vehicles,
             $this->createMock(ChargingCommandClient::class),
+            $this->waker(),
         );
 
         $service->setPlanEnabled(self::USER, $vin, self::PLAN_ID, false);
@@ -245,6 +253,7 @@ final class ChargingPlannerServiceTest extends TestCase
             $planners,
             $vehicles,
             $this->createMock(ChargingCommandClient::class),
+            $this->waker(),
         );
 
         $this->expectException(VehicleUnauthorizedException::class);
@@ -266,7 +275,7 @@ final class ChargingPlannerServiceTest extends TestCase
         $charging = $this->createMock(ChargingCommandClient::class);
         $charging->expects($this->once())->method('removeChargeSchedule')->with($vin, 777);
 
-        $service = new ChargingPlannerService($planners, $vehicles, $charging);
+        $service = new ChargingPlannerService($planners, $vehicles, $charging, $this->waker());
 
         $service->deletePlan(self::USER, $vin, self::PLAN_ID);
     }
@@ -286,9 +295,67 @@ final class ChargingPlannerServiceTest extends TestCase
         $charging = $this->createMock(ChargingCommandClient::class);
         $charging->expects($this->never())->method('removeChargeSchedule');
 
-        $service = new ChargingPlannerService($planners, $vehicles, $charging);
+        $service = new ChargingPlannerService($planners, $vehicles, $charging, $this->waker());
 
         $service->deletePlan(self::USER, $vin, self::PLAN_ID);
+    }
+
+    #[Test]
+    public function createPlanStoresTheScheduleIdWhenTheVehicleWakesUp(): void
+    {
+        $vin = new Vin(self::VIN);
+
+        $planners = $this->createMock(ChargingPlannerRepositoryInterface::class);
+        $planners->method('save')->willReturn(self::PLAN_ID);
+        $planners->expects($this->once())->method('setTeslaScheduleId')->with(self::PLAN_ID, 999);
+
+        $vehicles = $this->createMock(VehicleRepositoryInterface::class);
+        $vehicles->method('isAccessibleBy')->willReturn(true);
+
+        $calls = 0;
+        $charging = $this->createMock(ChargingCommandClient::class);
+        $charging
+            ->expects($this->exactly(2))
+            ->method('addChargeSchedule')
+            ->willReturnCallback(function () use (&$calls): ?int {
+                if (++$calls === 1) {
+                    throw new VehicleAsleepException('asleep');
+                }
+
+                return 999;
+            });
+
+        $wakeCommands = $this->createMock(VehicleCommandClient::class);
+        $wakeCommands->expects($this->once())->method('wakeUp')->with($vin);
+
+        $service = new ChargingPlannerService(
+            $planners,
+            $vehicles,
+            $charging,
+            new VehicleWaker($wakeCommands, $this->createStub(VehicleStateClient::class), [0]),
+        );
+
+        $service->createPlan(
+            self::USER,
+            $vin,
+            '23:30',
+            '07:30',
+            [DayOfWeek::Monday],
+            memorizeLongTerm: true,
+            enabled: true,
+            location: new GeoPoint(43.5, 5.4),
+            locationLabel: 'Maison',
+        );
+    }
+
+    /** Wake-transparent waker for the tests that do not exercise the asleep path. */
+    private function waker(): VehicleWaker
+    {
+        return new VehicleWaker(
+            $this->createStub(VehicleCommandClient::class),
+            $this->createStub(VehicleStateClient::class),
+            [0],
+        );
     }
 
     private function makePlanner(Vin $vin, ?int $teslaScheduleId = null): ChargingPlanner

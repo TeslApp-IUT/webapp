@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use Teslapp\Models\Climate\PreconditioningService;
 use Teslapp\Models\DatabaseException;
 use Teslapp\Models\Shared\Exceptions\TeslaApiException;
+use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
 use Teslapp\Models\Shared\ValueObjects\GeoPoint;
@@ -27,6 +28,8 @@ use Teslapp\Utils\Route;
  */
 final class PreconditioningController
 {
+    private const ASLEEP_MESSAGE = 'Le véhicule ne s\'est pas réveillé à temps. Réessayez dans un instant.';
+
     public function __construct(
         private readonly PreconditioningService $service,
         private readonly VehicleRepositoryInterface $vehicles,
@@ -61,6 +64,9 @@ final class PreconditioningController
             Flash::set('errors', ['Saisie invalide (heure ou coordonnées).']);
         } catch (VehicleUnauthorizedException) {
             Flash::set('errors', ['Vous n\'avez pas accès à ce véhicule.']);
+        } catch (VehicleAsleepException) {
+            // The service already woke the vehicle and retried; it needs more time.
+            Flash::set('errors', [self::ASLEEP_MESSAGE]);
         } catch (TeslaApiException) {
             Flash::set('errors', ['La commande Tesla a échoué.']);
         } catch (DatabaseException) {
@@ -100,6 +106,9 @@ final class PreconditioningController
             Flash::set('errors', ['Saisie invalide (heure ou coordonnées).']);
         } catch (VehicleUnauthorizedException) {
             Flash::set('errors', ['Vous n\'avez pas accès à ce véhicule.']);
+        } catch (VehicleAsleepException) {
+            // The service already woke the vehicle and retried; it needs more time.
+            Flash::set('errors', [self::ASLEEP_MESSAGE]);
         } catch (TeslaApiException) {
             Flash::set('errors', ['La commande Tesla a échoué.']);
         } catch (DatabaseException) {
@@ -124,6 +133,9 @@ final class PreconditioningController
             Flash::set('errors', ['Saisie invalide.']);
         } catch (VehicleUnauthorizedException) {
             Flash::set('errors', ['Vous n\'avez pas accès à ce véhicule.']);
+        } catch (VehicleAsleepException) {
+            // The service already woke the vehicle and retried; it needs more time.
+            Flash::set('errors', [self::ASLEEP_MESSAGE]);
         } catch (TeslaApiException) {
             Flash::set('errors', ['La commande Tesla a échoué.']);
         } catch (DatabaseException) {
@@ -152,6 +164,9 @@ final class PreconditioningController
             Flash::set('errors', ['Saisie invalide.']);
         } catch (VehicleUnauthorizedException) {
             Flash::set('errors', ['Vous n\'avez pas accès à ce véhicule.']);
+        } catch (VehicleAsleepException) {
+            // The service already woke the vehicle and retried; it needs more time.
+            Flash::set('errors', [self::ASLEEP_MESSAGE]);
         } catch (TeslaApiException) {
             Flash::set('errors', ['La commande Tesla a échoué.']);
         } catch (DatabaseException) {

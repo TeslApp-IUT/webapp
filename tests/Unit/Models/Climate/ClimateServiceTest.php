@@ -2,133 +2,121 @@
 
 declare(strict_types=1);
 
-namespace Teslapp\Tests\Unit\Models\Charging;
+namespace Teslapp\Tests\Unit\Models\Climate;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Teslapp\Models\Charging\ChargingService;
-use Teslapp\Models\Charging\ValueObjects\ChargeLimit;
-use Teslapp\Models\Charging\ValueObjects\ChargingAmps;
+use Teslapp\Models\Climate\ClimateService;
+use Teslapp\Models\Climate\ValueObjects\CopTemp;
+use Teslapp\Models\Climate\ValueObjects\KeeperMode;
+use Teslapp\Models\Climate\ValueObjects\Temperature;
 use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
-use Teslapp\Models\Shared\TeslaApi\ChargingCommandClient;
+use Teslapp\Models\Shared\TeslaApi\ClimateControlClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleWaker;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 
-#[CoversClass(ChargingService::class)]
-final class ChargingServiceTest extends TestCase
+#[CoversClass(ClimateService::class)]
+final class ClimateServiceTest extends TestCase
 {
     private const VIN = '5YJ3E1EA7KF000316';
     private const USER = 'user-1';
 
     #[Test]
-    public function startSendsTheCommandWhenTheUserOwnsTheVehicle(): void
+    public function activateSendsTheCommandWithTheRequestedTemperature(): void
     {
         $vin = new Vin(self::VIN);
+        $temp = new Temperature(21.5);
 
-        $client = $this->createMock(ChargingCommandClient::class);
-        $client->expects($this->once())->method('startCharging')->with($vin);
+        $client = $this->createMock(ClimateControlClient::class);
+        $client->expects($this->once())->method('startClimate')->with($vin, $temp);
 
-        $service = new ChargingService(
+        $service = new ClimateService(
             $client,
             $this->vehicles(owned: true, vin: $vin),
             $this->waker(),
         );
 
-        $service->start(self::USER, $vin);
+        $service->activate(self::USER, $vin, $temp);
     }
 
     #[Test]
-    public function startThrowsWhenTheUserDoesNotOwnTheVehicle(): void
+    public function activateThrowsWhenTheUserDoesNotOwnTheVehicle(): void
     {
-        $client = $this->createMock(ChargingCommandClient::class);
-        $client->expects($this->never())->method('startCharging');
+        $client = $this->createMock(ClimateControlClient::class);
+        $client->expects($this->never())->method('startClimate');
 
-        $service = new ChargingService($client, $this->vehicles(owned: false), $this->waker());
+        $service = new ClimateService($client, $this->vehicles(owned: false), $this->waker());
 
         $this->expectException(VehicleUnauthorizedException::class);
-        $service->start(self::USER, new Vin(self::VIN));
+        $service->activate(self::USER, new Vin(self::VIN));
     }
 
     #[Test]
-    public function stopSendsTheCommandWhenTheUserOwnsTheVehicle(): void
+    public function deactivateSendsTheCommandWhenTheUserOwnsTheVehicle(): void
     {
         $vin = new Vin(self::VIN);
 
-        $client = $this->createMock(ChargingCommandClient::class);
-        $client->expects($this->once())->method('stopCharging')->with($vin);
+        $client = $this->createMock(ClimateControlClient::class);
+        $client->expects($this->once())->method('stopClimate')->with($vin);
 
-        $service = new ChargingService(
+        $service = new ClimateService(
             $client,
             $this->vehicles(owned: true, vin: $vin),
             $this->waker(),
         );
 
-        $service->stop(self::USER, $vin);
+        $service->deactivate(self::USER, $vin);
     }
 
     #[Test]
-    public function setChargeLimitPassesTheValidatedLimit(): void
+    public function applyKeeperModeSendsTheSelectedMode(): void
     {
         $vin = new Vin(self::VIN);
-        $limit = new ChargeLimit(80);
 
-        $client = $this->createMock(ChargingCommandClient::class);
-        $client->expects($this->once())->method('setChargeLimit')->with($vin, $limit);
+        $client = $this->createMock(ClimateControlClient::class);
+        $client->expects($this->once())->method('setKeeperMode')->with($vin, KeeperMode::Dog);
 
-        $service = new ChargingService(
+        $service = new ClimateService(
             $client,
             $this->vehicles(owned: true, vin: $vin),
             $this->waker(),
         );
 
-        $service->setChargeLimit(self::USER, $vin, $limit);
+        $service->applyKeeperMode(self::USER, $vin, KeeperMode::Dog);
     }
 
     #[Test]
-    public function setChargeLimitThrowsWhenTheUserDoesNotOwnTheVehicle(): void
-    {
-        $client = $this->createMock(ChargingCommandClient::class);
-        $client->expects($this->never())->method('setChargeLimit');
-
-        $service = new ChargingService($client, $this->vehicles(owned: false), $this->waker());
-
-        $this->expectException(VehicleUnauthorizedException::class);
-        $service->setChargeLimit(self::USER, new Vin(self::VIN), new ChargeLimit(80));
-    }
-
-    #[Test]
-    public function setChargingAmpsPassesTheValidatedAmps(): void
+    public function applyCopTempSendsTheSelectedLevel(): void
     {
         $vin = new Vin(self::VIN);
-        $amps = new ChargingAmps(16);
 
-        $client = $this->createMock(ChargingCommandClient::class);
-        $client->expects($this->once())->method('setChargingAmps')->with($vin, $amps);
+        $client = $this->createMock(ClimateControlClient::class);
+        $client->expects($this->once())->method('setCopTemp')->with($vin, CopTemp::Medium);
 
-        $service = new ChargingService(
+        $service = new ClimateService(
             $client,
             $this->vehicles(owned: true, vin: $vin),
             $this->waker(),
         );
 
-        $service->setChargingAmps(self::USER, $vin, $amps);
+        $service->applyCopTemp(self::USER, $vin, CopTemp::Medium);
     }
 
     #[Test]
-    public function startWakesTheVehicleAndRetriesWhenAsleep(): void
+    public function activateWakesTheVehicleAndRetriesWhenAsleep(): void
     {
         $vin = new Vin(self::VIN);
 
         $calls = 0;
-        $client = $this->createMock(ChargingCommandClient::class);
+        $client = $this->createMock(ClimateControlClient::class);
         $client
             ->expects($this->exactly(2))
-            ->method('startCharging')
+            ->method('startClimate')
             ->with($vin)
             ->willReturnCallback(function () use (&$calls): void {
                 if (++$calls === 1) {
@@ -139,13 +127,13 @@ final class ChargingServiceTest extends TestCase
         $wakeCommands = $this->createMock(VehicleCommandClient::class);
         $wakeCommands->expects($this->once())->method('wakeUp')->with($vin);
 
-        $service = new ChargingService(
+        $service = new ClimateService(
             $client,
             $this->vehicles(owned: true, vin: $vin),
             new VehicleWaker($wakeCommands, $this->createStub(VehicleStateClient::class), [0]),
         );
 
-        $service->start(self::USER, $vin);
+        $service->activate(self::USER, $vin);
     }
 
     /** Wake-transparent waker for the tests that do not exercise the asleep path. */

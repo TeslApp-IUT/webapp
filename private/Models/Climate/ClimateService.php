@@ -6,20 +6,24 @@ namespace Teslapp\Models\Climate;
 use Teslapp\Models\Climate\ValueObjects\KeeperMode;
 use Teslapp\Models\Climate\ValueObjects\Temperature;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
-use Teslapp\Models\Shared\TeslaApi\ClimateClient;
+use Teslapp\Models\Shared\TeslaApi\ClimateControlClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleWaker;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 use Teslapp\Models\Climate\ValueObjects\CopTemp;
 
 /**
  * Climate use cases : activating, deactivating and configuring the climate system
- * Verifies vehicle ownership before sending any command to the API
+ * Verifies vehicle ownership before sending any command to the API.
+ * Every command runs through the shared VehicleWaker, which wakes a sleeping
+ * vehicle and retries.
  **/
 final readonly class ClimateService
 {
     public function __construct(
-        private ClimateClient $client,
+        private ClimateControlClient $client,
         private VehicleRepositoryInterface $vehicleRepository,
+        private VehicleWaker $waker,
     ) {}
 
     /**
@@ -31,7 +35,7 @@ final readonly class ClimateService
     public function activate(string $userId, Vin $vin, ?Temperature $temp = null): void
     {
         $this->assertOwnership($vin, $userId);
-        $this->client->startClimate($vin, $temp);
+        $this->waker->runAwake($vin, fn() => $this->client->startClimate($vin, $temp));
     }
 
     /**
@@ -42,7 +46,7 @@ final readonly class ClimateService
     public function deactivate(string $userId, Vin $vin): void
     {
         $this->assertOwnership($vin, $userId);
-        $this->client->stopClimate($vin);
+        $this->waker->runAwake($vin, fn() => $this->client->stopClimate($vin));
     }
 
     /**
@@ -53,7 +57,7 @@ final readonly class ClimateService
     public function applyKeeperMode(string $userId, Vin $vin, KeeperMode $mode): void
     {
         $this->assertOwnership($vin, $userId);
-        $this->client->setKeeperMode($vin, $mode);
+        $this->waker->runAwake($vin, fn() => $this->client->setKeeperMode($vin, $mode));
     }
 
     /**
@@ -64,7 +68,7 @@ final readonly class ClimateService
     public function applyCopTemp(string $userId, Vin $vin, CopTemp $level): void
     {
         $this->assertOwnership($vin, $userId);
-        $this->client->setCopTemp($vin, $level);
+        $this->waker->runAwake($vin, fn() => $this->client->setCopTemp($vin, $level));
     }
 
     /**

@@ -12,7 +12,7 @@ use Teslapp\Models\Shared\ValueObjects\Vin;
  * Tesla Fleet API client for climate-related commands.
  * When dryRun is true, commands are only logged and never sent to Tesla.
  **/
-final readonly class ClimateClient
+final readonly class ClimateClient implements ClimateControlClient
 {
     public function __construct(private bool $dryRun = true) {}
 
