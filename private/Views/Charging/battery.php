@@ -83,11 +83,14 @@ ob_start();
               <p class="battery-gauge__value">
                 <?= $batteryLevel !== null ? e((string) $batteryLevel) : 'N/A' ?><span> %</span>
               </p>
+              <!-- No inline style attributes here: the deployed CSP (style-src without
+                   'unsafe-inline') blocks them. battery.js sets the fill width from
+                   data-level through the CSSOM, which the CSP does not restrict. -->
               <div class="battery-gauge__track" role="img"
-                   aria-label="Niveau de batterie : <?= $batteryLevel !== null ? e((string) $batteryLevel) . ' %' : 'inconnu' ?>">
-                <div class="battery-gauge__fill" style="width: <?= $batteryLevel ?? 0 ?>%"></div>
-                <span class="battery-gauge__limit" id="gauge-limit" style="left: 80%"
-                      title="Limite de charge choisie"></span>
+                   aria-label="Niveau de batterie : <?= $batteryLevel !== null ? e((string) $batteryLevel) . ' %' : 'inconnu' ?>"
+                   data-level="<?= $batteryLevel ?? '' ?>">
+                <div class="battery-gauge__fill"></div>
+                <span class="battery-gauge__limit" id="gauge-limit" title="Limite de charge choisie"></span>
               </div>
             </div>
             <dl class="battery-meta">

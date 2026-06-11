@@ -29,6 +29,19 @@ function initStepper({ name, min, max, step, onChange }) {
   });
 }
 
+/* ---- Battery gauge fill ----
+   The width is set through the CSSOM instead of an inline style attribute: the
+   deployed environments ship a strict CSP (style-src without 'unsafe-inline')
+   that blocks inline styles, which left the gauge empty there. */
+const gaugeTrack = document.querySelector('.battery-gauge__track');
+if (gaugeTrack) {
+  const level = Number.parseFloat(gaugeTrack.dataset.level);
+  const fill = gaugeTrack.querySelector('.battery-gauge__fill');
+  if (fill && !Number.isNaN(level)) {
+    fill.style.width = `${level}%`;
+  }
+}
+
 const gaugeLimit = document.getElementById('gauge-limit');
 
 /* Charge limit: 5% steps, clamped to Tesla's [50, 100] range; mirrors onto the gauge marker. */
