@@ -42,7 +42,7 @@ $title = 'Batterie — TeslApp';
 $description = 'Gérez la recharge de votre Tesla : charge, limite et fenêtres heures creuses.';
 $header = 'user';
 $extraCss = ['dashboard', 'battery'];
-$extraJs = ['battery'];
+$extraJs = ['battery', 'command-forms'];
 
 // Leaflet (self-hosted vendor) powers the schedule location picker in the dialog.
 // `defer` keeps document order, so it executes before battery.js (also deferred).

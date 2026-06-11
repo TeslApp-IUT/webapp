@@ -7,13 +7,16 @@ namespace Teslapp\Models\Climate;
 use InvalidArgumentException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\ClimateCommandClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleWaker;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
 use Teslapp\Models\Shared\ValueObjects\GeoPoint;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 
 /**
- * Preconditioning use cases: CRUD on a vehicle's schedules.
+ * Preconditioning use cases: CRUD on a vehicle's schedules. Schedule pushes
+ * reach the car, so they run through the shared VehicleWaker (wake a sleeping
+ * vehicle, then retry).
  */
 final class PreconditioningService
 {
@@ -21,6 +24,7 @@ final class PreconditioningService
         private readonly PreconditioningPlannerRepositoryInterface $plannerRepository,
         private readonly VehicleRepositoryInterface $vehicleRepository,
         private readonly ClimateCommandClient $climateCommands,
+        private readonly VehicleWaker $waker,
     ) {}
 
     /**
@@ -109,7 +113,11 @@ final class PreconditioningService
         $existing = $this->requireOwnedPlanner($userId, $vin, $planId);
 
         if ($existing->teslaScheduleId !== null) {
-            $this->climateCommands->removePreconditionSchedule($vin, $existing->teslaScheduleId);
+            $scheduleId = $existing->teslaScheduleId;
+            $this->waker->runAwake(
+                $vin,
+                fn() => $this->climateCommands->removePreconditionSchedule($vin, $scheduleId),
+            );
         }
 
         $this->plannerRepository->deleteById($planId);
@@ -155,15 +163,19 @@ final class PreconditioningService
             return;
         }
 
-        $teslaScheduleId = $this->climateCommands->addPreconditionSchedule(
+        $location = $planner->location;
+        $teslaScheduleId = $this->waker->runAwake(
             $planner->vin,
-            $planner->preconditionTimeMinutes(),
-            $planner->daysOfWeekCsv(),
-            $planner->enabled,
-            $planner->deactivateAfterSuccess,
-            $planner->location->latitude,
-            $planner->location->longitude,
-            $planner->teslaScheduleId,
+            fn(): ?int => $this->climateCommands->addPreconditionSchedule(
+                $planner->vin,
+                $planner->preconditionTimeMinutes(),
+                $planner->daysOfWeekCsv(),
+                $planner->enabled,
+                $planner->deactivateAfterSuccess,
+                $location->latitude,
+                $location->longitude,
+                $planner->teslaScheduleId,
+            ),
         );
 
         if ($teslaScheduleId !== null) {

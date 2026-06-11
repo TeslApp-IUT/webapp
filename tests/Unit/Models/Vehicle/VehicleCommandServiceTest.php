@@ -11,6 +11,7 @@ use Teslapp\Models\Shared\Exceptions\TeslaApiException;
 use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleWaker;
 use Teslapp\Models\Shared\ValueObjects\TrunkSide;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\VehicleCommandService;
@@ -20,6 +21,19 @@ use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 final class VehicleCommandServiceTest extends TestCase
 {
     private const VIN = '5YJ3E1EA7KF000316';
+
+    /** @param list<int> $wakeRetryDelays Zero-second delays so tests never really sleep. */
+    private function service(
+        VehicleCommandClient $commands,
+        VehicleRepositoryInterface $vehicles,
+        array $wakeRetryDelays = [0],
+    ): VehicleCommandService {
+        return new VehicleCommandService(
+            $commands,
+            $vehicles,
+            new VehicleWaker($commands, $wakeRetryDelays),
+        );
+    }
 
     #[Test]
     public function lockSendsTheCommandWhenTheUserOwnsTheVehicle(): void
@@ -32,7 +46,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->with($vin, 'user-1')->willReturn(true);
 
-        (new VehicleCommandService($commands, $vehicles))->lock('user-1', $vin);
+        $this->service($commands, $vehicles)->lock('user-1', $vin);
     }
 
     #[Test]
@@ -46,7 +60,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(false);
 
-        $service = new VehicleCommandService($commands, $vehicles);
+        $service = $this->service($commands, $vehicles);
 
         $this->expectException(VehicleUnauthorizedException::class);
         $service->lock('user-2', $vin);
@@ -63,7 +77,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->with($vin, 'user-1')->willReturn(true);
 
-        (new VehicleCommandService($commands, $vehicles))->unlock('user-1', $vin);
+        $this->service($commands, $vehicles)->unlock('user-1', $vin);
     }
 
     #[Test]
@@ -77,7 +91,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(false);
 
-        $service = new VehicleCommandService($commands, $vehicles);
+        $service = $this->service($commands, $vehicles);
 
         $this->expectException(VehicleUnauthorizedException::class);
         $service->unlock('user-2', $vin);
@@ -94,7 +108,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->with($vin, 'user-1')->willReturn(true);
 
-        (new VehicleCommandService($commands, $vehicles))->honkHorn('user-1', $vin);
+        $this->service($commands, $vehicles)->honkHorn('user-1', $vin);
     }
 
     #[Test]
@@ -108,7 +122,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(false);
 
-        $service = new VehicleCommandService($commands, $vehicles);
+        $service = $this->service($commands, $vehicles);
 
         $this->expectException(VehicleUnauthorizedException::class);
         $service->honkHorn('user-2', $vin);
@@ -125,7 +139,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->with($vin, 'user-1')->willReturn(true);
 
-        (new VehicleCommandService($commands, $vehicles))->flashLights('user-1', $vin);
+        $this->service($commands, $vehicles)->flashLights('user-1', $vin);
     }
 
     #[Test]
@@ -139,7 +153,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(false);
 
-        $service = new VehicleCommandService($commands, $vehicles);
+        $service = $this->service($commands, $vehicles);
 
         $this->expectException(VehicleUnauthorizedException::class);
         $service->flashLights('user-2', $vin);
@@ -156,11 +170,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->with($vin, 'user-1')->willReturn(true);
 
-        (new VehicleCommandService($commands, $vehicles))->actuateTrunk(
-            'user-1',
-            $vin,
-            TrunkSide::Rear,
-        );
+        $this->service($commands, $vehicles)->actuateTrunk('user-1', $vin, TrunkSide::Rear);
     }
 
     #[Test]
@@ -174,7 +184,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(false);
 
-        $service = new VehicleCommandService($commands, $vehicles);
+        $service = $this->service($commands, $vehicles);
 
         $this->expectException(VehicleUnauthorizedException::class);
         $service->actuateTrunk('user-2', $vin, TrunkSide::Front);
@@ -191,7 +201,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->with($vin, 'user-1')->willReturn(true);
 
-        (new VehicleCommandService($commands, $vehicles))->openChargePortDoor('user-1', $vin);
+        $this->service($commands, $vehicles)->openChargePortDoor('user-1', $vin);
     }
 
     #[Test]
@@ -205,7 +215,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(false);
 
-        $service = new VehicleCommandService($commands, $vehicles);
+        $service = $this->service($commands, $vehicles);
 
         $this->expectException(VehicleUnauthorizedException::class);
         $service->openChargePortDoor('user-2', $vin);
@@ -222,7 +232,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->with($vin, 'user-1')->willReturn(true);
 
-        (new VehicleCommandService($commands, $vehicles))->closeChargePortDoor('user-1', $vin);
+        $this->service($commands, $vehicles)->closeChargePortDoor('user-1', $vin);
     }
 
     #[Test]
@@ -236,7 +246,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(false);
 
-        $service = new VehicleCommandService($commands, $vehicles);
+        $service = $this->service($commands, $vehicles);
 
         $this->expectException(VehicleUnauthorizedException::class);
         $service->closeChargePortDoor('user-2', $vin);
@@ -253,7 +263,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->with($vin, 'user-1')->willReturn(true);
 
-        (new VehicleCommandService($commands, $vehicles))->wakeUp('user-1', $vin);
+        $this->service($commands, $vehicles)->wakeUp('user-1', $vin);
     }
 
     #[Test]
@@ -267,7 +277,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(false);
 
-        $service = new VehicleCommandService($commands, $vehicles);
+        $service = $this->service($commands, $vehicles);
 
         $this->expectException(VehicleUnauthorizedException::class);
         $service->wakeUp('user-2', $vin);
@@ -294,10 +304,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(true);
 
-        (new VehicleCommandService($commands, $vehicles, wakeRetryDelays: [0]))->lock(
-            'user-1',
-            $vin,
-        );
+        $this->service($commands, $vehicles)->lock('user-1', $vin);
     }
 
     #[Test]
@@ -316,7 +323,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(true);
 
-        $service = new VehicleCommandService($commands, $vehicles, wakeRetryDelays: [0, 0]);
+        $service = $this->service($commands, $vehicles, [0, 0]);
 
         $this->expectException(VehicleAsleepException::class);
         $service->lock('user-1', $vin);
@@ -337,7 +344,7 @@ final class VehicleCommandServiceTest extends TestCase
         $vehicles = $this->createMock(VehicleRepositoryInterface::class);
         $vehicles->method('isAccessibleBy')->willReturn(true);
 
-        $service = new VehicleCommandService($commands, $vehicles, wakeRetryDelays: [0]);
+        $service = $this->service($commands, $vehicles);
 
         $this->expectException(TeslaApiException::class);
         $service->lock('user-1', $vin);

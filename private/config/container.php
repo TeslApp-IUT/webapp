@@ -38,6 +38,7 @@ use Teslapp\Models\Shared\Geocoding\GeocoderInterface;
 use Teslapp\Models\Shared\Geocoding\NominatimGeocoder;
 use Teslapp\Models\Shared\TeslaApi\ChargingCommandClient;
 use Teslapp\Models\Shared\TeslaApi\ClimateCommandClient;
+use Teslapp\Models\Shared\TeslaApi\ClimateControlClient;
 use Teslapp\Models\Shared\TeslaApi\TeslaChargingClient;
 use Teslapp\Models\Shared\TeslaApi\TeslaClimateClient;
 use Teslapp\Models\Shared\TeslaApi\TeslaCommandClient;
@@ -45,6 +46,7 @@ use Teslapp\Models\Shared\TeslaApi\TeslaStateClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleTelemetryRepositoryInterface;
+use Teslapp\Models\Shared\TeslaApi\VehicleWaker;
 use Teslapp\Models\Shared\VehicleTelemetryRepository;
 use Teslapp\Models\Vehicle\VehicleCommandService;
 use Teslapp\Models\Vehicle\VehicleRepository;
@@ -163,10 +165,15 @@ $container->set(
     static fn(): ClimateClient => new ClimateClient(TESLA_COMMANDS_DRY_RUN),
 );
 $container->set(
+    ClimateControlClient::class,
+    static fn(Container $c): ClimateControlClient => $c->get(ClimateClient::class),
+);
+$container->set(
     ClimateService::class,
     static fn(Container $c): ClimateService => new ClimateService(
-        $c->get(ClimateClient::class),
+        $c->get(ClimateControlClient::class),
         $c->get(VehicleRepositoryInterface::class),
+        $c->get(VehicleWaker::class),
     ),
 );
 $container->set(
@@ -184,11 +191,18 @@ $container->set(
     VehicleCommandClient::class,
     static fn(): VehicleCommandClient => new TeslaCommandClient(TESLA_COMMANDS_DRY_RUN),
 );
+// Shared wake-on-demand policy: wakes a sleeping vehicle and retries the command.
+// Injected into every command service (vehicle, charging, climate, schedules).
+$container->set(
+    VehicleWaker::class,
+    static fn(Container $c): VehicleWaker => new VehicleWaker($c->get(VehicleCommandClient::class)),
+);
 $container->set(
     VehicleCommandService::class,
     static fn(Container $c): VehicleCommandService => new VehicleCommandService(
         $c->get(VehicleCommandClient::class),
         $c->get(VehicleRepositoryInterface::class),
+        $c->get(VehicleWaker::class),
     ),
 );
 $container->set(
@@ -223,6 +237,7 @@ $container->set(
         $c->get(PreconditioningPlannerRepositoryInterface::class),
         $c->get(VehicleRepositoryInterface::class),
         $c->get(ClimateCommandClient::class),
+        $c->get(VehicleWaker::class),
     ),
 );
 $container->set(
@@ -255,6 +270,7 @@ $container->set(
     static fn(Container $c): ChargingService => new ChargingService(
         $c->get(ChargingCommandClient::class),
         $c->get(VehicleRepositoryInterface::class),
+        $c->get(VehicleWaker::class),
     ),
 );
 $container->set(
@@ -263,6 +279,7 @@ $container->set(
         $c->get(ChargingPlannerRepositoryInterface::class),
         $c->get(VehicleRepositoryInterface::class),
         $c->get(ChargingCommandClient::class),
+        $c->get(VehicleWaker::class),
     ),
 );
 $container->set(

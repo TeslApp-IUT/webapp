@@ -11,6 +11,7 @@ use Teslapp\Models\Climate\ValueObjects\ClimateAction;
 use Teslapp\Models\Climate\ValueObjects\KeeperMode;
 use Teslapp\Models\Climate\ValueObjects\Temperature;
 use Teslapp\Models\Shared\Exceptions\TeslaAppException;
+use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Shared\VehicleTelemetryRepository;
@@ -27,6 +28,8 @@ use Teslapp\Models\Climate\ValueObjects\CopTemp;
  **/
 final class ClimateController
 {
+    private const ASLEEP_MESSAGE = 'Le véhicule ne s\'est pas réveillé à temps. Réessayez dans un instant.';
+
     public function __construct(
         private readonly ClimateService $climateService,
         private readonly PreconditioningService $preconditioningService,
@@ -90,6 +93,9 @@ final class ClimateController
             }
 
             Flash::set('success', 'Commande envoyée.');
+        } catch (VehicleAsleepException) {
+            // The service already woke the vehicle and retried; it needs more time.
+            Flash::set('error', self::ASLEEP_MESSAGE);
         } catch (TeslaAppException $e) {
             error_log('Climate toggle failed: ' . $e->getMessage());
             Flash::set('error', 'Impossible d\'envoyer la commande à Tesla.');
@@ -122,6 +128,8 @@ final class ClimateController
         try {
             $this->climateService->applyKeeperMode($userId, $vin, $mode);
             Flash::set('success', 'Mode keeper appliqué.');
+        } catch (VehicleAsleepException) {
+            Flash::set('error', self::ASLEEP_MESSAGE);
         } catch (TeslaAppException $e) {
             error_log('Keeper mode failed: ' . $e->getMessage());
             Flash::set('error', 'Impossible d\'appliquer le mode keeper.');
