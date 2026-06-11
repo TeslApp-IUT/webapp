@@ -27,6 +27,23 @@ function initStepper({ name, min, max, step, onChange }) {
   presets.forEach((button) => {
     button.addEventListener('click', () => set(Number(button.dataset.value)));
   });
+
+  // The server renders the vehicle's actual setting (or a default) in the hidden
+  // input; sync the active preset and the gauge marker with it on load.
+  set(Number.parseInt(hidden.value, 10));
+}
+
+/* ---- Battery gauge fill ----
+   The width is set through the CSSOM instead of an inline style attribute: the
+   deployed environments ship a strict CSP (style-src without 'unsafe-inline')
+   that blocks inline styles, which left the gauge empty there. */
+const gaugeTrack = document.querySelector('.battery-gauge__track');
+if (gaugeTrack) {
+  const level = Number.parseFloat(gaugeTrack.dataset.level);
+  const fill = gaugeTrack.querySelector('.battery-gauge__fill');
+  if (fill && !Number.isNaN(level)) {
+    fill.style.width = `${level}%`;
+  }
 }
 
 const gaugeLimit = document.getElementById('gauge-limit');

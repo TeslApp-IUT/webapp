@@ -131,11 +131,13 @@
   background: linear-gradient(90deg, #b91c1c, #ef4444);
 }
 
-/* Charge-limit marker; battery.js moves it when the limit stepper changes. */
+/* Charge-limit marker; battery.js moves it when the limit stepper changes.
+   The default left matches the stepper's initial value (80%). */
 .battery-gauge__limit {
   position: absolute;
   top: -4px;
   bottom: -4px;
+  left: 80%;
   width: 2px;
   margin-left: -1px;
   background-color: var(--color-text-secondary);
