@@ -12,6 +12,24 @@
    =================================================================================================== */
 
 /* ===================================================================================================
+   0. MOBILE TOUCH BEHAVIOUR
+   =================================================================================================== */
+
+/* Disable the double-tap zoom (and the ~300ms tap delay browsers keep to detect it)
+   while preserving pan and pinch-zoom. Leaflet overrides this on its own containers. */
+* {
+  touch-action: manipulation;
+}
+
+/* iOS Safari auto-zooms into focused fields whose font-size is below 16px;
+   guarantee the minimum so focusing an input never zooms the page. */
+input,
+select,
+textarea {
+  font-size: max(16px, 1em);
+}
+
+/* ===================================================================================================
    1. CSS VARIABLES & CONFIGURATION
    =================================================================================================== */
 
