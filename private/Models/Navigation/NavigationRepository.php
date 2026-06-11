@@ -15,8 +15,6 @@ final readonly class NavigationRepository implements NavigationRepositoryInterfa
 {
     public function __construct(private PDO $pdo) {}
 
-    private const PAGE_SIZE = 10;
-
     /** @return list<Trip> */
     public function listTrips(Vin $vin, ?int $page): array
     {
@@ -47,6 +45,15 @@ final readonly class NavigationRepository implements NavigationRepositoryInterfa
         $stmt->execute();
 
         return array_map(static fn(array $row): Trip => Trip::fromRow($row), $stmt->fetchAll());
+    }
+
+    public function countTrips(Vin $vin): int
+    {
+        $stmt = $this->pdo->prepare('SELECT count(*) FROM app.trips t WHERE t.vin = :vin');
+        $stmt->bindValue(':vin', $vin->value);
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
     }
 
     public function findTrip(Vin $vin, string $tripId): ?Trip

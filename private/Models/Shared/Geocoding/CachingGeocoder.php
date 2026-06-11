@@ -23,7 +23,7 @@ final readonly class CachingGeocoder implements GeocoderInterface
         return $this->inner->geocode($address);
     }
 
-    public function reverseGeocode(GeoPoint $point): ?string
+    public function reverseGeocode(GeoPoint $point): ?ReverseGeocodeResult
     {
         // Match the NUMERIC(8,6)/(9,6) precision of the cache columns so the
         // lookup key is identical to what gets stored.
@@ -35,18 +35,18 @@ final readonly class CachingGeocoder implements GeocoderInterface
             return $cached;
         }
 
-        $label = $this->inner->reverseGeocode($point);
-        if ($label !== null) {
-            $this->store($lat, $lon, $label);
+        $result = $this->inner->reverseGeocode($point);
+        if ($result !== null) {
+            $this->store($lat, $lon, $result);
         }
 
-        return $label;
+        return $result;
     }
 
-    private function lookup(string $lat, string $lon): ?string
+    private function lookup(string $lat, string $lon): ?ReverseGeocodeResult
     {
         $stmt = $this->pdo->prepare('
-            SELECT label
+            SELECT label, full_address
             FROM app.geocode_cache
             WHERE latitude = :lat AND longitude = :lon
         ');
@@ -54,21 +54,31 @@ final readonly class CachingGeocoder implements GeocoderInterface
         $stmt->bindValue(':lon', $lon);
         $stmt->execute();
 
-        $label = $stmt->fetchColumn();
+        $row = $stmt->fetch();
 
-        return is_string($label) ? $label : null;
+        // Rows written before the full_address column existed have it NULL; treat
+        // those as a miss so the next lookup refetches and backfills the address.
+        if (!is_array($row) || !is_string($row['label']) || !is_string($row['full_address'])) {
+            return null;
+        }
+
+        return new ReverseGeocodeResult($row['label'], $row['full_address']);
     }
 
-    private function store(string $lat, string $lon, string $label): void
+    private function store(string $lat, string $lon, ReverseGeocodeResult $result): void
     {
+        // Upsert rather than DO NOTHING so a pre-migration row (short label only)
+        // gets its full address filled in on the next resolution.
         $stmt = $this->pdo->prepare('
-            INSERT INTO app.geocode_cache (latitude, longitude, label)
-            VALUES (:lat, :lon, :label)
-            ON CONFLICT (latitude, longitude) DO NOTHING
+            INSERT INTO app.geocode_cache (latitude, longitude, label, full_address)
+            VALUES (:lat, :lon, :label, :full)
+            ON CONFLICT (latitude, longitude)
+            DO UPDATE SET label = EXCLUDED.label, full_address = EXCLUDED.full_address
         ');
         $stmt->bindValue(':lat', $lat);
         $stmt->bindValue(':lon', $lon);
-        $stmt->bindValue(':label', $label);
+        $stmt->bindValue(':label', $result->short);
+        $stmt->bindValue(':full', $result->full);
         $stmt->execute();
     }
 }

@@ -8,10 +8,11 @@
 
 CREATE TABLE app.geocode_cache
 (
-    latitude   NUMERIC(8, 6) NOT NULL,
-    longitude  NUMERIC(9, 6) NOT NULL,
-    label      VARCHAR(255)  NOT NULL,
-    created_at TIMESTAMP     NOT NULL DEFAULT now(),
+    latitude     NUMERIC(8, 6) NOT NULL,
+    longitude    NUMERIC(9, 6) NOT NULL,
+    label        VARCHAR(255)  NOT NULL,
+    full_address TEXT          NOT NULL,
+    created_at   TIMESTAMP     NOT NULL DEFAULT now(),
 
     CONSTRAINT pk_geocode_cache PRIMARY KEY (latitude, longitude)
 );
