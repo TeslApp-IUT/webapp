@@ -57,13 +57,19 @@ final readonly class VehicleWaker
             return $command();
         } catch (VehicleAsleepException) {
             // Fleet API answered 408: the vehicle is asleep for sure.
+            error_log("Wake-on-demand: $vin->value answered 408 — waking it up.");
         } catch (TeslaApiException $e) {
-            if (!$this->isAsleep($vin)) {
+            // The Fleet API reports a sleeping car as "asleep", "offline" (deep
+            // sleep, no active link) or "waking" (a previous wake is underway).
+            // All of them are worth a wake_up + retry; only a genuinely online
+            // vehicle (or an unanswerable check) surfaces the command error.
+            $status = $this->connectivityOf($vin);
+            if ($status === null || $status === VehicleConnectivityStatus::Online) {
                 throw $e;
             }
             error_log(
                 "Wake-on-demand: command failed ({$e->getMessage()}) and " .
-                    "$vin->value reports asleep — waking it up.",
+                    "$vin->value reports '{$status->value}' — waking it up.",
             );
         }
 
@@ -91,18 +97,24 @@ final readonly class VehicleWaker
     /**
      * Asks the Fleet API for the vehicle's live connectivity state. This GET
      * never reaches the vehicle itself (Tesla answers from its own backend),
-     * so it stays reliable while the vehicle sleeps. On Offline/Unknown a
-     * wake_up would not help, so only Asleep counts.
+     * so it stays reliable while the vehicle sleeps. Returns null when the
+     * check fails or the VIN is not in the account's vehicle list.
      */
-    private function isAsleep(Vin $vin): bool
+    private function connectivityOf(Vin $vin): ?VehicleConnectivityStatus
     {
         try {
             $statuses = $this->state->fetchConnectivity();
-        } catch (TeslaApiException) {
-            // Cannot tell: let the original command error surface.
-            return false;
+        } catch (TeslaApiException $e) {
+            error_log("Wake-on-demand: connectivity check failed ({$e->getMessage()}).");
+
+            return null;
         }
 
-        return ($statuses[$vin->value] ?? null) === VehicleConnectivityStatus::Asleep;
+        $status = $statuses[$vin->value] ?? null;
+        if ($status === null) {
+            error_log("Wake-on-demand: $vin->value is not in the account's vehicle list.");
+        }
+
+        return $status;
     }
 }

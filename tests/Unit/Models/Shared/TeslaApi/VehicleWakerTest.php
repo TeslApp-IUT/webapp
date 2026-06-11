@@ -117,15 +117,58 @@ final class VehicleWakerTest extends TestCase
     }
 
     #[Test]
-    public function doesNotWakeWhenTheVehicleIsOffline(): void
+    public function wakesWhenTheVehicleReportsOffline(): void
     {
-        // Offline means unreachable (no cellular link): a wake_up cannot help.
+        // Deep sleep is often reported as "offline": still worth a wake_up.
+        $vin = new Vin(self::VIN);
+
+        $commands = $this->createMock(VehicleCommandClient::class);
+        $commands->expects($this->once())->method('wakeUp')->with($vin);
+
+        $calls = 0;
+        $waker = new VehicleWaker($commands, $this->state(VehicleConnectivityStatus::Offline), [0]);
+        $waker->runAwake($vin, function () use (&$calls): void {
+            if (++$calls === 1) {
+                throw new TeslaApiException('command failed');
+            }
+        });
+
+        $this->assertSame(2, $calls);
+    }
+
+    #[Test]
+    public function wakesWhenAPreviousWakeIsAlreadyUnderway(): void
+    {
+        // A second click while the vehicle boots sees state "waking".
+        $vin = new Vin(self::VIN);
+
+        $commands = $this->createMock(VehicleCommandClient::class);
+        $commands->expects($this->once())->method('wakeUp')->with($vin);
+
+        $calls = 0;
+        $waker = new VehicleWaker($commands, $this->state(VehicleConnectivityStatus::Waking), [0]);
+        $waker->runAwake($vin, function () use (&$calls): void {
+            if (++$calls === 1) {
+                throw new TeslaApiException('command failed');
+            }
+        });
+
+        $this->assertSame(2, $calls);
+    }
+
+    #[Test]
+    public function surfacesTheOriginalErrorWhenTheVinIsNotListed(): void
+    {
         $commands = $this->createMock(VehicleCommandClient::class);
         $commands->expects($this->never())->method('wakeUp');
 
-        $waker = new VehicleWaker($commands, $this->state(VehicleConnectivityStatus::Offline), [0]);
+        $state = $this->createMock(VehicleStateClient::class);
+        $state->method('fetchConnectivity')->willReturn([]);
+
+        $waker = new VehicleWaker($commands, $state, [0]);
 
         $this->expectException(TeslaApiException::class);
+        $this->expectExceptionMessage('command failed');
         $waker->runAwake(new Vin(self::VIN), function (): void {
             throw new TeslaApiException('command failed');
         });
