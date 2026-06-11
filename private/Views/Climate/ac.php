@@ -31,6 +31,7 @@ ob_start();
         <div class="dashboard-title">
           <h1>Climatisation</h1>
         </div>
+        <?php require __DIR__ . '/../partials/last_seen.php'; ?>
         <div class="dashboard-grid">
           <!-- Enable / Disable -->
           <div class="dashboard-card">

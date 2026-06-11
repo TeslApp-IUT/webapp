@@ -73,6 +73,8 @@ ob_start();
       <!-- Right Section -->
       <div class="dashboard-content">
         <h1 class="dashboard-title">Batterie</h1>
+        <?php $lastSeenAt = $data['last_seen_at'] ?? null;
+        require __DIR__ . '/../partials/last_seen.php'; ?>
         <div class="battery-grid">
           <!-- Battery state + immediate charge commands -->
           <div class="dashboard-card battery-card">

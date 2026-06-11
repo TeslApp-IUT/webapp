@@ -53,6 +53,7 @@ final class ClimateController
         }
 
         $data = $this->telemetryRepository->latest('temp_int', 'inside_temp', $vin);
+        $lastSeenAt = $this->telemetryRepository->getLatestTelemetry($vin)['last_seen_at'] ?? null;
 
         require_once __DIR__ . '/../../Views/Climate/ac.php';
     }
