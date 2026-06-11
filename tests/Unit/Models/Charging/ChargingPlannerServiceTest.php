@@ -15,6 +15,7 @@ use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\ChargingCommandClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleWaker;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
 use Teslapp\Models\Shared\ValueObjects\GeoPoint;
@@ -331,7 +332,7 @@ final class ChargingPlannerServiceTest extends TestCase
             $planners,
             $vehicles,
             $charging,
-            new VehicleWaker($wakeCommands, [0]),
+            new VehicleWaker($wakeCommands, $this->createStub(VehicleStateClient::class), [0]),
         );
 
         $service->createPlan(
@@ -350,7 +351,11 @@ final class ChargingPlannerServiceTest extends TestCase
     /** Wake-transparent waker for the tests that do not exercise the asleep path. */
     private function waker(): VehicleWaker
     {
-        return new VehicleWaker($this->createStub(VehicleCommandClient::class), [0]);
+        return new VehicleWaker(
+            $this->createStub(VehicleCommandClient::class),
+            $this->createStub(VehicleStateClient::class),
+            [0],
+        );
     }
 
     private function makePlanner(Vin $vin, ?int $teslaScheduleId = null): ChargingPlanner

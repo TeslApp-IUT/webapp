@@ -10,7 +10,9 @@ use PHPUnit\Framework\TestCase;
 use Teslapp\Models\Shared\Exceptions\TeslaApiException;
 use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleWaker;
+use Teslapp\Models\Shared\ValueObjects\VehicleConnectivityStatus;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 
 #[CoversClass(VehicleWaker::class)]
@@ -24,8 +26,11 @@ final class VehicleWakerTest extends TestCase
         $commands = $this->createMock(VehicleCommandClient::class);
         $commands->expects($this->never())->method('wakeUp');
 
+        $state = $this->createMock(VehicleStateClient::class);
+        $state->expects($this->never())->method('fetchConnectivity');
+
         $calls = 0;
-        $waker = new VehicleWaker($commands, [0]);
+        $waker = new VehicleWaker($commands, $state, [0]);
         $waker->runAwake(new Vin(self::VIN), function () use (&$calls): void {
             ++$calls;
         });
@@ -39,22 +44,26 @@ final class VehicleWakerTest extends TestCase
         $commands = $this->createMock(VehicleCommandClient::class);
         $commands->expects($this->never())->method('wakeUp');
 
-        $waker = new VehicleWaker($commands, [0]);
+        $waker = new VehicleWaker($commands, $this->createStub(VehicleStateClient::class), [0]);
         $result = $waker->runAwake(new Vin(self::VIN), fn(): ?int => 42);
 
         $this->assertSame(42, $result);
     }
 
     #[Test]
-    public function wakesTheVehicleOnceAndRetriesWhenAsleep(): void
+    public function wakesAndRetriesOnAFleetApi408WithoutCheckingConnectivity(): void
     {
         $vin = new Vin(self::VIN);
 
         $commands = $this->createMock(VehicleCommandClient::class);
         $commands->expects($this->once())->method('wakeUp')->with($vin);
 
+        // The 408 already proves the vehicle is asleep: no extra API call.
+        $state = $this->createMock(VehicleStateClient::class);
+        $state->expects($this->never())->method('fetchConnectivity');
+
         $calls = 0;
-        $waker = new VehicleWaker($commands, [0, 0]);
+        $waker = new VehicleWaker($commands, $state, [0, 0]);
         $result = $waker->runAwake($vin, function () use (&$calls): string {
             if (++$calls === 1) {
                 throw new VehicleAsleepException('asleep');
@@ -68,6 +77,81 @@ final class VehicleWakerTest extends TestCase
     }
 
     #[Test]
+    public function wakesAndRetriesWhenTheProxyErrorHidesASleepingVehicle(): void
+    {
+        // Real-world case: the signing proxy times out or answers 5xx instead
+        // of a clean 408 while the vehicle sleeps. The connectivity check is
+        // what reveals the vehicle is asleep.
+        $vin = new Vin(self::VIN);
+
+        $commands = $this->createMock(VehicleCommandClient::class);
+        $commands->expects($this->once())->method('wakeUp')->with($vin);
+
+        $calls = 0;
+        $waker = new VehicleWaker($commands, $this->state(VehicleConnectivityStatus::Asleep), [0]);
+        $result = $waker->runAwake($vin, function () use (&$calls): string {
+            if (++$calls === 1) {
+                throw new TeslaApiException('Tesla API network error: timeout');
+            }
+
+            return 'done';
+        });
+
+        $this->assertSame('done', $result);
+        $this->assertSame(2, $calls);
+    }
+
+    #[Test]
+    public function doesNotWakeWhenTheVehicleIsOnlineAndTheCommandFails(): void
+    {
+        $commands = $this->createMock(VehicleCommandClient::class);
+        $commands->expects($this->never())->method('wakeUp');
+
+        $waker = new VehicleWaker($commands, $this->state(VehicleConnectivityStatus::Online), [0]);
+
+        $this->expectException(TeslaApiException::class);
+        $this->expectExceptionMessage('command failed');
+        $waker->runAwake(new Vin(self::VIN), function (): void {
+            throw new TeslaApiException('command failed');
+        });
+    }
+
+    #[Test]
+    public function doesNotWakeWhenTheVehicleIsOffline(): void
+    {
+        // Offline means unreachable (no cellular link): a wake_up cannot help.
+        $commands = $this->createMock(VehicleCommandClient::class);
+        $commands->expects($this->never())->method('wakeUp');
+
+        $waker = new VehicleWaker($commands, $this->state(VehicleConnectivityStatus::Offline), [0]);
+
+        $this->expectException(TeslaApiException::class);
+        $waker->runAwake(new Vin(self::VIN), function (): void {
+            throw new TeslaApiException('command failed');
+        });
+    }
+
+    #[Test]
+    public function surfacesTheOriginalErrorWhenTheConnectivityCheckFails(): void
+    {
+        $commands = $this->createMock(VehicleCommandClient::class);
+        $commands->expects($this->never())->method('wakeUp');
+
+        $state = $this->createMock(VehicleStateClient::class);
+        $state
+            ->method('fetchConnectivity')
+            ->willThrowException(new TeslaApiException('listing failed'));
+
+        $waker = new VehicleWaker($commands, $state, [0]);
+
+        $this->expectException(TeslaApiException::class);
+        $this->expectExceptionMessage('command failed');
+        $waker->runAwake(new Vin(self::VIN), function (): void {
+            throw new TeslaApiException('command failed');
+        });
+    }
+
+    #[Test]
     public function preservesTheReturnValueOfARetriedCommand(): void
     {
         $vin = new Vin(self::VIN);
@@ -76,7 +160,7 @@ final class VehicleWakerTest extends TestCase
         $commands->expects($this->once())->method('wakeUp')->with($vin);
 
         $calls = 0;
-        $waker = new VehicleWaker($commands, [0]);
+        $waker = new VehicleWaker($commands, $this->createStub(VehicleStateClient::class), [0]);
         $result = $waker->runAwake($vin, function () use (&$calls): ?int {
             if (++$calls === 1) {
                 throw new VehicleAsleepException('asleep');
@@ -97,7 +181,11 @@ final class VehicleWakerTest extends TestCase
         $commands->expects($this->once())->method('wakeUp')->with($vin);
 
         $calls = 0;
-        $waker = new VehicleWaker($commands, [0, 0, 0]);
+        $waker = new VehicleWaker($commands, $this->createStub(VehicleStateClient::class), [
+            0,
+            0,
+            0,
+        ]);
 
         try {
             $waker->runAwake($vin, function () use (&$calls): void {
@@ -112,38 +200,30 @@ final class VehicleWakerTest extends TestCase
     }
 
     #[Test]
-    public function doesNotWakeOnOtherApiErrors(): void
+    public function toleratesProxyErrorsDuringRetriesUntilTheLastAttempt(): void
     {
-        $commands = $this->createMock(VehicleCommandClient::class);
-        $commands->expects($this->never())->method('wakeUp');
-
-        $waker = new VehicleWaker($commands, [0]);
-
-        $this->expectException(TeslaApiException::class);
-        $waker->runAwake(new Vin(self::VIN), function (): void {
-            throw new TeslaApiException('command failed');
-        });
-    }
-
-    #[Test]
-    public function letsANonAsleepErrorBubbleUpFromARetry(): void
-    {
+        // While the vehicle boots, the proxy may keep failing with non-408
+        // errors; mid-window retries swallow them, the final attempt decides.
         $vin = new Vin(self::VIN);
 
         $commands = $this->createMock(VehicleCommandClient::class);
         $commands->expects($this->once())->method('wakeUp')->with($vin);
 
         $calls = 0;
-        $waker = new VehicleWaker($commands, [0, 0]);
+        $waker = new VehicleWaker($commands, $this->createStub(VehicleStateClient::class), [0, 0]);
 
-        $this->expectException(TeslaApiException::class);
-        $this->expectExceptionMessage('command failed');
-        $waker->runAwake($vin, function () use (&$calls): void {
-            if (++$calls === 1) {
-                throw new VehicleAsleepException('asleep');
-            }
-            throw new TeslaApiException('command failed');
-        });
+        try {
+            $waker->runAwake($vin, function () use (&$calls): void {
+                if (++$calls === 1) {
+                    throw new VehicleAsleepException('asleep');
+                }
+                throw new TeslaApiException('proxy handshake failed');
+            });
+            $this->fail('Expected TeslaApiException');
+        } catch (TeslaApiException $e) {
+            $this->assertSame('proxy handshake failed', $e->getMessage());
+            $this->assertSame(3, $calls);
+        }
     }
 
     #[Test]
@@ -155,7 +235,7 @@ final class VehicleWakerTest extends TestCase
         $commands->expects($this->once())->method('wakeUp')->with($vin);
 
         $calls = 0;
-        $waker = new VehicleWaker($commands, []);
+        $waker = new VehicleWaker($commands, $this->createStub(VehicleStateClient::class), []);
         $waker->runAwake($vin, function () use (&$calls): void {
             if (++$calls === 1) {
                 throw new VehicleAsleepException('asleep');
@@ -163,5 +243,13 @@ final class VehicleWakerTest extends TestCase
         });
 
         $this->assertSame(2, $calls);
+    }
+
+    private function state(VehicleConnectivityStatus $status): VehicleStateClient
+    {
+        $state = $this->createMock(VehicleStateClient::class);
+        $state->method('fetchConnectivity')->willReturn([self::VIN => $status]);
+
+        return $state;
     }
 }

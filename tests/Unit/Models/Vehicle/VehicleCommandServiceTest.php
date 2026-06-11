@@ -11,6 +11,7 @@ use Teslapp\Models\Shared\Exceptions\TeslaApiException;
 use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleWaker;
 use Teslapp\Models\Shared\ValueObjects\TrunkSide;
 use Teslapp\Models\Shared\ValueObjects\Vin;
@@ -31,7 +32,11 @@ final class VehicleCommandServiceTest extends TestCase
         return new VehicleCommandService(
             $commands,
             $vehicles,
-            new VehicleWaker($commands, $wakeRetryDelays),
+            new VehicleWaker(
+                $commands,
+                $this->createStub(VehicleStateClient::class),
+                $wakeRetryDelays,
+            ),
         );
     }
 

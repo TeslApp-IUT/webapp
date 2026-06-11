@@ -14,6 +14,7 @@ use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\ChargingCommandClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleWaker;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
@@ -141,7 +142,7 @@ final class ChargingServiceTest extends TestCase
         $service = new ChargingService(
             $client,
             $this->vehicles(owned: true, vin: $vin),
-            new VehicleWaker($wakeCommands, [0]),
+            new VehicleWaker($wakeCommands, $this->createStub(VehicleStateClient::class), [0]),
         );
 
         $service->start(self::USER, $vin);
@@ -150,7 +151,11 @@ final class ChargingServiceTest extends TestCase
     /** Wake-transparent waker for the tests that do not exercise the asleep path. */
     private function waker(): VehicleWaker
     {
-        return new VehicleWaker($this->createStub(VehicleCommandClient::class), [0]);
+        return new VehicleWaker(
+            $this->createStub(VehicleCommandClient::class),
+            $this->createStub(VehicleStateClient::class),
+            [0],
+        );
     }
 
     private function vehicles(bool $owned, ?Vin $vin = null): VehicleRepositoryInterface

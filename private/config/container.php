@@ -193,9 +193,14 @@ $container->set(
 );
 // Shared wake-on-demand policy: wakes a sleeping vehicle and retries the command.
 // Injected into every command service (vehicle, charging, climate, schedules).
+// The state client backs the connectivity check used when the signing proxy
+// fails without a clean 408 on a sleeping vehicle.
 $container->set(
     VehicleWaker::class,
-    static fn(Container $c): VehicleWaker => new VehicleWaker($c->get(VehicleCommandClient::class)),
+    static fn(Container $c): VehicleWaker => new VehicleWaker(
+        $c->get(VehicleCommandClient::class),
+        $c->get(VehicleStateClient::class),
+    ),
 );
 $container->set(
     VehicleCommandService::class,
