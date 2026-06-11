@@ -1,10 +1,11 @@
 ------------------------------------------------------------------
---                           VERSION 2                          --
+--                           VERSION 3                          --
 --              INSERTION DES DONNÉES DE RÉFÉRENCE               --
 ------------------------------------------------------------------
 
 SET search_path TO app;
 
+-- Reference data kept for the MCD (days live in the DayOfWeek PHP enum).
 INSERT INTO day_of_week (name) VALUES
     ('Lundi'),
     ('Mardi'),
@@ -14,7 +15,7 @@ INSERT INTO day_of_week (name) VALUES
     ('Samedi'),
     ('Dimanche');
 
--- The 5 Tesla model lines, keyed by their VIN discriminator (4th VIN character).
+-- The 5 Tesla model lines (4th VIN character); kept for the MCD.
 INSERT INTO vehicle_models (vin_code, name) VALUES
     ('S', 'Model S'),
     ('3', 'Model 3'),
