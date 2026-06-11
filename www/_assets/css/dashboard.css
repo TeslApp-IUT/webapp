@@ -124,6 +124,19 @@
   color: #ffffff;
 }
 
+/* Switch-vehicle action — set apart from the tabs, shown on every dashboard tab. */
+.nav-divider {
+  width: 70%;
+  height: 1px;
+  margin: 8px 0;
+  background-color: var(--color-border);
+}
+
+.nav-item__icon--switch {
+  background-color: rgba(100, 100, 100, 0.2);
+  color: #a3a3a3;
+}
+
 /* Active button */
 .dashboard-content {
   padding: 48px;
@@ -299,6 +312,11 @@
     padding: 8px 6px;
     border: 1px solid var(--color-border);
     border-radius: 18px;
+  }
+
+  /* No room for the divider in the horizontal row layout. */
+  .dashboard-navigation .nav-divider {
+    display: none;
   }
 
   .dashboard-navigation .nav-item {
