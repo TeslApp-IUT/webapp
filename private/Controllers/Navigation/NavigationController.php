@@ -45,7 +45,13 @@ final readonly class NavigationController
             Http::redirect('/dashboard');
         }
 
-        $trips = $this->navigationRepository->listTrips($vin, null);
+        $totalTrips = $this->navigationRepository->countTrips($vin);
+        $totalPages = max(1, (int) ceil($totalTrips / NavigationRepositoryInterface::PAGE_SIZE));
+
+        $requestedPage = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
+        $page = min(max(is_int($requestedPage) ? $requestedPage : 1, 1), $totalPages);
+
+        $trips = $this->navigationRepository->listTrips($vin, $page);
 
         $addresses = $this->resolveTripAddresses($trips);
 
@@ -150,8 +156,8 @@ final readonly class NavigationController
 
         return [
             'id' => $trip->id,
-            'startAddress' => $this->geocoder->reverseGeocode($trip->start),
-            'endAddress' => $this->geocoder->reverseGeocode($trip->end),
+            'startAddress' => $this->geocoder->reverseGeocode($trip->start)?->full,
+            'endAddress' => $this->geocoder->reverseGeocode($trip->end)?->full,
             'startLat' => $trip->start->latitude,
             'startLon' => $trip->start->longitude,
             'endLat' => $trip->end->latitude,
@@ -188,8 +194,8 @@ final readonly class NavigationController
         $addresses = [];
         foreach ($trips as $trip) {
             $addresses[$trip->id] = [
-                'start' => $this->geocoder->reverseGeocode($trip->start),
-                'end' => $this->geocoder->reverseGeocode($trip->end),
+                'start' => $this->geocoder->reverseGeocode($trip->start)?->short,
+                'end' => $this->geocoder->reverseGeocode($trip->end)?->short,
             ];
         }
 

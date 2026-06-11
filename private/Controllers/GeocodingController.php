@@ -56,12 +56,12 @@ final class GeocodingController
             Http::json(['error' => 'Coordinates out of range'], 400);
         }
 
-        $label = $this->geocoder->reverseGeocode($point);
-        if ($label === null) {
+        $result = $this->geocoder->reverseGeocode($point);
+        if ($result === null) {
             Http::json(['error' => 'No address found'], 404);
         }
 
-        Http::json(['label' => $label]);
+        Http::json(['label' => $result->short]);
     }
 
     private function requireAuthenticated(): void
