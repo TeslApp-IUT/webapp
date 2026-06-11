@@ -12,6 +12,17 @@ $batteryLevel = is_numeric($batteryLevelRaw)
   : null;
 $chargeEnabled = (bool) ($data['charge_enable'] ?? false);
 
+// Live charge settings, clamped to the ranges the controls (and Tesla) accept.
+// Fall back to the page defaults when telemetry hasn't reported them yet.
+$chargeLimitRaw = $data['charge_limit'] ?? null;
+$chargeLimit = is_numeric($chargeLimitRaw)
+  ? (int) max(50, min(100, round((float) $chargeLimitRaw)))
+  : 80;
+$chargeCurrentRaw = $data['charge_current'] ?? null;
+$chargeCurrent = is_numeric($chargeCurrentRaw)
+  ? (int) max(5, min(48, round((float) $chargeCurrentRaw)))
+  : 16;
+
 // TIMESTAMP from the DB -> short readable label; keep the raw value if unparsable.
 $scheduledRaw = $data['scheduled_charging_start_time'] ?? null;
 $scheduledLabel = null;
@@ -86,7 +97,7 @@ ob_start();
               <div class="battery-gauge__track" role="img"
                    aria-label="Niveau de batterie : <?= $batteryLevel !== null ? e((string) $batteryLevel) . ' %' : 'inconnu' ?>">
                 <div class="battery-gauge__fill" style="width: <?= $batteryLevel ?? 0 ?>%"></div>
-                <span class="battery-gauge__limit" id="gauge-limit" style="left: 80%"
+                <span class="battery-gauge__limit" id="gauge-limit" style="left: <?= $chargeLimit ?>%"
                       title="Limite de charge choisie"></span>
               </div>
             </div>
@@ -135,20 +146,20 @@ ob_start();
             <form method="post" action="/charging/limit" class="battery-setting">
               <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
               <input type="hidden" name="vehicle_id" value="<?= e($vehicleId) ?>">
-              <input type="hidden" name="percent" value="80" id="limit-value">
+              <input type="hidden" name="percent" value="<?= $chargeLimit ?>" id="limit-value">
               <div class="battery-setting__head">
                 <span class="battery-setting__label">Limite de charge</span>
                 <span class="battery-setting__range">50 – 100 %</span>
               </div>
               <div class="battery-setting__controls">
                 <div class="battery-presets" role="group" aria-label="Limites rapides">
-                  <button type="button" class="battery-preset is-active" data-preset="limit" data-value="80">80 %</button>
-                  <button type="button" class="battery-preset" data-preset="limit" data-value="90">90 %</button>
-                  <button type="button" class="battery-preset" data-preset="limit" data-value="100">100 %</button>
+                  <?php foreach ([80, 90, 100] as $preset): ?>
+                    <button type="button" class="battery-preset<?= $preset === $chargeLimit ? ' is-active' : '' ?>" data-preset="limit" data-value="<?= $preset ?>"><?= $preset ?> %</button>
+                  <?php endforeach; ?>
                 </div>
                 <div class="battery-stepper">
                   <button type="button" class="battery-stepper__btn" id="limit-minus" aria-label="Diminuer la limite">−</button>
-                  <span class="battery-stepper__value"><span id="limit-display">80</span> %</span>
+                  <span class="battery-stepper__value"><span id="limit-display"><?= $chargeLimit ?></span> %</span>
                   <button type="button" class="battery-stepper__btn" id="limit-plus" aria-label="Augmenter la limite">+</button>
                 </div>
                 <button type="submit" class="btn-success battery-setting__apply">Appliquer</button>
@@ -158,20 +169,20 @@ ob_start();
             <form method="post" action="/charging/amps" class="battery-setting">
               <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
               <input type="hidden" name="vehicle_id" value="<?= e($vehicleId) ?>">
-              <input type="hidden" name="amps" value="16" id="amps-value">
+              <input type="hidden" name="amps" value="<?= $chargeCurrent ?>" id="amps-value">
               <div class="battery-setting__head">
                 <span class="battery-setting__label">Courant de charge</span>
                 <span class="battery-setting__range">5 – 48 A</span>
               </div>
               <div class="battery-setting__controls">
                 <div class="battery-presets" role="group" aria-label="Courants rapides">
-                  <button type="button" class="battery-preset" data-preset="amps" data-value="8">8 A</button>
-                  <button type="button" class="battery-preset is-active" data-preset="amps" data-value="16">16 A</button>
-                  <button type="button" class="battery-preset" data-preset="amps" data-value="32">32 A</button>
+                  <?php foreach ([8, 16, 32] as $preset): ?>
+                    <button type="button" class="battery-preset<?= $preset === $chargeCurrent ? ' is-active' : '' ?>" data-preset="amps" data-value="<?= $preset ?>"><?= $preset ?> A</button>
+                  <?php endforeach; ?>
                 </div>
                 <div class="battery-stepper">
                   <button type="button" class="battery-stepper__btn" id="amps-minus" aria-label="Diminuer le courant">−</button>
-                  <span class="battery-stepper__value"><span id="amps-display">16</span> A</span>
+                  <span class="battery-stepper__value"><span id="amps-display"><?= $chargeCurrent ?></span> A</span>
                   <button type="button" class="battery-stepper__btn" id="amps-plus" aria-label="Augmenter le courant">+</button>
                 </div>
                 <button type="submit" class="btn-success battery-setting__apply">Appliquer</button>
