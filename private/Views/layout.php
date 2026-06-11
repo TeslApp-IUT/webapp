@@ -38,7 +38,8 @@ use Teslapp\Utils\Flash;
 
   <a class="skip-link" href="#main">Aller au contenu principal</a>
   <?php if ($impersonating): ?>
-    <div class="sticky top-0 inset-x-0 z-[1001] flex items-center justify-between bg-amber-500/95 px-4 py-2 text-sm text-black backdrop-blur-sm">
+    <?php // TODO(temporary): banner hidden on request — restore by swapping `hidden` back to `flex`. ?>
+    <div class="sticky top-0 inset-x-0 z-[1001] hidden items-center justify-between bg-amber-500/95 px-4 py-2 text-sm text-black backdrop-blur-sm">
       <span>Mode délégué — vous naviguez en tant que <strong><?= htmlspecialchars($_SESSION['user_id'] ?? '', ENT_QUOTES, 'UTF-8') ?></strong></span>
       <form method="post" action="/auth/impersonate/stop" class="inline">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
