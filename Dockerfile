@@ -50,6 +50,8 @@ RUN if [ "$INSTALL_XDEBUG" = "true" ]; then \
 
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
+# Widen the FPM pool: wake-on-demand commands hold a worker for up to ~20s each.
+COPY docker/php-fpm.conf /usr/local/etc/php-fpm.d/zz-teslapp.conf
 
 # Project layout under BASE_PATH (/var/www/):
 #   vendor/  — Composer autoloader (outside DocumentRoot)
