@@ -27,8 +27,8 @@ $chargeCurrent = is_numeric($chargeCurrentRaw)
 $hasRealLimit = is_numeric($chargeLimitRaw);
 
 // DB timestamps are stored in UTC; toLocalTime() renders them in French local time.
+// The "last seen" age is handled by the shared partials/last_seen.php under the title.
 $scheduledLabel = toLocalTime($data['scheduled_charging_start_time'] ?? null);
-$lastSeenLabel = toLocalTime($data['last_seen_at'] ?? null);
 
 $gaugeModifier = '';
 if ($batteryLevel !== null && $batteryLevel <= 10) {
@@ -104,10 +104,6 @@ ob_start();
               <div class="battery-meta__item">
                 <dt>Charge programmée</dt>
                 <dd><?= $scheduledLabel !== null ? e($scheduledLabel) : 'Aucune' ?></dd>
-              </div>
-              <div class="battery-meta__item">
-                <dt>Dernière remontée</dt>
-                <dd><?= $lastSeenLabel !== null ? e($lastSeenLabel) : '—' ?></dd>
               </div>
             </dl>
             <div class="battery-actions">
