@@ -1,4 +1,9 @@
 <?php
+/** @var array<string, mixed> $user Profile fields, set by ProfileController. */
+/** @var string $profilePicture Avatar URL (may be empty), set by ProfileController. */
+/** @var string $csrfToken CSRF token for the update/delete actions, set by ProfileController. */
+/** @var array<string, string> $errors Validation errors, set by ProfileController. */
+
 $title = 'Profile - Teslapp';
 $description = 'Modifiez vos informations concernant votre profil.';
 $header = 'user';
@@ -31,7 +36,7 @@ ob_start();
                 <div class="relative group shrink-0">
                     <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-[#4A4A4A] shadow-lg bg-[#0d0d0d] flex items-center justify-center transition-all duration-300 group-hover:border-[#3b82f6]/60">
                         <img
-                            src="<?= strlen($profilePicture ?? '') > 1 ? htmlspecialchars($profilePicture, ENT_QUOTES, 'UTF-8') : '/_assets/images/placeholder_pfp.png' ?>"
+                            src="<?= strlen($profilePicture) > 1 ? htmlspecialchars($profilePicture, ENT_QUOTES, 'UTF-8') : '/_assets/images/placeholder_pfp.png' ?>"
                             alt="Photo de profil"
                             class="w-full h-full object-cover"
                         >
