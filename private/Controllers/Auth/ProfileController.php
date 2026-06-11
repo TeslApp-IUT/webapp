@@ -16,24 +16,24 @@ class ProfileController
         $userId = $_SESSION['user_id'] ?? null;
         if (!$userId) {
             header('Location: /login');
-            exit;
+            exit();
         }
 
         $row = $this->authRepository->getUserById($userId);
         if (!$row) {
             header('Location: /login');
-            exit;
+            exit();
         }
 
         // Shape expected by the view
         $user = [
             'firstName' => $row['first_name'],
-            'lastName'  => $row['last_name'],
-            'email'     => $row['email'],
+            'lastName' => $row['last_name'],
+            'email' => $row['email'],
         ];
         $profilePicture = $row['avatar_url'] ?? '';
-        $csrfToken      = $this->generateCsrfToken();
-        $errors         = [];
+        $csrfToken = $this->generateCsrfToken();
+        $errors = [];
 
         require __DIR__ . '/../../Views/Auth/profile.php';
     }
@@ -44,7 +44,7 @@ class ProfileController
         $userId = $_SESSION['user_id'] ?? null;
         if (!$userId) {
             header('Location: /login');
-            exit;
+            exit();
         }
 
         // CSRF check
@@ -55,8 +55,8 @@ class ProfileController
         }
 
         $firstName = trim($_POST['firstName'] ?? '');
-        $lastName  = trim($_POST['lastName']  ?? '');
-        $email     = trim($_POST['email']     ?? '');
+        $lastName = trim($_POST['lastName'] ?? '');
+        $email = trim($_POST['email'] ?? '');
 
         // Validation
         $errors = [];
@@ -79,13 +79,19 @@ class ProfileController
             $this->authRepository->updateUser($userId, $email, $firstName, $lastName);
             $_SESSION['user_display_name'] = $firstName . ' ' . $lastName;
         } catch (\Throwable) {
-            $this->renderWithErrors($userId, ['general' => 'Une erreur est survenue, veuillez réessayer.'], $firstName, $lastName, $email);
+            $this->renderWithErrors(
+                $userId,
+                ['general' => 'Une erreur est survenue, veuillez réessayer.'],
+                $firstName,
+                $lastName,
+                $email,
+            );
             return;
         }
 
         // PRG — redirect so a page refresh doesn't resubmit the form
         header('Location: /profile?saved=1');
-        exit;
+        exit();
     }
 
     // ── GET /profile/delete ───────────────────────────────────────
@@ -94,21 +100,21 @@ class ProfileController
         $userId = $_SESSION['user_id'] ?? null;
         if (!$userId) {
             header('Location: /login');
-            exit;
+            exit();
         }
 
         // CSRF check (passed as query param from the confirm link)
         $submittedToken = $_GET['csrf_token'] ?? '';
         if (!$this->validateCsrfToken($submittedToken)) {
             header('Location: /profile');
-            exit;
+            exit();
         }
 
         $this->authRepository->deleteUser($userId);
 
         session_destroy();
         header('Location: /?deleted=1');
-        exit;
+        exit();
     }
 
     // ── Helpers ───────────────────────────────────────────────────
@@ -119,20 +125,20 @@ class ProfileController
      */
     private function renderWithErrors(
         string $userId,
-        array  $errors,
+        array $errors,
         string $firstName = '',
-        string $lastName  = '',
-        string $email     = '',
+        string $lastName = '',
+        string $email = '',
     ): void {
         $row = $this->authRepository->getUserById($userId);
 
         $user = [
-            'firstName' => $firstName !== '' ? $firstName : ($row['first_name'] ?? ''),
-            'lastName'  => $lastName  !== '' ? $lastName  : ($row['last_name']  ?? ''),
-            'email'     => $email     !== '' ? $email     : ($row['email']      ?? ''),
+            'firstName' => $firstName !== '' ? $firstName : $row['first_name'] ?? '',
+            'lastName' => $lastName !== '' ? $lastName : $row['last_name'] ?? '',
+            'email' => $email !== '' ? $email : $row['email'] ?? '',
         ];
         $profilePicture = $row['avatar_url'] ?? '';
-        $csrfToken      = $this->generateCsrfToken();
+        $csrfToken = $this->generateCsrfToken();
 
         require __DIR__ . '/../../Views/Auth/profile.php';
     }
