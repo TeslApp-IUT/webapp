@@ -384,6 +384,32 @@
   outline-offset: 2px;
 }
 
+/* Heads-up shown when the car itself reports an upcoming scheduled charge. */
+.precond-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  background-color: rgba(34, 197, 94, 0.07);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 10px;
+}
+
+.precond-note svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: #21c55e;
+}
+
+.precond-note strong {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
 .precond-optional {
   font-size: 12px;
   font-weight: 400;

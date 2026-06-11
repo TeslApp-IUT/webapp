@@ -23,25 +23,12 @@ $chargeCurrent = is_numeric($chargeCurrentRaw)
   ? (int) max(5, min(48, round((float) $chargeCurrentRaw)))
   : 16;
 
-// TIMESTAMP from the DB -> short readable label; keep the raw value if unparsable.
-$scheduledRaw = $data['scheduled_charging_start_time'] ?? null;
-$scheduledLabel = null;
-if (is_string($scheduledRaw) && $scheduledRaw !== '') {
-  try {
-    $scheduledLabel = (new DateTimeImmutable($scheduledRaw))->format('d/m · H:i');
-  } catch (Exception) {
-    $scheduledLabel = $scheduledRaw;
-  }
-}
-$lastSeenRaw = $data['last_seen_at'] ?? null;
-$lastSeenLabel = null;
-if (is_string($lastSeenRaw) && $lastSeenRaw !== '') {
-  try {
-    $lastSeenLabel = (new DateTimeImmutable($lastSeenRaw))->format('d/m · H:i');
-  } catch (Exception) {
-    $lastSeenLabel = $lastSeenRaw;
-  }
-}
+// Whether the limit reflects a real telemetry value rather than the page default.
+$hasRealLimit = is_numeric($chargeLimitRaw);
+
+// DB timestamps are stored in UTC; toLocalTime() renders them in French local time.
+$scheduledLabel = toLocalTime($data['scheduled_charging_start_time'] ?? null);
+$lastSeenLabel = toLocalTime($data['last_seen_at'] ?? null);
 
 $gaugeModifier = '';
 if ($batteryLevel !== null && $batteryLevel <= 10) {
@@ -94,14 +81,24 @@ ob_start();
               <p class="battery-gauge__value">
                 <?= $batteryLevel !== null ? e((string) $batteryLevel) : 'N/A' ?><span> %</span>
               </p>
+              <!-- No inline style attributes here: the deployed CSP (style-src without
+                   'unsafe-inline') blocks them. battery.js sets the fill width from
+                   data-level and the marker from the limit input, through the CSSOM,
+                   which the CSP does not restrict. -->
               <div class="battery-gauge__track" role="img"
-                   aria-label="Niveau de batterie : <?= $batteryLevel !== null ? e((string) $batteryLevel) . ' %' : 'inconnu' ?>">
-                <div class="battery-gauge__fill" style="width: <?= $batteryLevel ?? 0 ?>%"></div>
-                <span class="battery-gauge__limit" id="gauge-limit" style="left: <?= $chargeLimit ?>%"
-                      title="Limite de charge choisie"></span>
+                   aria-label="Niveau de batterie : <?= $batteryLevel !== null ? e((string) $batteryLevel) . ' %' : 'inconnu' ?>"
+                   data-level="<?= $batteryLevel ?? '' ?>">
+                <div class="battery-gauge__fill"></div>
+                <span class="battery-gauge__limit" id="gauge-limit" title="Limite de charge choisie"></span>
               </div>
             </div>
             <dl class="battery-meta">
+              <?php if ($hasRealLimit): ?>
+                <div class="battery-meta__item">
+                  <dt>Limite de charge</dt>
+                  <dd><?= e((string) $chargeLimit) ?> %</dd>
+                </div>
+              <?php endif; ?>
               <div class="battery-meta__item">
                 <dt>Charge programmée</dt>
                 <dd><?= $scheduledLabel !== null ? e($scheduledLabel) : 'Aucune' ?></dd>
@@ -206,6 +203,19 @@ ob_start();
               </svg>
             </button>
           </div>
+          <?php if ($scheduledLabel !== null): ?>
+            <!-- The car itself reports its next scheduled charge (ScheduledChargingStartTime
+                 telemetry signal), whichever app or screen created the schedule. -->
+            <p class="precond-note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z" />
+              </svg>
+              Le véhicule a déjà une charge programmée — prochaine échéance :
+              <strong><?= e($scheduledLabel) ?></strong>. Si elle ne figure pas ci-dessous,
+              elle a été réglée depuis le véhicule ou l'app Tesla.
+            </p>
+          <?php endif; ?>
           <?php if (empty($plans)): ?>
             <p class="precond-empty">Aucune planification pour le moment. Créez-en une avec le bouton « + ».</p>
           <?php else: ?>
