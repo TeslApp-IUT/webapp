@@ -16,7 +16,7 @@ final class VehicleTest extends TestCase
     #[Test]
     public function isAccessibleOnlyByItsOwner(): void
     {
-        $vehicle = new Vehicle(new Vin('5YJ3E1EA7KF000316'), 'user-1', 'Ma Tesla', '3');
+        $vehicle = new Vehicle(new Vin('5YJ3E1EA7KF000316'), 'user-1', 'Ma Tesla', '3', 'public-1');
 
         self::assertTrue($vehicle->isAccessibleBy('user-1'));
         self::assertFalse($vehicle->isAccessibleBy('user-2'));
@@ -30,12 +30,14 @@ final class VehicleTest extends TestCase
             'user_id' => 'user-1',
             'name' => 'Ma Tesla',
             'model_code' => '3',
+            'public_id' => 'public-1',
         ]);
 
         self::assertSame('5YJ3E1EA7KF000316', $vehicle->vin->value);
         self::assertSame('user-1', $vehicle->userId);
         self::assertSame('Ma Tesla', $vehicle->name);
         self::assertSame('3', $vehicle->modelCode);
+        self::assertSame('public-1', $vehicle->publicId);
     }
 
     #[Test]
@@ -50,5 +52,6 @@ final class VehicleTest extends TestCase
         self::assertSame('Owned', $vehicle->name);
         self::assertSame('', $vehicle->userId);
         self::assertSame('', $vehicle->modelCode);
+        self::assertSame('', $vehicle->publicId);
     }
 }

@@ -27,17 +27,19 @@ final readonly class AuthRepository
         string $email,
         string $firstName,
         string $lastName,
+        string $avatarUrl = '',
     ): void {
         try {
             $stmt = $this->pdo->prepare(
-                'INSERT INTO users (id, email, first_name, last_name) VALUES (:id, :email, :first_name, :last_name)
-                 ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email, updated_at = now(), first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name',
+                'INSERT INTO users (id, email, first_name, last_name, avatar_url) VALUES (:id, :email, :first_name, :last_name, :avatar_url)
+                 ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email, updated_at = now(), first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name, avatar_url = EXCLUDED.avatar_url',
             );
             $stmt->execute([
                 ':id' => $userId,
                 ':email' => $email,
                 ':first_name' => $firstName,
                 ':last_name' => $lastName,
+                ':avatar_url' => $avatarUrl ?: null,
             ]);
         } catch (PDOException $e) {
             throw new DatabaseException("Failed to upsert user $userId", previous: $e);
@@ -171,5 +173,103 @@ final readonly class AuthRepository
         $stmt->execute([':sub_id' => $sub_id]);
         $row = $stmt->fetch();
         return $row !== false;
+    }
+
+    /**
+     * Returns the full user row, or null if not found.
+     *
+     * @return array{id: string, email: string, first_name: string, last_name: string, avatar_url: string|null}|null
+     */
+    public function getUserById(string $userId): ?array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT id, email, first_name, last_name, avatar_url FROM users WHERE id = :id LIMIT 1',
+        );
+        $stmt->execute([':id' => $userId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row !== false ? $row : null;
+    }
+
+    /**
+     * Updates the user's editable profile fields.
+     */
+    public function updateUser(
+        string $userId,
+        string $email,
+        string $firstName,
+        string $lastName,
+    ): void {
+        try {
+            $stmt = $this->pdo->prepare(
+                'UPDATE users
+                 SET email = :email, first_name = :first_name, last_name = :last_name, updated_at = now()
+                 WHERE id = :id',
+            );
+            $stmt->execute([
+                ':id' => $userId,
+                ':email' => $email,
+                ':first_name' => $firstName,
+                ':last_name' => $lastName,
+            ]);
+        } catch (PDOException $e) {
+            throw new DatabaseException("Failed to update user $userId", previous: $e);
+        }
+    }
+
+    /**
+     * Permanently deletes a user and all cascading rows (tokens, vehicles, etc.).
+     */
+    public function deleteUser(string $userId): void
+    {
+        try {
+            $stmt = $this->pdo->prepare('DELETE FROM users WHERE id = :id');
+            $stmt->execute([':id' => $userId]);
+        } catch (PDOException $e) {
+            throw new DatabaseException("Failed to delete user $userId", previous: $e);
+        }
+    }
+
+    /**
+     * Returns the user's first and last name, or null if the user is not found.
+     *
+     * @return array{first_name: string, last_name: string}|null
+     */
+    public function getUserName(string $userId): ?array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT first_name, last_name FROM users WHERE id = :id LIMIT 1',
+        );
+        $stmt->execute([':id' => $userId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row !== false
+            ? [
+                'first_name' => (string) $row['first_name'],
+                'last_name' => (string) $row['last_name'],
+            ]
+            : null;
+    }
+
+    /**
+     * Returns the user's first, last name, email and avatar url, or null if the user is not found.
+     *
+     * @return array{first_name: string, last_name: string, email: string, avatar_url: string}|null
+     */
+    public function getCredentials(string $userId): ?array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT first_name, last_name, email, avatar_url FROM users WHERE id = :id LIMIT 1',
+        );
+        $stmt->execute([':id' => $userId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row !== false
+            ? [
+                'first_name' => (string) $row['first_name'],
+                'last_name' => (string) $row['last_name'],
+                'email' => (string) $row['email'],
+                'avatar_url' => (string) $row['avatar_url'],
+            ]
+            : null;
     }
 }

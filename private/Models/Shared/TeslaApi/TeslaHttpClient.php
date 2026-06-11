@@ -8,6 +8,7 @@ use JsonException;
 use Teslapp\Models\Auth\AuthRepository;
 use Teslapp\Models\Database;
 use Teslapp\Models\Shared\Exceptions\TeslaApiException;
+use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\TokenCipher;
 use Teslapp\Models\Shared\ValueObjects\AccessToken;
 
@@ -103,6 +104,11 @@ final class TeslaHttpClient
 
         if ($status >= 400) {
             error_log("Tesla API error $status on $method $path: $response");
+            // Fleet API answers 408 "vehicle unavailable" when the vehicle is offline or
+            // asleep — a dedicated exception lets command services wake it up and retry.
+            if ($status === 408) {
+                throw new VehicleAsleepException("Vehicle is asleep or offline ($method $path).");
+            }
             throw new TeslaApiException("Tesla API returned HTTP $status on $method $path.");
         }
 
@@ -159,6 +165,10 @@ final class TeslaHttpClient
      * is refreshed via the stored refresh token, the new material is persisted (session + DB), and
      * the fresh access token is returned.
      *
+     * When the session holds neither token (e.g. the remember-me fallback in www/index.php
+     * rebuilt the session from the cookie, which only restores `user_id`), the encrypted
+     * credentials are rehydrated from the database before falling back to the refresh flow.
+     *
      * @throws TeslaApiException if no valid token and no usable refresh token are available.
      */
     public static function getUserAccessToken(): AccessToken
@@ -171,6 +181,20 @@ final class TeslaHttpClient
         }
 
         $refreshToken = $_SESSION['refresh_token'] ?? null;
+
+        // Session lost its tokens but the user is still logged in: rebuild the cache from the
+        // encrypted credentials stored in the database. A rehydrated access token may still be
+        // valid, in which case it is reused without a round trip to Tesla.
+        if (!is_string($refreshToken) || $refreshToken === '') {
+            $refreshToken = self::rehydrateSessionFromDatabase();
+
+            $cached = $_SESSION['access_token'] ?? null;
+            $expiresAt = (int) ($_SESSION['access_token_expires_at'] ?? 0);
+            if (is_string($cached) && $cached !== '' && time() < $expiresAt) {
+                return new AccessToken($cached);
+            }
+        }
+
         if (!is_string($refreshToken) || $refreshToken === '') {
             throw new TeslaApiException('No authenticated user: missing refresh token in session.');
         }
@@ -205,6 +229,59 @@ final class TeslaHttpClient
         }
 
         return new AccessToken($identity['accessToken']);
+    }
+
+    /**
+     * Rebuilds the session token cache from the encrypted credentials stored in the database for
+     * the currently logged-in user (`$_SESSION['user_id']`).
+     *
+     * The remember-me re-auth (www/index.php) only restores `user_id`; the OAuth tokens live
+     * encrypted in `oauth2_token` and must be decrypted back into the session before any Tesla
+     * API call. Returns the decrypted refresh token, or null when no usable row exists.
+     */
+    private static function rehydrateSessionFromDatabase(): ?string
+    {
+        $userId = (string) ($_SESSION['user_id'] ?? '');
+        if ($userId === '') {
+            return null;
+        }
+
+        $repository = new AuthRepository(Database::pdo());
+        $credentials = $repository->getLatestCredentials($userId);
+        if ($credentials === null) {
+            return null;
+        }
+
+        $cipher = new TokenCipher(
+            base64_decode(getenv('TESLAPP_TOKEN_ENCRYPTION_KEY'), strict: true),
+        );
+
+        try {
+            $accessToken = $cipher->decrypt(
+                (string) $credentials['access_token_encrypted'],
+                (string) $credentials['access_token_nonce'],
+            );
+            $refreshToken = $cipher->decrypt(
+                (string) $credentials['refresh_token_encrypted'],
+                (string) $credentials['refresh_token_nonce'],
+            );
+        } catch (\RuntimeException) {
+            // Corrupt/undecryptable material (e.g. a rotated encryption key): treat as no token.
+            return null;
+        }
+
+        // `access_token_expired_at` comes back from Postgres as a timestamptz string; normalise
+        // it to an epoch and apply the same safety buffer as the session/partner tokens.
+        $rawExpiry = $credentials['access_token_expired_at'];
+        $accessExpiresAt = is_numeric($rawExpiry)
+            ? (int) $rawExpiry
+            : (int) strtotime((string) $rawExpiry);
+
+        $_SESSION['access_token'] = $accessToken;
+        $_SESSION['refresh_token'] = $refreshToken;
+        $_SESSION['access_token_expires_at'] = $accessExpiresAt - (self::TIMEOUT_SECONDS + 60);
+
+        return $refreshToken;
     }
 
     /**

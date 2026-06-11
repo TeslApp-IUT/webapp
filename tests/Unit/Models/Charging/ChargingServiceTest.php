@@ -10,8 +10,12 @@ use PHPUnit\Framework\TestCase;
 use Teslapp\Models\Charging\ChargingService;
 use Teslapp\Models\Charging\ValueObjects\ChargeLimit;
 use Teslapp\Models\Charging\ValueObjects\ChargingAmps;
+use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\ChargingCommandClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleWaker;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 
@@ -29,7 +33,11 @@ final class ChargingServiceTest extends TestCase
         $client = $this->createMock(ChargingCommandClient::class);
         $client->expects($this->once())->method('startCharging')->with($vin);
 
-        $service = new ChargingService($client, $this->vehicles(owned: true, vin: $vin));
+        $service = new ChargingService(
+            $client,
+            $this->vehicles(owned: true, vin: $vin),
+            $this->waker(),
+        );
 
         $service->start(self::USER, $vin);
     }
@@ -40,7 +48,7 @@ final class ChargingServiceTest extends TestCase
         $client = $this->createMock(ChargingCommandClient::class);
         $client->expects($this->never())->method('startCharging');
 
-        $service = new ChargingService($client, $this->vehicles(owned: false));
+        $service = new ChargingService($client, $this->vehicles(owned: false), $this->waker());
 
         $this->expectException(VehicleUnauthorizedException::class);
         $service->start(self::USER, new Vin(self::VIN));
@@ -54,7 +62,11 @@ final class ChargingServiceTest extends TestCase
         $client = $this->createMock(ChargingCommandClient::class);
         $client->expects($this->once())->method('stopCharging')->with($vin);
 
-        $service = new ChargingService($client, $this->vehicles(owned: true, vin: $vin));
+        $service = new ChargingService(
+            $client,
+            $this->vehicles(owned: true, vin: $vin),
+            $this->waker(),
+        );
 
         $service->stop(self::USER, $vin);
     }
@@ -68,7 +80,11 @@ final class ChargingServiceTest extends TestCase
         $client = $this->createMock(ChargingCommandClient::class);
         $client->expects($this->once())->method('setChargeLimit')->with($vin, $limit);
 
-        $service = new ChargingService($client, $this->vehicles(owned: true, vin: $vin));
+        $service = new ChargingService(
+            $client,
+            $this->vehicles(owned: true, vin: $vin),
+            $this->waker(),
+        );
 
         $service->setChargeLimit(self::USER, $vin, $limit);
     }
@@ -79,7 +95,7 @@ final class ChargingServiceTest extends TestCase
         $client = $this->createMock(ChargingCommandClient::class);
         $client->expects($this->never())->method('setChargeLimit');
 
-        $service = new ChargingService($client, $this->vehicles(owned: false));
+        $service = new ChargingService($client, $this->vehicles(owned: false), $this->waker());
 
         $this->expectException(VehicleUnauthorizedException::class);
         $service->setChargeLimit(self::USER, new Vin(self::VIN), new ChargeLimit(80));
@@ -94,9 +110,52 @@ final class ChargingServiceTest extends TestCase
         $client = $this->createMock(ChargingCommandClient::class);
         $client->expects($this->once())->method('setChargingAmps')->with($vin, $amps);
 
-        $service = new ChargingService($client, $this->vehicles(owned: true, vin: $vin));
+        $service = new ChargingService(
+            $client,
+            $this->vehicles(owned: true, vin: $vin),
+            $this->waker(),
+        );
 
         $service->setChargingAmps(self::USER, $vin, $amps);
+    }
+
+    #[Test]
+    public function startWakesTheVehicleAndRetriesWhenAsleep(): void
+    {
+        $vin = new Vin(self::VIN);
+
+        $calls = 0;
+        $client = $this->createMock(ChargingCommandClient::class);
+        $client
+            ->expects($this->exactly(2))
+            ->method('startCharging')
+            ->with($vin)
+            ->willReturnCallback(function () use (&$calls): void {
+                if (++$calls === 1) {
+                    throw new VehicleAsleepException('asleep');
+                }
+            });
+
+        $wakeCommands = $this->createMock(VehicleCommandClient::class);
+        $wakeCommands->expects($this->once())->method('wakeUp')->with($vin);
+
+        $service = new ChargingService(
+            $client,
+            $this->vehicles(owned: true, vin: $vin),
+            new VehicleWaker($wakeCommands, $this->createStub(VehicleStateClient::class), [0]),
+        );
+
+        $service->start(self::USER, $vin);
+    }
+
+    /** Wake-transparent waker for the tests that do not exercise the asleep path. */
+    private function waker(): VehicleWaker
+    {
+        return new VehicleWaker(
+            $this->createStub(VehicleCommandClient::class),
+            $this->createStub(VehicleStateClient::class),
+            [0],
+        );
     }
 
     private function vehicles(bool $owned, ?Vin $vin = null): VehicleRepositoryInterface

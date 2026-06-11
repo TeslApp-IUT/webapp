@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
-    <file url="file://$PROJECT_DIR$/db/migration_vehicle_public_id.sql" value="e6b85880-def6-454c-8535-c961c40ec26f" />
     <file url="file://$PROJECT_DIR$/db/script_creation_app.sql" value="e6b85880-def6-454c-8535-c961c40ec26f" />
     <file url="file://$PROJECT_DIR$/db/script_creation_telemetry.sql" value="e6b85880-def6-454c-8535-c961c40ec26f" />
     <file url="file://$PROJECT_DIR$/db/script_insertion_app.sql" value="e6b85880-def6-454c-8535-c961c40ec26f" />
     <file url="file://$PROJECT_DIR$/private/Models/Auth/AuthRepository.php" value="e6b85880-def6-454c-8535-c961c40ec26f" />
+    <file url="file://$PROJECT_DIR$/private/Models/Navigation/NavigationRepository.php" value="e6b85880-def6-454c-8535-c961c40ec26f" />
   </component>
 </project>

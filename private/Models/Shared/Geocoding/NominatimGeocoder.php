@@ -32,25 +32,105 @@ final readonly class NominatimGeocoder implements GeocoderInterface
             return null;
         }
 
-        $label =
+        $fallback =
             isset($hit['display_name']) && is_string($hit['display_name'])
                 ? $hit['display_name']
                 : $address;
+        $name = isset($hit['name']) && is_string($hit['name']) ? $hit['name'] : null;
+        $label = $this->compactLabel($hit['address'] ?? null, $fallback, $name);
 
         return new GeocodeResult(new GeoPoint((float) $hit['lat'], (float) $hit['lon']), $label);
     }
 
-    public function reverseGeocode(GeoPoint $point): ?string
+    public function reverseGeocode(GeoPoint $point): ?ReverseGeocodeResult
     {
         $data = $this->get('/reverse', [
             'lat' => $point->latitude,
             'lon' => $point->longitude,
             'format' => 'jsonv2',
+            // Building-level precision, with the address split into fields
+            // so a short "number street, postcode city" label can be built.
+            'zoom' => 18,
+            'addressdetails' => 1,
         ]);
 
-        return isset($data['display_name']) && is_string($data['display_name'])
-            ? $data['display_name']
+        if (!isset($data['display_name']) || !is_string($data['display_name'])) {
+            return null;
+        }
+
+        $full = $data['display_name'];
+        $name = isset($data['name']) && is_string($data['name']) ? $data['name'] : null;
+        $short = $this->conciseLabel($data['address'] ?? null, $full, $name);
+
+        return new ReverseGeocodeResult($short, $full);
+    }
+
+    /**
+     * Very short label for a point: just "road, city" (or "place, city"),
+     * dropping the house number and postcode. Falls back to the verbose
+     * display name when address details are missing.
+     *
+     * @param mixed $address the `address` object of a Nominatim response
+     * @param string|null $name the top-level `name` field, empty for plain addresses
+     */
+    private function conciseLabel(mixed $address, string $fallback, ?string $name = null): string
+    {
+        if (!is_array($address)) {
+            return $fallback;
+        }
+
+        $part = static fn(string $key): ?string => isset($address[$key]) &&
+        is_string($address[$key]) &&
+        $address[$key] !== ''
+            ? $address[$key]
             : null;
+
+        $road = $part('road') ?? $part('pedestrian');
+        $place = $name ?? $road;
+        $city = $part('city') ?? ($part('town') ?? ($part('village') ?? $part('municipality')));
+
+        $parts = array_filter(
+            [$place, $city],
+            static fn(?string $s): bool => $s !== null && $s !== '',
+        );
+        $label = implode(', ', $parts);
+
+        return $label !== '' ? $label : $fallback;
+    }
+
+    /**
+     * Short human label ("413 Avenue Gaston Berger, 13090 Aix-en-Provence") built
+     * from Nominatim address details; falls back to the verbose display name.
+     * Place names are kept as a prefix ("Tour Eiffel, 5 Avenue...").
+     *
+     * @param mixed $address the `address` object of a Nominatim response
+     * @param string|null $name the top-level `name` field, empty for plain addresses
+     */
+    private function compactLabel(mixed $address, string $fallback, ?string $name = null): string
+    {
+        if (!is_array($address)) {
+            return $fallback;
+        }
+
+        $part = static fn(string $key): ?string => isset($address[$key]) &&
+        is_string($address[$key]) &&
+        $address[$key] !== ''
+            ? $address[$key]
+            : null;
+
+        $road = $part('road') ?? $part('pedestrian');
+        $street = trim(($part('house_number') ?? '') . ' ' . ($road ?? ''));
+        $city = $part('city') ?? ($part('town') ?? ($part('village') ?? $part('municipality')));
+        $cityLine = trim(($part('postcode') ?? '') . ' ' . ($city ?? ''));
+
+        $parts = array_filter([$street, $cityLine], static fn(string $s): bool => $s !== '');
+        if ($name !== null && $name !== '' && $name !== $road && $name !== $street) {
+            array_unshift($parts, $name);
+        }
+
+        $label = implode(', ', $parts);
+
+        return $label !== '' ? $label : $fallback;
     }
 
     /**

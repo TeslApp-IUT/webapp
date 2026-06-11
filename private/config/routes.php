@@ -18,12 +18,14 @@ use Teslapp\Controllers\Auth\AuthSignUpController;
 use Teslapp\Controllers\Charging\ChargingController;
 use Teslapp\Controllers\Charging\ChargingPlannerController;
 use Teslapp\Controllers\Climate\ClimateController;
-use Teslapp\Controllers\GeocodingController;
 use Teslapp\Controllers\Climate\PreconditioningController;
 use Teslapp\Controllers\DashboardController;
+use Teslapp\Controllers\GeocodingController;
+use Teslapp\Controllers\Navigation\NavigationController;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\VehicleController;
 use Teslapp\Controllers\VehicleCommandController;
+use Teslapp\Controllers\Auth\ProfileController;
 
 return [
     // URLs for static pages accessible to everyone
@@ -42,6 +44,10 @@ return [
     'dashboard/{vehicleId}/vehicle' => [VehicleCommandController::class, 'page', true],
     'dashboard/{vehicleId}/ac' => [ClimateController::class, 'ac', true],
     'dashboard/{vehicleId}/battery' => [ChargingController::class, 'battery', true],
+    'dashboard/{vehicleId}/navigation' => [NavigationController::class, 'page', true],
+
+    // Navigation (AJAX JSON endpoint) — single trip details, id passed as ?id= query param
+    'dashboard/{vehicleId}/navigation/trip' => [NavigationController::class, 'trip', true],
 
     // Vehicle commands (AJAX JSON endpoints) — vehicleId in URL, resolved to VIN server-side
     'dashboard/{vehicleId}/lock' => [VehicleCommandController::class, 'lock', true],
@@ -125,4 +131,9 @@ return [
     // Geocoding
     'geocode' => [GeocodingController::class, 'geocode', true],
     'geocode/reverse' => [GeocodingController::class, 'reverse', true],
+
+    //Profile page
+    'profile' => [ProfileController::class, 'profile', false],
+    'profile/update' => [ProfileController::class, 'update', false],
+    'profile/delete' => [ProfileController::class, 'delete', false],
 ];

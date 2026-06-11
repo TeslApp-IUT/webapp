@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/TeslApp-webapp.iml" filepath="$PROJECT_DIR$/.idea/TeslApp-webapp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Teslapp.iml" filepath="$PROJECT_DIR$/Teslapp.iml" />
     </modules>
   </component>
 </project>

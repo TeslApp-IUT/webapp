@@ -1,13 +1,17 @@
 <?php
 /**
  * Vehicle command page — the "Véhicule" dashboard tab (issue #26).
- * A primary "wake" banner on top, then remote command tiles grouped by
- * category. Each wired control (the hero + every tile) is a <button data-action>
- * that POSTs to /vehicle/<action> (handled by VehicleCommandController); the VIN
- * is resolved server-side from the session. The JS (vehicle-actions.js) toggles
- * an .is-loading class and writes the shared [data-action-feedback] element — it
- * never rewrites a button's content, so the SVG pictograms are preserved.
+ * Remote command tiles grouped by category. Each tile is a <button data-action>
+ * that POSTs to /dashboard/<vehicleId>/<action> (VehicleCommandController); the
+ * VIN is resolved server-side. There is no wake button: the service wakes the
+ * vehicle and retries automatically when Tesla reports it asleep. The JS
+ * (vehicle-actions.js) toggles an .is-loading class and writes the shared
+ * [data-action-feedback] element — it never rewrites a button's content, so the
+ * SVG pictograms are preserved.
  */
+
+/** @var string $vehicleId Vehicle public id, set by the rendering controller. */
+
 $title = 'Commandes du véhicule — TeslApp';
 $description = 'Commandes à distance de votre véhicule Tesla : verrouillage, klaxon, coffres et trappe de charge.';
 $header = 'user';
@@ -24,30 +28,11 @@ ob_start();
       <div class="dashboard-content">
         <header class="commands-header">
           <h1 class="dashboard-title">Commandes du véhicule</h1>
-          <a href="/dashboard" class="btn-switch-vehicle">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
-            </svg>
-            Changer de véhicule
-          </a>
         </header>
 
         <p class="actions-feedback" role="status" aria-live="polite" data-action-feedback></p>
 
         <div class="vehicle-commands">
-          <!-- Primary action: wake the vehicle -->
-          <button class="command-hero" type="button" data-action="wake">
-            <span class="command-hero__icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9" />
-              </svg>
-            </span>
-            <span class="command-hero__text">
-              <span class="command-hero__title">Réveiller le véhicule</span>
-              <span class="command-hero__hint">À lancer avant une commande si la voiture est en veille</span>
-            </span>
-          </button>
-
           <!-- Accès & sécurité -->
           <section class="command-group">
             <h2 class="command-group__title">Accès &amp; sécurité</h2>

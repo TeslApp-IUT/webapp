@@ -12,6 +12,7 @@ enum VehicleConnectivityStatus: string
     case Online = 'online';
     case Asleep = 'asleep';
     case Offline = 'offline';
+    case Waking = 'waking';
     case Unknown = 'unknown';
 
     public static function fromApiState(string $state): self
@@ -25,6 +26,7 @@ enum VehicleConnectivityStatus: string
             self::Online => 'En ligne',
             self::Asleep => 'En veille',
             self::Offline => 'Hors ligne',
+            self::Waking => 'Réveil en cours',
             self::Unknown => 'Statut inconnu',
         };
     }

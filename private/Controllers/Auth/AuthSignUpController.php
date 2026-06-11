@@ -83,7 +83,8 @@ final readonly class AuthSignUpController
         }
 
         // 1. Create the user row FIRST — jwt.sub / oauth2_token.user_id FK onto users.id.
-        $this->authRepository->ensureUser($sub, $email, $firstName, $lastName);
+        $avatarUrl = (string) ($_SESSION['signup_tmp_profile_picture'] ?? '');
+        $this->authRepository->ensureUser($sub, $email, $firstName, $lastName, $avatarUrl);
 
         // 2. Persist the OAuth credentials gathered during the callback.
         $claims = $_SESSION['signup_tmp_claims'] ?? null;
@@ -100,6 +101,7 @@ final readonly class AuthSignUpController
         $this->rememberToken->issue($sub);
         $this->cleanupSignupSession();
         $_SESSION['user_id'] = $sub;
+        $_SESSION['user_display_name'] = trim($firstName . ' ' . $lastName);
         session_regenerate_id(true);
 
         Http::redirect('/dashboard');

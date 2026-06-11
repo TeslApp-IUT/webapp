@@ -25,3 +25,30 @@ if (!function_exists('e')) {
         return htmlspecialchars($value ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
     }
 }
+
+if (!function_exists('toLocalTime')) {
+    /**
+     * Formats a UTC database timestamp in French local time.
+     *
+     * The database and the telemetry ingestion store TIMESTAMP columns in UTC;
+     * views render them in Europe/Paris, the project's audience.
+     *
+     * @param string|null $utcDateTime Raw DB value (null or '' returns null)
+     * @param string $format DateTimeImmutable::format() pattern
+     * @return string|null The formatted local time, or the raw value if unparsable
+     */
+    function toLocalTime(?string $utcDateTime, string $format = 'd/m · H:i'): ?string
+    {
+        if ($utcDateTime === null || $utcDateTime === '') {
+            return null;
+        }
+
+        try {
+            return (new DateTimeImmutable($utcDateTime, new DateTimeZone('UTC')))
+                ->setTimezone(new DateTimeZone('Europe/Paris'))
+                ->format($format);
+        } catch (Exception) {
+            return $utcDateTime;
+        }
+    }
+}

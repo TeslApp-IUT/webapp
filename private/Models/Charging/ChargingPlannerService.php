@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Teslapp\Models\Charging;
 
+use InvalidArgumentException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\ChargingCommandClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleWaker;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
 use Teslapp\Models\Shared\ValueObjects\GeoPoint;
 use Teslapp\Models\Shared\ValueObjects\Vin;
@@ -13,7 +15,8 @@ use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 
 /**
  * Charging schedule use cases: CRUD on a vehicle's charging windows
- * (typically off-peak tariff windows).
+ * (typically off-peak tariff windows). Schedule pushes reach the car, so they
+ * run through the shared VehicleWaker (wake a sleeping vehicle, then retry).
  */
 final class ChargingPlannerService
 {
@@ -21,6 +24,7 @@ final class ChargingPlannerService
         private readonly ChargingPlannerRepositoryInterface $plannerRepository,
         private readonly VehicleRepositoryInterface $vehicleRepository,
         private readonly ChargingCommandClient $chargingCommands,
+        private readonly VehicleWaker $waker,
     ) {}
 
     /**
@@ -111,7 +115,11 @@ final class ChargingPlannerService
         $existing = $this->requireOwnedPlanner($userId, $vin, $planId);
 
         if ($existing->teslaScheduleId !== null) {
-            $this->chargingCommands->removeChargeSchedule($vin, $existing->teslaScheduleId);
+            $scheduleId = $existing->teslaScheduleId;
+            $this->waker->runAwake(
+                $vin,
+                fn() => $this->chargingCommands->removeChargeSchedule($vin, $scheduleId),
+            );
         }
 
         $this->plannerRepository->deleteById($planId);
@@ -140,17 +148,21 @@ final class ChargingPlannerService
             return;
         }
 
-        $teslaScheduleId = $this->chargingCommands->addChargeSchedule(
+        $location = $planner->location;
+        $teslaScheduleId = $this->waker->runAwake(
             $planner->vin,
-            $planner->startTimeMinutes(),
-            $planner->endTimeMinutes(),
-            $planner->daysOfWeekCsv(),
-            $planner->enabled,
-            $planner->deactivateAfterSuccess,
-            $planner->location->latitude,
-            $planner->location->longitude,
-            $planner->locationLabel,
-            $planner->teslaScheduleId,
+            fn(): ?int => $this->chargingCommands->addChargeSchedule(
+                $planner->vin,
+                $planner->startTimeMinutes(),
+                $planner->endTimeMinutes(),
+                $planner->daysOfWeekCsv(),
+                $planner->enabled,
+                $planner->deactivateAfterSuccess,
+                $location->latitude,
+                $location->longitude,
+                $planner->locationLabel,
+                $planner->teslaScheduleId,
+            ),
         );
 
         if ($teslaScheduleId !== null) {
@@ -162,6 +174,16 @@ final class ChargingPlannerService
     private function requireOwnedPlanner(string $userId, Vin $vin, string $planId): ChargingPlanner
     {
         $this->assertOwnership($vin, $userId);
+
+        // Reject non-UUID ids before they reach PostgreSQL (uuid cast error -> 500).
+        if (
+            preg_match(
+                '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i',
+                $planId,
+            ) !== 1
+        ) {
+            throw new InvalidArgumentException('Invalid plan id');
+        }
 
         $planner = $this->plannerRepository->findById($planId);
         if ($planner === null || $planner->vin->value !== $vin->value) {

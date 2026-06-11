@@ -68,6 +68,17 @@ if (!isset($_SESSION['user_id'])) {
     }
 }
 
+// Populate the display name for the header if not already set (covers remember-me re-auth).
+if (isset($_SESSION['user_id']) && !isset($_SESSION['user_display_name'])) {
+    /** @var \Teslapp\Models\Auth\AuthRepository $authRepo */
+    $authRepo = $container->get(\Teslapp\Models\Auth\AuthRepository::class);
+    $userName = $authRepo->getUserName((string) $_SESSION['user_id']);
+    $_SESSION['user']['first_name'] = $userName['first_name'];
+    $_SESSION['user']['last_name'] = $userName['last_name'];
+    $_SESSION['user_display_name'] =
+        $userName !== null ? trim($userName['first_name'] . ' ' . $userName['last_name']) : '';
+}
+
 $_SESSION['LAST_ACTIVITY'] = $now;
 
 // Load the developer flag once per session (keyed on the real user, not an impersonated one).

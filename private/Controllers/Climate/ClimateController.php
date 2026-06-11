@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Teslapp\Controllers\Climate;
@@ -10,6 +11,7 @@ use Teslapp\Models\Climate\ValueObjects\ClimateAction;
 use Teslapp\Models\Climate\ValueObjects\KeeperMode;
 use Teslapp\Models\Climate\ValueObjects\Temperature;
 use Teslapp\Models\Shared\Exceptions\TeslaAppException;
+use Teslapp\Models\Shared\Exceptions\VehicleAsleepException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Shared\VehicleTelemetryRepository;
@@ -18,9 +20,16 @@ use Teslapp\Utils\Csrf;
 use Teslapp\Utils\Flash;
 use Teslapp\Utils\Http;
 use Teslapp\Utils\Route;
+use Teslapp\Models\Climate\ValueObjects\CopTemp;
 
+/**
+ * Controller responsible for climate-related commands.
+ * Handles climate activation, deactivation, keeper mode and preconditioning plans.
+ **/
 final class ClimateController
 {
+    private const ASLEEP_MESSAGE = 'Le véhicule ne s\'est pas réveillé à temps. Réessayez dans un instant.';
+
     public function __construct(
         private readonly ClimateService $climateService,
         private readonly PreconditioningService $preconditioningService,
@@ -29,8 +38,12 @@ final class ClimateController
     ) {}
 
     /**
+     * GET dashboard/{vehicleId}/ac
+     * Displays the climate control page with the preconditioning plans for the selected vehicle.
+     * Redirects to vehicle selection if the vehicle is invalid or unauthorized.
+     *
      * @throws \Exception
-     */
+     **/
     public function ac(): void
     {
         ['userId' => $userId, 'vin' => $vin, 'vehicleId' => $vehicleId] = $this->requireVehicle();
@@ -43,10 +56,17 @@ final class ClimateController
         }
 
         $data = $this->telemetryRepository->latest('temp_int', 'inside_temp', $vin);
+        $lastSeenAt = $this->telemetryRepository->getLatestTelemetry($vin)['last_seen_at'] ?? null;
 
         require_once __DIR__ . '/../../Views/Climate/ac.php';
     }
 
+    /**
+     * POST climate/toggle
+     * Activates or deactivates the climate system based on the 'action' POST parameter.
+     * When starting, optionally applies the requested temperature.
+     * Redirects to the climate page after the command is sent.
+     **/
     public function toggle(): void
     {
         $vehicleId = (string) (filter_input(INPUT_POST, 'vehicle_id', FILTER_UNSAFE_RAW) ?? '');
@@ -73,6 +93,9 @@ final class ClimateController
             }
 
             Flash::set('success', 'Commande envoyée.');
+        } catch (VehicleAsleepException) {
+            // The service already woke the vehicle and retried; it needs more time.
+            Flash::set('error', self::ASLEEP_MESSAGE);
         } catch (TeslaAppException $e) {
             error_log('Climate toggle failed: ' . $e->getMessage());
             Flash::set('error', 'Impossible d\'envoyer la commande à Tesla.');
@@ -81,6 +104,11 @@ final class ClimateController
         Http::redirect($page);
     }
 
+    /**
+     * POST climate/keeper
+     * Sets the climate keeper mode for the selected vehicle
+     * Modes: 0 = Off, 1 = Keep, 2 = Dog, 3 = Camp
+     **/
     public function setKeeperMode(): void
     {
         $vehicleId = (string) (filter_input(INPUT_POST, 'vehicle_id', FILTER_UNSAFE_RAW) ?? '');
@@ -100,15 +128,34 @@ final class ClimateController
         try {
             $this->climateService->applyKeeperMode($userId, $vin, $mode);
             Flash::set('success', 'Mode keeper appliqué.');
+        } catch (VehicleAsleepException) {
+            Flash::set('error', self::ASLEEP_MESSAGE);
         } catch (TeslaAppException $e) {
             error_log('Keeper mode failed: ' . $e->getMessage());
             Flash::set('error', 'Impossible d\'appliquer le mode keeper.');
         }
 
+        if ($mode === KeeperMode::Keep) {
+            $rawCop = filter_input(INPUT_POST, 'cop_temp', FILTER_VALIDATE_INT);
+            $copTemp = $rawCop !== false ? CopTemp::tryFrom($rawCop) : null;
+
+            if ($copTemp !== null) {
+                try {
+                    $this->climateService->applyCopTemp($userId, $vin, $copTemp);
+                } catch (TeslaAppException $e) {
+                    error_log('COP temp failed: ' . $e->getMessage());
+                }
+            }
+        }
+
         Http::redirect($page);
     }
 
-    /** @return array{userId: string, vin: Vin, vehicleId: string} */
+    /**
+     * Resolves the vehicle targeted by the {vehicleId} route parameter.
+     *
+     * @return array{userId: string, vin: Vin, vehicleId: string}
+     **/
     private function requireVehicle(): array
     {
         $vehicleId = Route::param('vehicleId');

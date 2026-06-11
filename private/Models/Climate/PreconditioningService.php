@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace Teslapp\Models\Climate;
 
+use InvalidArgumentException;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\ClimateCommandClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleWaker;
 use Teslapp\Models\Shared\ValueObjects\DayOfWeek;
 use Teslapp\Models\Shared\ValueObjects\GeoPoint;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 
 /**
- * Preconditioning use cases: CRUD on a vehicle's schedules.
+ * Preconditioning use cases: CRUD on a vehicle's schedules. Schedule pushes
+ * reach the car, so they run through the shared VehicleWaker (wake a sleeping
+ * vehicle, then retry).
  */
 final class PreconditioningService
 {
@@ -20,6 +24,7 @@ final class PreconditioningService
         private readonly PreconditioningPlannerRepositoryInterface $plannerRepository,
         private readonly VehicleRepositoryInterface $vehicleRepository,
         private readonly ClimateCommandClient $climateCommands,
+        private readonly VehicleWaker $waker,
     ) {}
 
     /**
@@ -34,6 +39,8 @@ final class PreconditioningService
     }
 
     /**
+     * A plan must have a location (Tesla schedules are geofenced).
+     *
      * @param list<DayOfWeek> $days
      * @return string the new planner id
      * @throws VehicleUnauthorizedException if the user does not own the vehicle
@@ -45,7 +52,7 @@ final class PreconditioningService
         array $days,
         bool $memorizeLongTerm,
         bool $enabled,
-        ?GeoPoint $location = null,
+        GeoPoint $location,
         ?string $locationLabel = null,
     ): string {
         $this->assertOwnership($vin, $userId);
@@ -79,7 +86,7 @@ final class PreconditioningService
         array $days,
         bool $memorizeLongTerm,
         bool $enabled,
-        ?GeoPoint $location = null,
+        GeoPoint $location,
         ?string $locationLabel = null,
     ): void {
         $existing = $this->requireOwnedPlanner($userId, $vin, $planId);
@@ -106,7 +113,11 @@ final class PreconditioningService
         $existing = $this->requireOwnedPlanner($userId, $vin, $planId);
 
         if ($existing->teslaScheduleId !== null) {
-            $this->climateCommands->removePreconditionSchedule($vin, $existing->teslaScheduleId);
+            $scheduleId = $existing->teslaScheduleId;
+            $this->waker->runAwake(
+                $vin,
+                fn() => $this->climateCommands->removePreconditionSchedule($vin, $scheduleId),
+            );
         }
 
         $this->plannerRepository->deleteById($planId);
@@ -114,13 +125,30 @@ final class PreconditioningService
 
     /**
      * Enables or disables a schedule from the list, without opening the edit form.
-     * A disabled schedule stays listed and can be re-enabled.
+     * A disabled schedule stays listed and can be re-enabled. The new state is
+     * also pushed to the car.
      *
      * @throws VehicleUnauthorizedException if the vehicle or planner isn't the user's
      */
     public function setPlanEnabled(string $userId, Vin $vin, string $planId, bool $enabled): void
     {
-        $this->requireOwnedPlanner($userId, $vin, $planId);
+        $existing = $this->requireOwnedPlanner($userId, $vin, $planId);
+
+        // Car first: if the push fails, the row keeps the old state.
+        $this->pushAndStore(
+            $planId,
+            new PreconditioningPlanner(
+                id: $existing->id,
+                vin: $existing->vin,
+                activationHour: $existing->activationHour,
+                deactivateAfterSuccess: $existing->deactivateAfterSuccess,
+                days: $existing->days,
+                enabled: $enabled,
+                location: $existing->location,
+                locationLabel: $existing->locationLabel,
+                teslaScheduleId: $existing->teslaScheduleId,
+            ),
+        );
 
         $this->plannerRepository->setEnabled($planId, $enabled);
     }
@@ -135,15 +163,19 @@ final class PreconditioningService
             return;
         }
 
-        $teslaScheduleId = $this->climateCommands->addPreconditionSchedule(
+        $location = $planner->location;
+        $teslaScheduleId = $this->waker->runAwake(
             $planner->vin,
-            $planner->preconditionTimeMinutes(),
-            $planner->daysOfWeekCsv(),
-            $planner->enabled,
-            $planner->deactivateAfterSuccess,
-            $planner->location->latitude,
-            $planner->location->longitude,
-            $planner->teslaScheduleId,
+            fn(): ?int => $this->climateCommands->addPreconditionSchedule(
+                $planner->vin,
+                $planner->preconditionTimeMinutes(),
+                $planner->daysOfWeekCsv(),
+                $planner->enabled,
+                $planner->deactivateAfterSuccess,
+                $location->latitude,
+                $location->longitude,
+                $planner->teslaScheduleId,
+            ),
         );
 
         if ($teslaScheduleId !== null) {
@@ -158,6 +190,16 @@ final class PreconditioningService
         string $planId,
     ): PreconditioningPlanner {
         $this->assertOwnership($vin, $userId);
+
+        // Reject non-UUID ids before they reach PostgreSQL (uuid cast error -> 500).
+        if (
+            preg_match(
+                '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i',
+                $planId,
+            ) !== 1
+        ) {
+            throw new InvalidArgumentException('Invalid plan id');
+        }
 
         $planner = $this->plannerRepository->findById($planId);
         if ($planner === null || $planner->vin->value !== $vin->value) {

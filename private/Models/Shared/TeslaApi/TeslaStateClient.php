@@ -24,7 +24,7 @@ final readonly class TeslaStateClient implements VehicleStateClient
 
         $vehicles = [];
         foreach ($response as $row) {
-            if (is_array($row)) {
+            if (is_array($row) && $row['access_type'] === 'OWNER') {
                 $vehicles[] = Vehicle::fromTeslaResponse($row);
             }
         }

@@ -14,6 +14,7 @@ use Teslapp\Controllers\Charging\ChargingController;
 use Teslapp\Controllers\Charging\ChargingPlannerController;
 use Teslapp\Controllers\Climate\PreconditioningController;
 use Teslapp\Controllers\GeocodingController;
+use Teslapp\Controllers\Navigation\NavigationController;
 use Teslapp\Models\Charging\ChargingPlannerRepository;
 use Teslapp\Models\Charging\ChargingPlannerRepositoryInterface;
 use Teslapp\Models\Charging\ChargingPlannerService;
@@ -24,16 +25,20 @@ use Teslapp\Models\Auth\RememberTokenRepository;
 use Teslapp\Models\Climate\PreconditioningPlannerRepository;
 use Teslapp\Models\Climate\PreconditioningPlannerRepositoryInterface;
 use Teslapp\Models\Climate\PreconditioningService;
+use Teslapp\Models\Navigation\NavigationRepository;
+use Teslapp\Models\Navigation\NavigationRepositoryInterface;
 use Teslapp\Models\Shared\TokenCipher;
 use Teslapp\Controllers\StaticPagesController;
 use Teslapp\Controllers\DashboardController;
 use Teslapp\Controllers\VehicleCommandController;
 use Teslapp\Controllers\VehicleController;
 use Teslapp\Models\Database;
+use Teslapp\Models\Shared\Geocoding\CachingGeocoder;
 use Teslapp\Models\Shared\Geocoding\GeocoderInterface;
 use Teslapp\Models\Shared\Geocoding\NominatimGeocoder;
 use Teslapp\Models\Shared\TeslaApi\ChargingCommandClient;
 use Teslapp\Models\Shared\TeslaApi\ClimateCommandClient;
+use Teslapp\Models\Shared\TeslaApi\ClimateControlClient;
 use Teslapp\Models\Shared\TeslaApi\TeslaChargingClient;
 use Teslapp\Models\Shared\TeslaApi\TeslaClimateClient;
 use Teslapp\Models\Shared\TeslaApi\TeslaCommandClient;
@@ -41,6 +46,7 @@ use Teslapp\Models\Shared\TeslaApi\TeslaStateClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleCommandClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleStateClient;
 use Teslapp\Models\Shared\TeslaApi\VehicleTelemetryRepositoryInterface;
+use Teslapp\Models\Shared\TeslaApi\VehicleWaker;
 use Teslapp\Models\Shared\VehicleTelemetryRepository;
 use Teslapp\Models\Vehicle\VehicleCommandService;
 use Teslapp\Models\Vehicle\VehicleRepository;
@@ -51,10 +57,19 @@ use Teslapp\Controllers\Climate\ClimateController;
 use Teslapp\Models\Climate\ClimateService;
 use Teslapp\Models\Shared\TeslaApi\ClimateClient;
 use Teslapp\Utils\RememberToken;
+use Teslapp\Controllers\Auth\ProfileController;
 
 $container = new Container();
 
 // Controllers
+
+$container->set(
+    ProfileController::class,
+    static fn(Container $c): ProfileController => new ProfileController(
+        $c->get(AuthRepository::class),
+    ),
+);
+
 $container->set(
     StaticPagesController::class,
     static fn(): StaticPagesController => new StaticPagesController(),
@@ -159,10 +174,15 @@ $container->set(
     static fn(): ClimateClient => new ClimateClient(TESLA_COMMANDS_DRY_RUN),
 );
 $container->set(
+    ClimateControlClient::class,
+    static fn(Container $c): ClimateControlClient => $c->get(ClimateClient::class),
+);
+$container->set(
     ClimateService::class,
     static fn(Container $c): ClimateService => new ClimateService(
-        $c->get(ClimateClient::class),
+        $c->get(ClimateControlClient::class),
         $c->get(VehicleRepositoryInterface::class),
+        $c->get(VehicleWaker::class),
     ),
 );
 $container->set(
@@ -180,11 +200,23 @@ $container->set(
     VehicleCommandClient::class,
     static fn(): VehicleCommandClient => new TeslaCommandClient(TESLA_COMMANDS_DRY_RUN),
 );
+// Shared wake-on-demand policy: wakes a sleeping vehicle and retries the command.
+// Injected into every command service (vehicle, charging, climate, schedules).
+// The state client backs the connectivity check used when the signing proxy
+// fails without a clean 408 on a sleeping vehicle.
+$container->set(
+    VehicleWaker::class,
+    static fn(Container $c): VehicleWaker => new VehicleWaker(
+        $c->get(VehicleCommandClient::class),
+        $c->get(VehicleStateClient::class),
+    ),
+);
 $container->set(
     VehicleCommandService::class,
     static fn(Container $c): VehicleCommandService => new VehicleCommandService(
         $c->get(VehicleCommandClient::class),
         $c->get(VehicleRepositoryInterface::class),
+        $c->get(VehicleWaker::class),
     ),
 );
 $container->set(
@@ -219,6 +251,7 @@ $container->set(
         $c->get(PreconditioningPlannerRepositoryInterface::class),
         $c->get(VehicleRepositoryInterface::class),
         $c->get(ClimateCommandClient::class),
+        $c->get(VehicleWaker::class),
     ),
 );
 $container->set(
@@ -251,6 +284,7 @@ $container->set(
     static fn(Container $c): ChargingService => new ChargingService(
         $c->get(ChargingCommandClient::class),
         $c->get(VehicleRepositoryInterface::class),
+        $c->get(VehicleWaker::class),
     ),
 );
 $container->set(
@@ -259,6 +293,7 @@ $container->set(
         $c->get(ChargingPlannerRepositoryInterface::class),
         $c->get(VehicleRepositoryInterface::class),
         $c->get(ChargingCommandClient::class),
+        $c->get(VehicleWaker::class),
     ),
 );
 $container->set(
@@ -275,6 +310,24 @@ $container->set(
     static fn(Container $c): ChargingPlannerController => new ChargingPlannerController(
         $c->get(ChargingPlannerService::class),
         $c->get(VehicleRepositoryInterface::class),
+    ),
+);
+
+$container->set(
+    NavigationRepositoryInterface::class,
+    static fn(Container $c): NavigationRepositoryInterface => new NavigationRepository(
+        Database::pdo(),
+    ),
+);
+
+// Navigation
+$container->set(
+    NavigationController::class,
+    static fn(Container $c): NavigationController => new NavigationController(
+        $c->get(VehicleTelemetryRepositoryInterface::class),
+        $c->get(VehicleRepositoryInterface::class),
+        $c->get(NavigationRepositoryInterface::class),
+        new CachingGeocoder($c->get(GeocoderInterface::class), Database::pdo()),
     ),
 );
 

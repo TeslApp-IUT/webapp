@@ -8,41 +8,45 @@ use Teslapp\Models\Charging\ValueObjects\ChargeLimit;
 use Teslapp\Models\Charging\ValueObjects\ChargingAmps;
 use Teslapp\Models\Shared\Exceptions\VehicleUnauthorizedException;
 use Teslapp\Models\Shared\TeslaApi\ChargingCommandClient;
+use Teslapp\Models\Shared\TeslaApi\VehicleWaker;
 use Teslapp\Models\Shared\ValueObjects\Vin;
 use Teslapp\Models\Vehicle\VehicleRepositoryInterface;
 
 /**
  * Immediate charging use cases: start/stop the charge, tune its limit and current.
+ * Every command runs through the shared VehicleWaker, which wakes a sleeping
+ * vehicle and retries.
  */
 final readonly class ChargingService
 {
     public function __construct(
         private ChargingCommandClient $client,
         private VehicleRepositoryInterface $vehicleRepository,
+        private VehicleWaker $waker,
     ) {}
 
     public function start(string $userId, Vin $vin): void
     {
         $this->assertOwnership($vin, $userId);
-        $this->client->startCharging($vin);
+        $this->waker->runAwake($vin, fn() => $this->client->startCharging($vin));
     }
 
     public function stop(string $userId, Vin $vin): void
     {
         $this->assertOwnership($vin, $userId);
-        $this->client->stopCharging($vin);
+        $this->waker->runAwake($vin, fn() => $this->client->stopCharging($vin));
     }
 
     public function setChargeLimit(string $userId, Vin $vin, ChargeLimit $limit): void
     {
         $this->assertOwnership($vin, $userId);
-        $this->client->setChargeLimit($vin, $limit);
+        $this->waker->runAwake($vin, fn() => $this->client->setChargeLimit($vin, $limit));
     }
 
     public function setChargingAmps(string $userId, Vin $vin, ChargingAmps $amps): void
     {
         $this->assertOwnership($vin, $userId);
-        $this->client->setChargingAmps($vin, $amps);
+        $this->waker->runAwake($vin, fn() => $this->client->setChargingAmps($vin, $amps));
     }
 
     /** @throws VehicleUnauthorizedException */

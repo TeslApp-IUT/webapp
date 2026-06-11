@@ -22,6 +22,7 @@ final readonly class VehicleTelemetryRepository implements VehicleTelemetryRepos
     {
         $stmt = $this->pdo->prepare(
             'SELECT inside_temp, ac_enabled, charge_enable, battery_level,
+                    charge_limit, charge_current,
                     scheduled_charging_start_time, climate_keeper_mode,
                     latitude, longitude, last_seen_at
              FROM app.overview

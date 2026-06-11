@@ -54,7 +54,13 @@ final class VehicleServiceTest extends TestCase
         $api = $this->createMock(VehicleStateClient::class);
         $api->method('listVehicles')->willReturn([]); // API empty
 
-        $existing = new Vehicle(new Vin('5YJ3E1EA7KF000316'), 'user-1', 'Ma Model 3', '3');
+        $existing = new Vehicle(
+            new Vin('5YJ3E1EA7KF000316'),
+            'user-1',
+            'Ma Model 3',
+            '3',
+            'public-1',
+        );
         $vehicleRepo = $this->createMock(VehicleRepositoryInterface::class);
         $vehicleRepo->method('findByUser')->willReturn([$existing]);
         $vehicleRepo
@@ -71,7 +77,9 @@ final class VehicleServiceTest extends TestCase
     #[Test]
     public function listForUserReturnsTheUsersVehicles(): void
     {
-        $vehicles = [new Vehicle(new Vin('5YJ3E1EA7KF000316'), 'user-1', 'Ma Model 3', '3')];
+        $vehicles = [
+            new Vehicle(new Vin('5YJ3E1EA7KF000316'), 'user-1', 'Ma Model 3', '3', 'public-1'),
+        ];
 
         $vehicleRepo = $this->createMock(VehicleRepositoryInterface::class);
         $vehicleRepo->method('findByUser')->with('user-1')->willReturn($vehicles);
