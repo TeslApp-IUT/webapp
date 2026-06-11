@@ -27,6 +27,10 @@ function initStepper({ name, min, max, step, onChange }) {
   presets.forEach((button) => {
     button.addEventListener('click', () => set(Number(button.dataset.value)));
   });
+
+  // The server renders the vehicle's actual setting (or a default) in the hidden
+  // input; sync the active preset and the gauge marker with it on load.
+  set(Number.parseInt(hidden.value, 10));
 }
 
 /* ---- Battery gauge fill ----
