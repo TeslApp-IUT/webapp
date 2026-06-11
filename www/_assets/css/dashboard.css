@@ -150,6 +150,13 @@
   color: var(--color-text);
 }
 
+/* Latest telemetry timestamp, tucked just under the tab title. */
+.dashboard-last-seen {
+  margin: -32px 0 32px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
 /* Telemetry Grid */
 .dashboard-grid {
   display: grid;

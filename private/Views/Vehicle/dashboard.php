@@ -36,6 +36,8 @@ ob_start();
       <!-- Right Section -->
       <div class="dashboard-content">
         <h1 class="dashboard-title">Tableau de bord — <?= e($vehicleName) ?></h1>
+        <?php $lastSeenAt = $data['last_seen_at'] ?? null;
+        require __DIR__ . '/../partials/last_seen.php'; ?>
         <div class="dashboard-grid">
           <!-- Battery -->
           <a href="/dashboard/<?= e($vehicleId) ?>/battery" class="dashboard-card-link">
