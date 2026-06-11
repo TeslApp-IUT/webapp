@@ -47,15 +47,23 @@
           event.preventDefault();
           return;
         }
-        inFlight = true;
 
         const submitter = event.submitter;
-        if (!submitter) {
-          return;
-        }
-        // Defer the visual lock: disabling the submitter synchronously inside
-        // the submit handler would drop its name/value from the POST body.
-        setTimeout(() => markBusy(submitter), 0);
+        // Lock only once every submit handler has run and none cancelled the
+        // submission: the page JS (battery.js, ac.js) calls preventDefault()
+        // to geocode a typed address first, then re-submits — locking on that
+        // cancelled pass would block the re-submit and freeze the whole page.
+        // The deferral also matters for the button itself: disabling it
+        // synchronously would drop its name/value from the POST body.
+        setTimeout(() => {
+          if (event.defaultPrevented) {
+            return;
+          }
+          inFlight = true;
+          if (submitter) {
+            markBusy(submitter);
+          }
+        }, 0);
       });
     });
 
