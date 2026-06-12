@@ -10,21 +10,6 @@
     "ext-pdo": "*",
     "ext-mbstring": "*"
   },
-  "autoload": {
-    "psr-4": {
-      "Teslapp\\Controllers\\": "private/Controllers/",
-      "Teslapp\\Models\\": "private/Models/",
-      "Teslapp\\Utils\\": "private/Utils/"
-    },
-    "files": [
-      "private/Utils/Functions.php"
-    ]
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Teslapp\\Tests\\": "tests/"
-    }
-  },
   "scripts": {
     "phpstan": "phpstan analyse",
     "test": "phpunit",

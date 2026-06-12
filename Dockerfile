@@ -1,18 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ################################################################################
-# Stage 1: Install Composer dependencies
-FROM composer:lts AS deps
-
-WORKDIR /app
-
-COPY composer.json ./
-RUN --mount=type=cache,target=/tmp/composer-cache \
-    COMPOSER_CACHE_DIR=/tmp/composer-cache \
-    composer install --no-dev --no-interaction
-
-################################################################################
-# Stage 2: Tailwind CSS build
+# Stage 1: Tailwind CSS build
 FROM oven/bun:alpine AS css
 
 WORKDIR /build
@@ -25,7 +14,7 @@ COPY www/index.php www/index.php
 RUN bun run build
 
 ################################################################################
-# Stage 3: Final runtime image (nginx + PHP-FPM on Alpine)
+# Stage 2: Final runtime image (nginx + PHP-FPM on Alpine)
 FROM php:8.2-fpm-alpine AS final
 
 # Install nginx and supervisor; compile pdo_pgsql against postgresql-dev then
@@ -54,10 +43,9 @@ COPY docker/supervisord.conf /etc/supervisord.conf
 COPY docker/php-fpm.conf /usr/local/etc/php-fpm.d/zz-teslapp.conf
 
 # Project layout under BASE_PATH (/var/www/):
-#   vendor/  — Composer autoloader (outside DocumentRoot)
-#   private/ — Application source (outside DocumentRoot)
+#   private/ — Application source (outside DocumentRoot), including the
+#              hand-written autoloader (private/config/autoloader.php)
 #   html/    — DocumentRoot (www/)
-COPY --from=deps /app/vendor /var/www/vendor
 COPY ./private /var/www/private
 COPY ./www /var/www/html
 # Overwrite with the minified compiled CSS from the build stage

@@ -9,18 +9,14 @@ use Teslapp\Utils\RememberToken;
 use Teslapp\Utils\Route;
 
 /**
- * Loading: global configuration, Composer autoload (PSR-4),
+ * Loading: global configuration, hand-written PSR-4 autoloader,
  * followed by the routes table.
  */
 require_once __DIR__ . '/../private/config/config.php';
 
-// Composer autoload (PSR-4) — required. Run `composer install` if missing.
-$autoload = BASE_PATH . '/vendor/autoload.php';
-if (!is_file($autoload)) {
-    http_response_code(500);
-    exit('Autoload Composer manquant. Lancez `composer install`.');
-}
-require_once $autoload;
+// Hand-written PSR-4 autoloader — loads project classes and global helpers
+// (see private/config/autoloader.php).
+require_once __DIR__ . '/../private/config/autoloader.php';
 
 $routes = require_once __DIR__ . '/../private/config/routes.php';
 
